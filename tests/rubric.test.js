@@ -118,3 +118,12 @@ test("specialists discourage oddity-as-originality and treat sex/trauma as poten
   assert.match(prompt,/An extraordinary character may be recognizably distinctive while badly executed/);
   assert.match(prompt,/Sexual content, trauma, disability and dark comedy are neutral premises/);
 });
+
+test("voice-rich prose is functional information, not a generic construction defect",()=>{
+  const kind={primary:"character",secondary:null};
+  const prompt=rubricPrompt(kind);
+  assert.match(prompt,/voice, cadence, humor, attitude/);
+  assert.match(prompt,/shorter declarative rewrite is not automatically more efficient/);
+  assert.match(prompt,/token savings without meaningful runtime impact/);
+  assert.match(prompt,/empty weaknesses are valid/);
+});
