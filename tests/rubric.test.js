@@ -68,11 +68,11 @@ test("comparison prompt includes both modules and cards",()=>{
   for(const re of [/Card A data/,/Card B data/,/"cardA"/,/"cardB"/,/"firstMessageSynergy"/,/"profileGreetingCoverage"/,/"exampleDialogueAssessment"/,/"comparison"/]) assert.match(str,re);
 });
 test("universal rules don't mandate conflict",()=>{
-  assert.match(FOUNDATION,/No mandatory independent goals, friction, conflict/);
+  assert.match(FOUNDATION,/initiative, defiance, conflict, redemption and psychological complexity are not prerequisites/);
 });
 
 test("scoring anchors disallow high scores for simple clarity, shock, or rule obedience",()=>{
-  for(const re of [/8\+ EVIDENCE TEST/,/following a rigid template is not proof/i,/shock value/i,/distinctiveness is not quality/i,/only ONE selected greeting/i,/Creator Notes.*NOT seen/i]) assert.match(FOUNDATION,re);
+  for(const re of [/8\+ EVIDENCE TEST/,/A card may make a bland loop extremely predictable, or enforce a cumbersome fixed response format/i,/shock value/i,/distinctiveness is not quality/i,/Only ONE selected greeting/i,/Creator Notes, listing tags.*NOT seen/i]) assert.match(FOUNDATION,re);
 });
 test("single and comparison use the same mandatory report shape",()=>{
   const kind={primary:"character",secondary:null};
