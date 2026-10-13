@@ -21,6 +21,7 @@ test("OpenAI-compatible provider never leaks key into request body",async()=>{
     assert.equal(payload.messages[1].role,"user");
     assert.equal(seen.options.headers.Authorization,"Bearer TEST_ONLY_NOT_REAL");
     assert.ok(!seen.options.body.includes("TEST_ONLY_NOT_REAL"));
+    assert.equal(seen.options.headers["HTTP-Referer"],undefined);
   } finally {globalThis.fetch=previous;}
 });
 test("Gemini receives image as inline data instead of in card text",async()=>{
@@ -46,4 +47,19 @@ test("The app fails explicitly on truncated outputs",async()=>{
 });
 test("Custom endpoint must use HTTPS or localhost",async()=>{
   await assert.rejects(()=>complete(cfg("custom",{baseUrl:"http://insecure.example/v1"}),"a","b"),/Custom API URL/);
+});
+
+test("OpenRouter 5.0 has distinct attribution URL and title", async()=>{
+  const previous=globalThis.fetch;
+  let headers;
+  globalThis.fetch=async(_url,options)=>{
+    headers=options.headers;
+    return new Response(JSON.stringify({choices:[{finish_reason:"stop",message:{content:'{"ok":true}'}}]}),{status:200,headers:{"Content-Type":"application/json"}});
+  };
+  try {
+    await complete(cfg("openrouter"),"system","card");
+    assert.equal(headers["HTTP-Referer"],"https://github.com/zootopiabest/Character-Card-Analyzer-5.0");
+    assert.equal(headers["X-Title"],"Character Card Analyzer 5.0");
+    assert.notEqual(headers["HTTP-Referer"],"https://zootopiabest.github.io");
+  } finally { globalThis.fetch=previous; }
 });

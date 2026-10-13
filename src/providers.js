@@ -90,6 +90,9 @@ export async function complete(config, system, user, imageDataUrl = null) {
   const endpoint = baseUrl(config).replace(/\/chat\/completions$/,"") + "/chat/completions";
   const result = await sendJson(endpoint,
     { Authorization: "Bearer " + config.key.trim(),
-      ...(config.provider === "openrouter" ? {"X-Title":"Character Card Analyzer 5.0"} : {}) }, body);
+      ...(config.provider === "openrouter" ? {
+        "HTTP-Referer": "https://github.com/zootopiabest/Character-Card-Analyzer-5.0",
+        "X-Title": "Character Card Analyzer 5.0"
+      } : {}) }, body);
   return outputOf(result);
 }
