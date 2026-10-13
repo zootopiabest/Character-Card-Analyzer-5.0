@@ -21,8 +21,8 @@ function setBusy(v) {
 function populateSelector(id, primary) {
   const el=$(id);
   el.innerHTML = primary
-    ? '<option value="auto">Auto-detect from card</option>'
-    : '<option value="auto">Auto-select if useful</option><option value="none">No secondary rubric</option>';
+    ? '<option value="auto">Auto-detect (extra API call)</option>'
+    : '<option value="auto">Auto-select (extra API call)</option><option value="none">No secondary rubric</option>';
   for(const key of SPECIALIST_KEYS) {
     const opt=document.createElement("option");opt.value=key;opt.textContent=SPECIALISTS[key].label;el.appendChild(opt);
   }
