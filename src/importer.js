@@ -17,7 +17,7 @@ export function extractCardText(input) {
     "Example Dialogue": ["mes_example", "example_dialogue"],
     "System Prompt": ["system_prompt"],
     "Post History Instructions": ["post_history_instructions"],
-    "Creator Notes": ["creator_notes"],
+    "Creator Notes (non-runtime metadata)": ["creator_notes"],
   })) {
     const content = keys.map((k) => root[k]).find((x) => typeof x === "string" && x.trim());
     if (content) lines.push("## " + name + "\n" + content);
@@ -25,7 +25,7 @@ export function extractCardText(input) {
   const greetings = root.alternate_greetings || root.alternateGreetings || root.alt_greetings;
   if (Array.isArray(greetings)) greetings.forEach((g,i) => {
     const v = typeof g === "string" ? g : (g?.content || g?.text || "");
-    if (v) lines.push("## Greeting " + (i+2) + "\n" + v);
+    if (v) lines.push("## Alternate Greeting " + (i+2) + " (separate roleplay start)\n" + v);
   });
   if (root.character_book || root.lorebook) lines.push("## Lorebook\n" + JSON.stringify(root.character_book || root.lorebook));
   if (root.extensions) lines.push("## Extensions\n" + JSON.stringify(root.extensions));

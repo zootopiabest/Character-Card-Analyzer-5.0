@@ -10,8 +10,9 @@ This is a fresh, static browser application with an independent modular grading 
 - Automatic AI classification or explicit user selection of **primary and optional secondary** rubrics.
 - Small universal foundation and **six** specialist rubrics: standalone character, character-driven scenario, scenario-driven character, RPG/world, companion/support/service, and ensemble.
 - One consistent rubric used across comparison and single-card evaluation.
-- Independent greeting report cards that do **not** affect overall quality.
+- **First greeting synergy** plus a profile-to-all-greetings support assessment. Automatic per-greeting scoring has been removed; that remains a potential future opt-in feature.
 - Separate 0-100 slop severity index (higher means worse).
+- Calibrated evidence-first score anchors; unusual, shocking or highly scripted behavior does not earn a high score merely for being memorable or obedient.
 - Deterministically computed overall quality: core 45% + primary 55%, or core 40% + primary 45% + secondary 15%. These weights are **provisional**, not empirically calibrated.
 - Imports JSON character cards (including V3 data), Markdown, text, and PNG cards containing supported embedded metadata. PNG portrait is available for image comparison.
 - Optional portrait match in single-card mode.
@@ -39,7 +40,7 @@ For GitHub Pages, enable Pages with **GitHub Actions** as its source under Setti
 
 - src/rubrics/core.js: universal quality/grade discipline.
 - src/rubrics/specialists.js: one source of truth for specialist scoring modules.
-- src/rubrics/components.js: greeting, visual, comparison policies.
+- src/rubrics/components.js: first greeting synergy, alternative-start coverage, visual and comparison policies.
 - src/rubrics/assemble.js: builds only the relevant prompt and expected output schema.
 - src/classifier.js: model-based bot type classification.
 - src/providers.js: direct BYOK model calls.
@@ -75,5 +76,7 @@ The tests exercise assembly and score contracts without requiring provider keys.
 4. Static anatomy is continuity metadata; sexuality/genre are not defects.
 5. Quiet, cooperative or dependent character behavior can be excellent.
 6. No irrelevant categories can be "high scored" as a workaround; modules are omitted if not applicable.
-7. Separate greeting and visual grades from characterization.
+7. Use textual first greeting synergy and profile support for all independent greetings; only visual continuity has an optional numeric score.
 8. Every actual deduction requires attributable evidence and a consequence.
+9. Creator Notes are non-runtime metadata, only one selected greeting initializes a given chat, and example dialogue can fall out of context.
+10. The persistent profile must adequately teach voice and load-bearing behavior rather than relying on examples or prior greetings. Missing example dialogue is fine when the profile stands on its own.
