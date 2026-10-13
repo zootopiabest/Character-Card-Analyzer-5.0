@@ -19,3 +19,18 @@ test("calibration packets preserve card input, swap comparison order, and keep r
     }
   }
 });
+
+test("regression fixtures cover agency, trauma shortcuts, dark comedy, and false contradictions", () => {
+  const ids = CALIBRATION_CASES.map(c => c.id);
+  assert.equal(ids.length,16);
+  assert.equal(new Set(ids).size,ids.length);
+  for (const id of ["quirk-catalog-vs-agency", "trauma-as-sexual-shortcut", "dark-humor-vs-contempt", "contact-and-past-not-contradiction"]) {
+    const fixture=CALIBRATION_CASES.find(c=>c.id===id);
+    assert.equal(fixture.kind.primary,"character");
+    assert.ok(fixture.a.data.description.length>70 && fixture.b.data.description.length>70);
+    assert.ok(fixture.expectations.length>=3);
+    const emitted=calibrationPackets(fixture);
+    assert.ok(emitted["compare-ab.txt"].includes("Scores 6+ require evidence"));
+    assert.ok(!emitted["compare-ab.txt"].includes(fixture.question));
+  }
+});

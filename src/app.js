@@ -1,10 +1,10 @@
-import { mountModelBrowser } from "./model-browser.js?v=5.1.1";
-import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.1";
-import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.1";
-import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.1";
-import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.1";
-import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.1";
-import { APP_VERSION } from "./version.js?v=5.1.1";
+import { mountModelBrowser } from "./model-browser.js?v=5.1.2";
+import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.2";
+import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.2";
+import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.2";
+import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.2";
+import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.2";
+import { APP_VERSION } from "./version.js?v=5.1.2";
 
 const $ = (id) => document.getElementById(id);
 let modelBrowser=null,activeProvider=null;

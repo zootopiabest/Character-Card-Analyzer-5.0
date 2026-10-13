@@ -1,5 +1,5 @@
 import { OPENROUTER_MODELS, CACHE_KEY, CACHE_MAX_AGE_MS, toBrowserModels, catalogAuthors,
-  filterAndSortModels, formatPrice, fetchOpenRouterCatalog } from "./openrouter-models.js?v=5.1.1";
+  filterAndSortModels, formatPrice, fetchOpenRouterCatalog } from "./openrouter-models.js?v=5.1.2";
 
 const safe=value=>String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const RECOMMENDED="__recommended__";

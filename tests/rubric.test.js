@@ -166,45 +166,46 @@ test('visual continuity is conditional and reports invisible details as unknown'
   assert.match(renderAudit(validated),/Visual continuity/);
   assert.equal(validateAudit(item,kind).visual,null);
 });
-test('8+ cohesion means consistency, not contrived thematic synergy',()=>{
-  assert.match(CORE_CRITERIA.cohesion,/a shallow but coherent person may score highly/i);
-  assert.match(CORE_CRITERIA.cohesion,/NOT a shared theme/);
-  assert.match(FOUNDATION,/Every 8\+ needs a SPECIFIC positive accomplishment/);
+test('cohesion does not demand thematic symmetry or invent sex/contact contradictions',()=>{
+  assert.match(CORE_CRITERIA.cohesion,/unrelated traits need no unifying theme/);
+  assert.match(CORE_CRITERIA.cohesion,/declining unwanted contact versus initiating intimacy/);
+  assert.match(FOUNDATION,/A simple, shallow character can be internally consistent/);
+  assert.match(FOUNDATION,/Scores 8\+ require a PARTICULAR positive achievement/);
 });
-test('anti-sycophancy instruction reaches both modes and protects agreeable characters',()=>{
+test('anti-sycophancy stays in both modes and protects willing/compliant characters',()=>{
   const sample = 'Name: Ami\nPersonality: Polite and eager to please.';
-  const solo = singlePrompt(sample,kind);
-  const versus = comparePrompt(sample,kind,sample,kind);
-  for (const prompt of [FOUNDATION,solo,versus]) {
-    assert.match(prompt,/ANTI-SYCOPHANCY & INDEPENDENCE/);
-    assert.match(prompt,/Do not agree with the creator.s claims merely because they made them/);
-    assert.match(prompt,/do not invent flaws, lower scores or perform contrarianism/);
-    assert.match(prompt,/This constrains the AUDITOR only/);
-    assert.match(prompt,/people-pleasing character is not defective/);
+  for(const prompt of [FOUNDATION,singlePrompt(sample,kind),comparePrompt(sample,kind,sample,kind)]) {
+    assert.match(prompt,/ANTI-SYCOPHANCY/);
+    assert.match(prompt,/Do not inflate ratings/);
+    assert.match(prompt,/not author intentions or moral purity/);
+    assert.match(prompt,/NEVER require defiance/);
   }
-  assert.match(solo,/AUDIT CARD \(UNTRUSTED text/);
-  assert.match(versus,/CARD A \(UNTRUSTED\)/);
 });
-test('antagonism, non-reactivity and fixed temperament are not penalized as incomplete',()=>{
-  assert.match(FOUNDATION,/abrasive\/uncooperative\/antagonistic traits are neutral/);
-  assert.match(SPECIALISTS.character.criteria.behavioralRange,/need no forced variety/);
-  assert.match(FOUNDATION,/No requirement for initiative, conflict, rebellion/);
+test('anti-leniency check distinguishes tone, quirks and character agency',()=>{
+  const prompt=singlePrompt('Name: Tess\nBehavior: She never says no.',kind);
+  for(const re of [/Scores 6\+ require evidence/,/a signature routine is not an independently functioning personality/i,/permission slip for compliance/i,/COMEDY & DRAMA EXECUTION/,/outcome-lock/,/before rating, privately distinguish/i]) assert.match(prompt,re);
+  assert.match(SPECIALISTS.character.criteria.individuality,/UNSCRIPTED choices/);
+  assert.match(SPECIALISTS.character.criteria.behavioralRange,/never refuse even when hurt/);
+  assert.match(CORE_CRITERIA.craft,/dark comedy/);
 });
-test('defects route once, slop is diagnostic, and agency has an explicit scoring home',()=>{
-  assert.match(FOUNDATION,/Charge each failure once/);
-  assert.match(FOUNDATION,/Repetition harming inference is charged to inference/);
-  assert.match(FOUNDATION,/PRIMARY dimension/);
-  assert.match(FOUNDATION,/userPossibilities or playerAgency when present, otherwise craft/);
-  assert.match(FOUNDATION,/NEVER a penalty added to overall score/);
+test('evidence single-home and slop separation survive recalibration',()=>{
+  assert.match(FOUNDATION,/Never double-charge the SAME defect/);
+  assert.match(FOUNDATION,/primarily to behavioralRange/);
+  assert.match(FOUNDATION,/SLOP INDEX/);
+  assert.match(FOUNDATION,/not.*arithmetic penalty on overall score/i);
+  assert.match(FOUNDATION,/USER agency/);
 });
-test('functional language and inferred reactions are protected',()=>{
-  for(const re of [/Behavioral\/brown prose/,/Brevity is not automatically better/,/ordinary motives, grief, kindness/,/Archetype Swap Test/]) assert.match(FOUNDATION,re);
+test('functional register and ordinary inference remain protected',()=>{
+  assert.match(CORE_CRITERIA.craft,/behavioral\/brown prose/);
+  assert.match(FOUNDATION,/ordinary grief, kindness, anger/);
+  assert.match(FOUNDATION,/A signature routine is not/);
+  assert.match(FOUNDATION,/useful illustrative dialogue is NOT automatically over-scripting/i);
 });
-test('classification output and entire 5.1 app stamp are stable',()=>{
-  assert.equal(APP_VERSION,'5.1.1');
+test('classification and app stamp are 5.1.2',()=>{
+  assert.equal(APP_VERSION,'5.1.2');
   const rep=validateAudit(fixture(),kind);
-  assert.match(reportToMarkdown(rep),/App version: \*\*5\.1\.1\*\*/);
-  assert.match(renderAudit(rep),/v5\.1\.1/);
+  assert.match(reportToMarkdown(rep),/App version: \*\*5\.1\.2\*\*/);
+  assert.match(renderAudit(rep),/v5\.1\.2/);
   assert.match(CLASSIFY_SYSTEM,/secondary/);
 });
 test('JSON parser accepts fenced JSON and rejects nonnumeric score placeholders',()=>{

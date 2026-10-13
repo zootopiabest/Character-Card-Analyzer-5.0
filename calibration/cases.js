@@ -142,4 +142,49 @@ export const CALIBRATION_CASES = [
     ]
   }
 
+  ,{
+    id:"quirk-catalog-vs-agency",kind,
+    question:"Do detailed quirky routines substitute for independent characterization?",
+    a:card({name:"Tess",description:"Tess is a weary night-shift worker. She wants stable housing but prioritizes keeping her younger sister safe. She tends to assume mistakes are her fault, enjoys cheap astronomy magazines, and is sometimes very eager to please. If accepting help would endanger her sister, she usually turns it down even when she needs it herself.",first_mes:'Tess checked a bus timetable. "Can I ask you something?"'}),
+    b:card({name:"Tess",description:"Tess is a weary night-shift worker. She is fragile, needy, forgetful and deeply traumatized. Whenever someone leaves mid-conversation she follows them and pretends they want exercise. Whenever praised she squeals and changes mood instantly. When nervous she stares at an ant. She has a dozen colorful exact reaction lines. She exists to please people; whatever anyone asks she always says yes, even when it hurts, and never has a reason to refuse.",first_mes:'Tess checked a bus timetable. "Can I ask you something?"'}),
+    expectations:[
+      "Do not reward B's larger count of specific reaction gags as higher individuality or more competent behavior.",
+      "A establishes independent priorities and consequential decisions; B hardcodes one outcome. Recognize B's behavioralRange ceiling without requiring assertiveness from all people-pleasers.",
+      "If B also receives an individuality deduction, identify distinct missing perspective/unscripted judgment rather than charging the same refusal lock twice."
+    ]
+  },
+  {
+    id:"trauma-as-sexual-shortcut",kind,
+    question:"Can the auditor differentiate voluntary intimacy from forced availability attributed to suffering?",
+    a:card({name:"Eden",description:"Eden is affectionate and sexually adventurous. She often initiates casual relationships, cares deeply about her friends, and prefers direct communication. Past neglect sometimes makes her anxious, but she chooses partners based on mutual interest and retains personal limits.",first_mes:'Eden smiled. "You seem fun. Want to get coffee?"'}),
+    b:card({name:"Eden",description:"Eden was neglected, hurt and isolated. All that trauma made her totally obedient. She will never refuse any intimacy, even when in pain. Being wanted is the only thing she can do for anyone, so every stranger gets immediate access; all of her ordinary anxieties are automatically fixed if someone wants sex with her. Whenever someone asks anything, her answer is yes.",first_mes:'Eden smiled. "You seem fun. Want to get coffee?"'}),
+    expectations:[
+      "A's easy sexuality is not a negative and does not need detailed psychological causation.",
+      "B turns trauma into a universal mechanism for non-negotiable intimacy and eliminates responsive choice; charge demonstrated forced outcome, not taboo content.",
+      "Do not automatically presume diagnosed people or survivors lack agency. Critique the directives on this specific card."
+    ]
+  },
+  {
+    id:"dark-humor-vs-contempt",kind,
+    question:"Can the evaluator identify an actual comic mechanism instead of rewarding profanity and cruelty as dark comedy?",
+    a:card({name:"Ivo",description:"Ivo is a broke undertaker who apologizes to every corpse before moving it and offers the mourners brutally practical instructions. The narrator is dry and restrained, drawing irony from the difference between solemn ceremonies and Ivo's disastrously ordinary equipment failures.",first_mes:'The hearse stalled outside the chapel. "He has waited seventy years," Ivo told the family. "He can wait for jumper cables."'}),
+    b:card({name:"Ivo",description:"Ivo is a broke, useless, worthless undertaker with a miserable history of abuse, humiliation and endless tragic accidents. Dark comedy! The narrator must call him a pathetic idiot and swear in every paragraph; begin every turn by insulting him and end by mocking him again. All of the audience's laughter comes from how broken and disgusting he is.",first_mes:'The useless idiot could not even drive his fucking hearse. How hilarious and pathetic.'}),
+    expectations:[
+      "A uses setup, incongruity and a character-specific voice that actually supports deadpan comedy.",
+      "B merely asserts dark comedy, mandates a contemptuous wrapper and substitutes insults/misery for an executed gag; craft should reflect that failure.",
+      "The criticism is not that harsh or offensive humor is forbidden; actual comedy can be harsh and work. Avoid treating narrator-template predictability as a bonus."
+    ]
+  },
+  {
+    id:"contact-and-past-not-contradiction",kind,
+    question:"Does the evaluator invent an intimacy inconsistency without evidence?",
+    a:card({name:"Kai",description:"Kai recoils from strangers grabbing her without warning. She enjoys initiating intimate conversations on her own terms. She has never exchanged intimacy for shelter before.",first_mes:'Kai stepped toward the stranger. "I need somewhere to stay. I know this sounds strange, but would you be open to a date?"'}),
+    b:card({name:"Kai",description:"Kai recoils from strangers grabbing her without warning, yet also instructs the model to never object or react negatively to any unsolicited touching by strangers. She has never exchanged intimacy for shelter before.",first_mes:'Kai stepped toward the stranger. "Would you be open to a date?"'}),
+    expectations:[
+      "A is not internally inconsistent: initiating conversation is not accepting unwanted touch, and a first-time offer is not disproven by a past negative.",
+      "B has explicitly incompatible instructions about the same unsolicited-contact situation; do not make the same mistake in the other direction.",
+      "Place an evidenced material contradiction under cohesion ONCE, without echo deductions in all other criteria."
+    ]
+  }
+
 ];

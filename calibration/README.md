@@ -1,6 +1,6 @@
 # Behavioral calibration cases
 
-These twelve synthetic pairs test grading behavior, not exact numerical answers. They are development fixtures, never extra instructions injected into normal audits. Expectations in `cases.js` are for the human reviewer only. Passing local unit tests does **not** mean a model passes these cases.
+These sixteen synthetic pairs probe grading behavior, not exact numerical answers. The new pairs target the failure pattern seen in a real 5.1.1 report on a strongly over-scripted character; they are SYNTHETIC and do not reproduce that creator's full card. They are development fixtures, never extra instructions injected into normal audits. Expectations in `cases.js` are for the human reviewer only. Passing local unit tests does **not** mean a model passes these cases.
 
 Generate importable cards and production prompts without making API calls:
 
@@ -22,6 +22,10 @@ Each directory in `calibration-output/` contains `a.json`, `b.json`, independent
 | constant-disabled-lore | Disabled and constant-requested entries are not guaranteed active context. |
 | prose-vs-filler | Useful behavioral register vs. repeated ornamental filler. |
 | fast-intimacy-without-psychology | Accessibility and affection don't require an imposed trauma rationale. |
+| quirk-catalog-vs-agency | Distinctive scripted reactions are not independently inferred judgments or an open-ended personality. |
+| trauma-as-sexual-shortcut | Freely chosen sexual enthusiasm versus trauma invoked to mandate intimacy without refusal. |
+| dark-humor-vs-contempt | Working dark comedy versus profanity/humiliation presented as the joke. |
+| contact-and-past-not-contradiction | No invented inconsistency between unwanted contact, self-initiated intimacy, and past history. |
 
 For each case, read its expectations in `cases.js`. Run both cards independently, then compare them in both orders. Record app version, provider/model, settings, run date, and the unedited exported reports. Mark each expectation pass/fail/uncertain and cite the report passage that supports the decision. Judge directional differences and the stated reasoning; do not require an exact score or treat a tiny rounding change as meaningful. A score difference in another dimension is acceptable only when separately justified, not when it simply renames the same defect.
 

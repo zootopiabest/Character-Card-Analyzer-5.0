@@ -1,7 +1,7 @@
-import { CORE_CRITERIA, FOUNDATION } from "./core.js?v=5.1.1";
-import { SPECIALISTS, assertSpecialist } from "./specialists.js?v=5.1.1";
+import { CORE_CRITERIA, FOUNDATION } from "./core.js?v=5.1.2";
+import { SPECIALISTS, assertSpecialist } from "./specialists.js?v=5.1.2";
 import { RUNTIME_RUBRIC, CREATOR_RUBRIC, LOREBOOK_RUBRIC, GREETING_RUBRIC,
-  ALTERNATES_RUBRIC, EXAMPLES_RUBRIC, VISUAL_RUBRIC, COMPARISON_RUBRIC } from "./components.js?v=5.1.1";
+  ALTERNATES_RUBRIC, EXAMPLES_RUBRIC, VISUAL_RUBRIC, COMPARISON_RUBRIC } from "./components.js?v=5.1.2";
 
 export const coreKeys = Object.keys(CORE_CRITERIA);
 const modulesFor = (kind) => {
@@ -85,8 +85,8 @@ export function rubricPrompt(kind, hasImage = false, features = {}) {
   ].join("\n\n");
 }
 const outputRules = [
-  "Return ONLY one valid JSON object matching this structure. Replace score placeholders with NUMBERS; do not include missing optional fields. Each criterion's rationale combines cited evidence/accomplishment -> its distinct runtime effect. No invented roleplay test results, numeric greeting grades or model-computed overall score.",
-  "Summary <=3 sentences; every list <=3 concise entries and may be []; avoid repeating criterion analyses in summaries or lists. Weaknesses require evidence and impact."
+  "Before rating, privately distinguish: (1) durable priorities vs scripted quirks; (2) chosen temperament vs forced identical outcomes; (3) executed humor/drama vs labels or shock; (4) real contradictions vs plausible change; (5) independently evidenced faults vs duplicate consequences. Return ONLY one valid JSON object matching this structure. Replace score placeholders with NUMBERS; do not include missing optional fields. Each criterion's rationale combines cited evidence/accomplishment -> its distinct runtime effect. No invented roleplay test results, numeric greeting grades or model-computed overall score.",
+  "Summary <=3 sentences; every list <=3 concise entries and may be []; avoid repeating criterion analyses in summaries or lists. Weaknesses require evidence and impact. For a score of 6+, articulate what actually WORKS in that criterion beyond one memorably specific quirk or a forced format. For scores below 6, state the principal functional limitation without cushioning it with irrelevant compliments. Distinguish quoted card content from its predicted effect."
 ].join(" ");
 export function reportSchema(kind, hasImage = false, features = {}) {
   return outputRules + "\n" + JSON.stringify(reportTemplate(kind,hasImage,features));

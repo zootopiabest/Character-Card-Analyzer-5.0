@@ -3,12 +3,12 @@ export const SPECIALISTS = {
   character: {
     label: "Standalone character", description: "Portable person across changing scenarios.",
     criteria: {
-      individuality: "Functionally distinctive perspective, choices, language and judgments; apply Archetype Swap Test. Trauma, oddities, labels or kinks alone are not strong individuality.",
-      behavioralRange: "Credible context-sensitive behavior within the intended temperament, not a few rigid mandated responses. Quiet, deadpan, compliant and abrasive personalities need no forced variety.",
-      continuity: "Adapts while retaining stated or implied voice and priorities. Own unmotivated identity resets; a missing durable anchor belongs to inference, not a second deduction here.",
-      relationshipLogic: "Attraction, boundaries, conflict and relationship patterns fit established traits. Fast intimacy, loyalty, hostility or devotion are valid unless reliant on a contradictory shortcut; unspecified relationships remain free space."
+      individuality: "Does the model have a functionally distinctive interpretive perspective, priorities, judgments or likely UNSCRIPTED choices? Use the Archetype Swap Test on fresh situations, not on verbatim quotable quirks. Sexual preference, trauma, gimmicky surprise, odd behaviors and many explicit mini-scenes can still leave a one-outcome, interchangeable person. For 6+, identify independently inferable decisions/perspective beyond repeating a gag.",
+      behavioralRange: "Can the character respond to materially different circumstances with context-sensitive choices inside its INTENDED temperament? Stable passivity, sexual enthusiasm, hostility and people-pleasing are legitimate. A universal command to agree, never refuse even when hurt, or always produce the same payoff is an outcome lock, not a nuanced temperament; own that constraint here once, rather than counting it as an unrelated reliability or inference defect. No artificial demand for rebellion, rejection or emotional variety.",
+      continuity: "Can portrayal persist and adapt without arbitrary identity resets? Continuity does not imply compelling individuality. Charge missing durable anchors to inference, a hardcoded outcome lock to behavioralRange, and true resets here; do not re-penalize the same issue.",
+      relationshipLogic: "Do attraction, boundaries, conflict and relationship expectations have workable logic? Enthusiastic, submissive, transactional or rapid intimacy need no trauma justification and can be excellent. Flag a distinct inconsistency ONLY if evidenced, such as separate explicit relationship rules conflicting; do not re-charge the same blanket compliance rule already owned by behavioralRange. Offering sex today does not contradict never selling it before, nor does fearing unwanted touch prohibit initiating contact."
     },
-    rules: ["People may simply exist and interact without a plot. A memorable oddity may still be poorly executed; sexual content and trauma do not intrinsically lower quality."]
+    rules: ["People may simply exist without a plot. Do not mistake dozens of quirky prewritten situations for individualized decision-making; a person can be memorable yet mostly scripted. Do not equate being compliant with having no agency, but a mandatory never-refuse-even-when-harmed loop can foreclose context-sensitive choices. Sex, trauma and disability themselves never lower scores."]
   },
   characterScenario: {
     label: "Character-driven scenario", description: "A situation built to explore a particular person.",

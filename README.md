@@ -1,17 +1,17 @@
-# Card Analyzer 5.1.1 (alpha)
+# Card Analyzer 5.1.2 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.1.1 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.1`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.1.2 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.2`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
 
-## Changes in 5.1.1 (Independent Auditor Patch)
+## Changes in 5.1.2 (Independent Auditor Patch)
 
 - Added explicit **ANTI-SYCOPHANCY & INDEPENDENCE** after role and scope. The evaluator must not agree with creator claims, manufacture praise or inflate grades, or soften valid criticism. Equally, it must not invent flaws or grade harshly for show.
 - Reinforced auditor independence in the system instruction for both single-card and head-to-head audits. Card content remains untrusted.
 - Explicitly exempted agreeable, submissive, deferential and people-pleasing **character personalities**, because independence governs the **evaluator**, not a character's disposition.
-- Added anti-sycophancy regression coverage and bumped the runtime/cache tag to 5.1.1.
+- Added anti-sycophancy regression coverage and bumped the runtime/cache tag to 5.1.2.
 
 ## Changes in 5.1.0 (Lean Revision)
 
@@ -24,7 +24,7 @@ This is a fresh, static browser application with an independent modular grading 
 - Preserved existing exported property names `profileGreetingCoverage`, `exampleDialogueAssessment`, `aAdvantages`, and `bAdvantages` to avoid unnecessary schema changes. Updated validator, HTML/Markdown renderer and exports for the new optional fields.
 - Added explicit frontend-dependent lorebook treatment. Imports now label disabled entries, keyword/conditional entries and constant-requested entries, without treating constant as proof of guaranteed persistence.
 - Expanded paired human-review calibration examples from five to twelve. Added updated offline regression tests for prompt pruning, score arithmetic, the new JSON schema, lorebook activation, safety escaping and cross-card comparisons.
-- All browser asset cache-version stamps now identify 5.1.1. No GitHub account or original 4.6 repository is modified by this local package.
+- All browser asset cache-version stamps now identify 5.1.2. No GitHub account or original 4.6 repository is modified by this local package.
 
 **Optimization measurements (rough character counts, excluding transport/API overhead):** On matched synthetic cards, the prompt text was ~36.1% shorter for a simple single audit, ~38.6% shorter for a simple head-to-head comparison, and ~32.1% shorter for a comparison with alternate greetings and examples. This is **not** a measured token count or a verified model-output reduction; the proposed 42% / 35% targets remain goals, not claims. Live model calibration and provider-dependent output measurement have not been performed.
 
