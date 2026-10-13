@@ -1,0 +1,11 @@
+{
+  "name": "character-card-analyzer-5",
+  "version": "5.0.0-alpha.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/app.js && node --check src/evaluator.js && node --check src/providers.js && node --check src/importer.js && node --check src/report.js && node --check src/rubrics/assemble.js"
+  },
+  "engines": { "node": ">=20" }
+}
