@@ -82,7 +82,6 @@ export async function complete(config, system, user, imageDataUrl = null) {
       { role: "system", content: system },
       { role: "user", content: roleContent }
     ],
-    temperature: 0.25
   };
   // Newer OpenAI reasoning-model families use max_completion_tokens.
   if (config.provider === "openai" && /^(o[1-9]|gpt-5|gpt-6)/i.test(config.model.trim()))
