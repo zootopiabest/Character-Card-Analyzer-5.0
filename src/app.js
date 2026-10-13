@@ -1,8 +1,9 @@
 import { PROVIDERS, DEFAULT_MODEL } from "./providers.js";
-import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js";
+import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.0.1";
 import { extractCardText, importCardFile, importPortrait } from "./importer.js";
-import { classifyCard, runSingle, runComparison } from "./evaluator.js";
-import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js";
+import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.0.1";
+import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.0.1";
+import { APP_VERSION } from "./version.js?v=5.0.1";
 
 const $ = (id) => document.getElementById(id);
 let mode = "single", result = null, resultMode = "single", cardImage = null, busy = false;
@@ -168,5 +169,6 @@ function init() {
   $("saveMarkdown").addEventListener("click",()=>{if(result)downloadText("card-analyzer-5-report.md",reportToMarkdown(result,resultMode),"text/markdown");});
   $("saveJson").addEventListener("click",()=>{if(result)downloadText("card-analyzer-5-report.json",JSON.stringify(result,null,2),"application/json");});
   setMode("single");
+  $("runtimeVersion").textContent = "Runtime " + APP_VERSION + " loaded · Modular grading";
 }
 init();

@@ -1,7 +1,8 @@
 import { complete } from "./providers.js";
 import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js";
-import { singlePrompt, comparePrompt, coreKeys, specialistKeys } from "./rubrics/assemble.js";
-import { SPECIALISTS } from "./rubrics/specialists.js";
+import { singlePrompt, comparePrompt, coreKeys, specialistKeys } from "./rubrics/assemble.js?v=5.0.1";
+import { SPECIALISTS } from "./rubrics/specialists.js?v=5.0.1";
+import { APP_VERSION } from "./version.js?v=5.0.1";
 
 export function parseJson(text) {
   if (typeof text !== "string" || !text.trim()) throw new Error("Empty model response.");
@@ -65,7 +66,7 @@ export function validateAudit(report, kind, hasImage = false) {
     ? coreScore * 0.45 + primaryScore * 0.55
     : coreScore * 0.4 + primaryScore * 0.45 + secondaryScore * 0.15).toFixed(1));
   return {
-    kind, overallScore,
+    kind, overallScore, appVersion: APP_VERSION,
     summary: assertString(report.summary, "summary"),
     core, specialists, slop,
     strengths: strings(report.strengths, "strengths"),

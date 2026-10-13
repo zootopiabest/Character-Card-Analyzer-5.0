@@ -7,6 +7,7 @@ import { normalizeClassification } from "../src/classifier.js";
 import { parseJson, validateAudit } from "../src/evaluator.js";
 import { extractCardText } from "../src/importer.js";
 import { renderAudit, reportToMarkdown } from "../src/report.js";
+import { APP_VERSION } from "../src/version.js";
 
 const fixture = (kind) => ({
   summary: "Complete report.",
@@ -137,4 +138,13 @@ test("explanation and purple prose are only useful when they carry runtime infor
   assert.match(prompt,/shorter declarative rewrite is not automatically more efficient/);
   assert.match(prompt,/4,000 tokens of filler are costly/);
   assert.match(prompt,/vivid writing alone/);
+});
+
+test("version 5.0.1 is stamped on completed results and exports",()=>{
+  assert.equal(APP_VERSION,"5.0.1");
+  const kind={primary:"character",secondary:null};
+  const report=validateAudit(fixture(kind),kind);
+  assert.equal(report.appVersion,APP_VERSION);
+  assert.match(reportToMarkdown(report),/App version: \*\*5\.0\.1\*\*/);
+  assert.match(renderAudit(report),/v5\.0\.1/);
 });

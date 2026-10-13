@@ -10,7 +10,7 @@ const listBlock = (title, items) => '<section class="report-section"><h4>' + saf
 
 export function renderAudit(report) {
   return '<div class="report">' +
-    '<header class="result-header"><span class="eyebrow">' + safe(report.kind.primary) +
+    '<header class="result-header"><span class="eyebrow">' + safe('v' + (report.appVersion||'unknown') + ' · ' + report.kind.primary) +
     (report.kind.secondary ? ' + ' + safe(report.kind.secondary) : '') +
     '</span><div class="result-score"><span>' + number(report.overallScore) +
     '<small>/10</small></span><div><b>Overall quality</b><p>Deterministically weighted from applicable rubrics</p></div></div>' +
@@ -46,7 +46,7 @@ export function renderComparison(data) {
 export function reportToMarkdown(result, mode="single") {
   const audit = (r) => [
     "# Card audit: " + r.kind.primary + (r.kind.secondary ? " + " + r.kind.secondary : ""),
-    "Overall: **"+number(r.overallScore)+"/10** | Slop: **"+r.slop.score+"/100 (higher worse)**",
+    "App version: **"+(r.appVersion||"unknown")+"** | Overall: **"+number(r.overallScore)+"/10** | Slop: **"+r.slop.score+"/100 (higher worse)**",
     r.summary,
     "## Universal criteria",
     ...Object.entries(r.core).map(([name,v])=> "### "+name+": "+v.score+"/10\n"+v.evidence+"\n"+v.effect),

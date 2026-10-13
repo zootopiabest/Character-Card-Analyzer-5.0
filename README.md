@@ -1,6 +1,8 @@
-# Card Analyzer 5.0 (alpha)
+# Card Analyzer 5.0.1 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
+
+**Version check:** The footer says `Runtime 5.0.1 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.0.1`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
 
