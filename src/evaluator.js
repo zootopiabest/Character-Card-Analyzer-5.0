@@ -51,11 +51,6 @@ export function validateAudit(report, kind, hasImage = false) {
     score: assertNumber(report.slop?.score, 0, 100, "slop.score"),
     evidence: assertString(report.slop?.evidence, "slop.evidence")
   };
-  const greetings = (report.greetings || []).map((g,i) => ({
-    label: assertString(g.label, "greeting label " + i),
-    score: assertNumber(g.score, 0, 10, "greeting " + i),
-    notes: assertString(g.notes, "greeting notes " + i)
-  }));
   const visual = hasImage ? {
     score: assertNumber(report.visual?.score, 0, 100, "visual.score"),
     matches: strings(report.visual?.matches, "visual.matches"),
@@ -76,7 +71,10 @@ export function validateAudit(report, kind, hasImage = false) {
     strengths: strings(report.strengths, "strengths"),
     weaknesses: strings(report.weaknesses, "weaknesses"),
     tradeoffs: strings(report.tradeoffs, "tradeoffs"),
-    greetings, visual
+    firstMessageSynergy: assertString(report.firstMessageSynergy, "firstMessageSynergy"),
+    profileGreetingCoverage: assertString(report.profileGreetingCoverage, "profileGreetingCoverage"),
+    exampleDialogueAssessment: assertString(report.exampleDialogueAssessment, "exampleDialogueAssessment"),
+    visual
   };
 }
 export async function classifyCard(config, cardText) {

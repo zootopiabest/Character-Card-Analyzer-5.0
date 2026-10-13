@@ -27,10 +27,9 @@ export function renderAudit(report) {
     '<section class="report-section"><h4>Slop analysis</h4><p>' + safe(report.slop.evidence) + '</p></section>' +
     listBlock("What it does well",report.strengths) + listBlock("Construction defects",report.weaknesses) +
     listBlock("Intentional tradeoffs, not defects",report.tradeoffs) +
-    (report.greetings.length ? '<details open><summary>Greeting report cards (independent)</summary><div class="criteria-grid">' +
-      report.greetings.map((g)=>'<article class="criterion"><div class="criterion-head"><b>'+safe(g.label)+
-        '</b><strong>'+number(g.score)+'/10</strong></div><p>'+safe(g.notes)+'</p></article>').join("") +
-      '</div></details>' : '') +
+    '<section class="report-section"><h4>First message synergy</h4><p>' + safe(report.firstMessageSynergy) + '</p></section>' +
+    '<section class="report-section"><h4>Profile → all greetings</h4><p>' + safe(report.profileGreetingCoverage) + '</p></section>' +
+    '<section class="report-section"><h4>Example dialogue &amp; lasting voice</h4><p>' + safe(report.exampleDialogueAssessment) + '</p></section>' +
     (report.visual ? '<section class="report-section"><h4>Visual continuity: ' +
       Math.round(report.visual.score) + '/100</h4><p>' + safe(report.visual.notes) + '</p>' +
       listBlock('Matches', report.visual.matches) + listBlock('Mismatches',report.visual.mismatches)+'</section>' : '') +
@@ -56,7 +55,9 @@ export function reportToMarkdown(result, mode="single") {
     "## Strengths\n"+r.strengths.map(x=>"- "+x).join("\n"),
     "## Weaknesses\n"+(r.weaknesses.length?r.weaknesses.map(x=>"- "+x).join("\n"):"None evidenced."),
     "## Tradeoffs\n"+r.tradeoffs.map(x=>"- "+x).join("\n"),
-    "## Greetings\n"+r.greetings.map(g=> "### "+g.label+": "+g.score+"/10\n"+g.notes).join("\n"),
+    "## First message synergy\n"+r.firstMessageSynergy,
+    "## Profile → all greetings\n"+r.profileGreetingCoverage,
+    "## Example dialogue and lasting voice\n"+r.exampleDialogueAssessment,
     ...(r.visual ? ["## Visual match: "+r.visual.score+"/100\n"+r.visual.notes] : [])
   ].join("\n\n");
   if(mode==="single") return audit(result);
