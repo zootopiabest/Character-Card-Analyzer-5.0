@@ -1,3 +1,4 @@
+import { fetchOpenRouterCatalog, selectLatestDeepSeekPro } from "./openrouter-models.js?v=5.0.3";
 const PRESETS = {
   gemini: { label: "Google Gemini", model: "gemini-2.5-pro" },
   openai: { label: "OpenAI", model: "gpt-4.1" },
@@ -51,7 +52,21 @@ const outputOf = (data) => {
 export async function complete(config, system, user, imageDataUrl = null) {
   if (!config.key?.trim()) throw new Error("Enter an API key in Settings first.");
   if (!config.model?.trim()) throw new Error("Choose a model ID.");
-  const budget = Math.max(1024, Math.min(32768, Number(config.maxTokens) || 8192));
+  config={...config,model:config.model.trim()};
+  let resolvedCeiling=null;
+  if(config.model.startsWith("latest:") || config.model.startsWith("~")) {
+    if(config.provider!=="openrouter") throw new Error("Latest model choices require the OpenRouter provider.");
+    if(config.model.startsWith("latest:")) {
+      if(config.model!=="latest:deepseek-pro") throw new Error("Unknown latest-model family. Choose a model from the browser.");
+      const resolved=selectLatestDeepSeekPro(await fetchOpenRouterCatalog());
+      if(imageDataUrl && Array.isArray(resolved.architecture?.input_modalities) && !resolved.architecture.input_modalities.includes("image"))
+        throw new Error(resolved.id+" does not accept images. Remove the portrait or choose a vision-capable model.");
+      const ceiling=resolved.top_provider?.max_completion_tokens;
+      config={...config,model:resolved.id};
+      if(Number.isFinite(ceiling) && ceiling>0) resolvedCeiling=ceiling;
+    }
+  }
+  const budget = Math.min(resolvedCeiling ?? Infinity, Math.max(1024, Math.min(32768, Number(config.maxTokens) || 8192)));
   if (config.provider === "gemini") {
     const model = encodeURIComponent(config.model.trim());
     const parts = [{ text: user }];
@@ -96,3 +111,4 @@ export async function complete(config, system, user, imageDataUrl = null) {
       } : {}) }, body);
   return outputOf(result);
 }
+

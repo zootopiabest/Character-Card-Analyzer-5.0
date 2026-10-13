@@ -1,8 +1,8 @@
-import { complete } from "./providers.js?v=5.0.2";
-import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.0.2";
-import { singlePrompt, comparePrompt, coreKeys, specialistKeys } from "./rubrics/assemble.js?v=5.0.2";
-import { SPECIALISTS } from "./rubrics/specialists.js?v=5.0.2";
-import { APP_VERSION } from "./version.js?v=5.0.2";
+import { complete } from "./providers.js?v=5.0.3";
+import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.0.3";
+import { singlePrompt, comparePrompt, coreKeys, specialistKeys } from "./rubrics/assemble.js?v=5.0.3";
+import { SPECIALISTS } from "./rubrics/specialists.js?v=5.0.3";
+import { APP_VERSION } from "./version.js?v=5.0.3";
 
 export function parseJson(text) {
   if (typeof text !== "string" || !text.trim()) throw new Error("Empty model response.");

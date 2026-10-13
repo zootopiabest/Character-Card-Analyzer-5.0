@@ -1,4 +1,4 @@
-import { SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.0.2";
+import { SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.0.3";
 
 export const CLASSIFY_SYSTEM = [
   "Classify an LLM roleplay/interactive-agent card by what its runtime is trying to DO, not by file format, tone, anatomy, gender or prose style.",

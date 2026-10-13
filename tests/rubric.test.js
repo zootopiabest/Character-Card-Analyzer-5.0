@@ -140,12 +140,12 @@ test("explanation and purple prose are only useful when they carry runtime infor
   assert.match(prompt,/vivid writing alone/);
 });
 
-test("version 5.0.2 is stamped on completed results and exports",()=>{
-  assert.equal(APP_VERSION,"5.0.2");
+test("version 5.0.3 is stamped on completed results and exports",()=>{
+  assert.equal(APP_VERSION,"5.0.3");
   const kind={primary:"character",secondary:null};
   const report=validateAudit(fixture(kind),kind);
   assert.equal(report.appVersion,APP_VERSION);
-  assert.match(reportToMarkdown(report),/App version: \*\*5\.0\.2\*\*/);
-  assert.match(renderAudit(report),/v5\.0\.2/);
+  assert.match(reportToMarkdown(report),/App version: \*\*5\.0\.3\*\*/);
+  assert.match(renderAudit(report),/v5\.0\.3/);
 });
 

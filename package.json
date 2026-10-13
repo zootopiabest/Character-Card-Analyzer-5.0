@@ -1,11 +1,11 @@
 {
   "name": "character-card-analyzer-5",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "check": "node --check src/app.js && node --check src/evaluator.js && node --check src/providers.js && node --check src/importer.js && node --check src/report.js && node --check src/rubrics/assemble.js",
+    "check": "node --check src/app.js && node --check src/evaluator.js && node --check src/providers.js && node --check src/importer.js && node --check src/report.js && node --check src/rubrics/assemble.js && node --check src/openrouter-models.js && node --check src/model-browser.js",
     "calibration": "node scripts/calibration.js"
   },
   "engines": {

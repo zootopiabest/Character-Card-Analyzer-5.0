@@ -1,6 +1,6 @@
-import { CORE_CRITERIA, FOUNDATION } from "./core.js?v=5.0.2";
-import { SPECIALISTS, assertSpecialist } from "./specialists.js?v=5.0.2";
-import { GREETING_RUBRIC, VISUAL_RUBRIC, COMPARISON_RUBRIC } from "./components.js?v=5.0.2";
+import { CORE_CRITERIA, FOUNDATION } from "./core.js?v=5.0.3";
+import { SPECIALISTS, assertSpecialist } from "./specialists.js?v=5.0.3";
+import { GREETING_RUBRIC, VISUAL_RUBRIC, COMPARISON_RUBRIC } from "./components.js?v=5.0.3";
 
 export const coreKeys = Object.keys(CORE_CRITERIA);
 const modulesFor = (kind) => {

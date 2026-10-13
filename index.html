@@ -3,16 +3,38 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101219">
-<title>Card Analyzer 5.0.2 | Modular Audit</title>
-<link rel="stylesheet" href="./styles.css?v=5.0.2">
+<title>Card Analyzer 5.0.3 | Modular Audit</title>
+<link rel="stylesheet" href="./styles.css?v=5.0.3">
 </head>
 <body>
 <div class="app-shell">
 <header class="topbar">
- <div class="brand"><div class="brand-mark">V</div><div><span class="eyebrow">INDEPENDENT PROJECT</span><div class="brand-name">Card Analyzer <span>5.0.2</span> <b class="alpha">ALPHA</b></div></div></div>
+ <div class="brand"><div class="brand-mark">V</div><div><span class="eyebrow">INDEPENDENT PROJECT</span><div class="brand-name">Card Analyzer <span>5.0.3</span> <b class="alpha">ALPHA</b></div></div></div>
  <a class="ghost-link" href="https://github.com/zootopiabest/Character-Card-Analyzer-5.0" target="_blank" rel="noreferrer">Repository ↗</a>
 </header>
 <main>
+<details id="modelSettings" class="panel config-panel" open>
+<summary class="model-settings-summary"><span class="settings-title">Model &amp; API settings</span><span id="modelSettingsSummary" class="settings-selection"></span><span class="settings-toggle" aria-hidden="true">⌄</span></summary>
+<div class="settings-body"><div class="settings-grid">
+<div class="field"><label for="provider">Provider</label><select id="provider">
+<option value="gemini">Google Gemini</option><option value="openai">OpenAI</option><option value="openrouter">OpenRouter</option><option value="deepseek">DeepSeek</option><option value="custom">Custom OpenAI-compatible</option></select></div>
+<div class="field"><label for="model">Model ID <span id="modelBrowserHint" class="muted" hidden>· or choose below</span></label><input id="model" type="text" autocomplete="off" placeholder="e.g. gemini-2.5-pro"></div>
+<div class="field"><label for="apiKey">API key</label><input id="apiKey" type="password" autocomplete="off" placeholder="Only sent to your chosen provider"></div>
+<div class="field" id="customBaseWrap" hidden><label for="apiBase">Custom API base URL</label><input id="apiBase" type="url" placeholder="https://host.example/v1"></div>
+<div class="field"><label for="maxTokens">Report output token limit</label><input id="maxTokens" type="number" min="1024" max="32768" step="1024" value="16384"></div>
+</div><label class="checkline"><input id="rememberKey" type="checkbox"><span>Remember API key in this browser</span></label>
+<p class="micro">Your key is never sent to the analyzer repository or a project server. Model requests go directly from your browser to the provider. Remembered keys use local storage on your device.</p>
+
+<section id="openRouterBrowser" class="model-browser" aria-label="OpenRouter model browser" hidden>
+<div class="browser-heading"><div><h3>OpenRouter model browser</h3><p class="micro">Selected: <span id="selectedModel"></span></p></div><button type="button" id="refreshModels" class="quiet-button">↻ Refresh list</button></div>
+<label class="sr-only" for="modelSearch">Search OpenRouter models</label><input id="modelSearch" type="search" enterkeyhint="search" placeholder="Search OpenRouter models…" autocomplete="off">
+<div id="modelAuthors" class="model-chip-row" role="group" aria-label="Filter models by provider"></div>
+<div id="modelSortControls" class="model-sort-controls"><div id="modelSorts" class="model-chip-row" role="group" aria-label="Sort models"></div><button type="button" id="modelSortDirection" class="model-chip" aria-label="Reverse sort order">↓</button></div>
+<div class="catalog-caption"><span id="modelCount" role="status"></span><span>Prices: USD per million tokens</span></div>
+<div id="modelList" class="model-list" aria-label="Available models"></div>
+<p id="catalogStatus" class="micro" role="status" aria-live="polite"></p>
+<p class="micro">Recommended “Latest” choices follow new releases automatically. Other choices stay pinned to the selected model. You can also enter an exact model ID above.</p>
+</section></div></details>
 <section class="hero"><span class="overline">PURPOSE-FIRST · MODULAR · EVIDENCE-LED</span>
 <h1>Grade the bot.<br><em>Not the genre.</em></h1>
 <p>A ground-up rebuild of character-card auditing. Only the rubrics that fit the bot's intended job. No mandatory drama, no psychology padding, no invented flaws.</p>
@@ -20,7 +42,7 @@
 </section>
 <div class="workspace">
 <section class="panel editor-panel" aria-label="Card input">
-<div class="panel-heading"><div><span class="eyebrow">01 / INPUT</span><h2>Review workspace</h2></div><span class="dot"></span></div>
+<div class="panel-heading"><div><span class="eyebrow">02 / INPUT</span><h2>Review workspace</h2></div><span class="dot"></span></div>
 <div class="tabbar" role="tablist" aria-label="Analysis mode">
 <button class="tab active" type="button" data-mode="single" aria-selected="true">Single audit</button>
 <button class="tab" type="button" data-mode="compare" aria-selected="false">Head-to-head</button></div>
@@ -53,17 +75,7 @@
 <div class="footer-actions"><button id="analyzeButton" class="primary-button" type="button">Run audit <span>↗</span></button><button id="clearButton" class="quiet-button" type="button">Clear input</button></div>
 <div id="status" class="status" role="status" aria-live="polite" hidden></div>
 </section>
-<aside class="sidebar"><section class="panel config-panel">
-<div class="panel-heading"><div><span class="eyebrow">02 / ENGINE</span><h2>Model settings</h2></div><span class="gear">⚙</span></div>
-<div class="field"><label for="provider">Provider</label><select id="provider">
-<option value="gemini">Google Gemini</option><option value="openai">OpenAI</option><option value="openrouter">OpenRouter</option><option value="deepseek">DeepSeek</option><option value="custom">Custom OpenAI-compatible</option></select></div>
-<div class="field"><label for="model">Model ID</label><input id="model" type="text" autocomplete="off" placeholder="e.g. gemini-2.5-pro"></div>
-<div class="field"><label for="apiKey">API key</label><input id="apiKey" type="password" autocomplete="off" placeholder="Only sent to your chosen provider"></div>
-<div class="field" id="customBaseWrap" hidden><label for="apiBase">Custom API base URL</label><input id="apiBase" type="url" placeholder="https://host.example/v1"></div>
-<div class="field"><label for="maxTokens">Report output token limit</label><input id="maxTokens" type="number" min="1024" max="32768" step="1024" value="16384"></div>
-<label class="checkline"><input id="rememberKey" type="checkbox"><span>Remember API key in this browser</span></label>
-<p class="micro">Your key is never sent to the analyzer repository or a project server. Model requests go directly from your browser to the provider. Remembered keys use local storage on your device.</p>
-</section>
+<aside class="sidebar">
 <section class="explainer"><span class="eyebrow">THE NEW APPROACH</span><h3>One foundation.<br>Different jobs.</h3>
 <div class="steps"><div><b>01</b><span>Identify intended experience.</span></div><div><b>02</b><span>Load only relevant criteria.</span></div><div><b>03</b><span>Separate evidence from taste.</span></div><div><b>04</b><span>Score quality; separate slop and greeting diagnostics.</span></div></div>
 <a href="https://github.com/zootopiabest/Character-card-Analyzer" target="_blank" rel="noreferrer">4.6 remains untouched ↗</a></section>
@@ -71,7 +83,7 @@
 <section id="results" class="results" hidden><div class="results-heading"><div><span class="eyebrow">03 / VERDICT</span><h2>Audit results</h2></div>
 <div class="result-actions"><button id="saveMarkdown" class="quiet-button" type="button">↓ Markdown</button><button id="saveJson" class="quiet-button" type="button">↓ JSON</button></div></div>
 <div id="classificationSummary"></div><div id="resultContent"></div></section>
-</main><footer class="site-footer"><span id="runtimeVersion">Runtime not confirmed · Refresh to load 5.0.2</span><span>Fresh project, not retrofitted onto 4.6.</span></footer></div>
-<script type="module" src="./src/app.js?v=5.0.2"></script>
+</main><footer class="site-footer"><span id="runtimeVersion">Runtime not confirmed · Refresh to load 5.0.3</span><span>Fresh project, not retrofitted onto 4.6.</span></footer></div>
+<script type="module" src="./src/app.js?v=5.0.3"></script>
 </body></html>
 

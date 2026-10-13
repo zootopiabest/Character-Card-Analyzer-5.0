@@ -1,11 +1,13 @@
-import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.0.2";
-import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.0.2";
-import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.0.2";
-import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.0.2";
-import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.0.2";
-import { APP_VERSION } from "./version.js?v=5.0.2";
+import { mountModelBrowser } from "./model-browser.js?v=5.0.3";
+import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.0.3";
+import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.0.3";
+import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.0.3";
+import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.0.3";
+import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.0.3";
+import { APP_VERSION } from "./version.js?v=5.0.3";
 
 const $ = (id) => document.getElementById(id);
+let modelBrowser=null,activeProvider=null;
 let mode = "single", result = null, resultMode = "single", cardImage = null, busy = false;
 const storeKey = "card-analyzer-5-settings";
 let settings = {};
@@ -35,24 +37,34 @@ function readConfig() {
     baseUrl:$("apiBase").value.trim(), maxTokens:Number($("maxTokens").value)||16384
   };
 }
-function persistSettings() {
+function updateModelSummary() {
+  $("modelSettingsSummary").textContent=PROVIDERS[$("provider").value].label+" · "+($("model").value.trim()||"Choose a model");
+  modelBrowser?.syncSelection();
+}
+function persistSettings(providerOverride) {
   try {
     const cfg=readConfig();
+    if(providerOverride) cfg.provider=providerOverride;
     settings.providers=settings.providers||{};
     settings.providers[cfg.provider]={model:cfg.model,baseUrl:cfg.baseUrl,maxTokens:cfg.maxTokens};
-    settings.provider=cfg.provider;settings.rememberKey=$("rememberKey").checked;
+    settings.provider=cfg.provider;settings.modelSettingsOpen=$("modelSettings").open;settings.rememberKey=$("rememberKey").checked;
     localStorage.setItem(storeKey,JSON.stringify(settings));
     if(settings.rememberKey) {keys[cfg.provider]=cfg.key;localStorage.setItem(storeKey+"-keys",JSON.stringify(keys));}
     else { localStorage.removeItem(storeKey+"-keys"); for(const p of Object.keys(keys)) delete keys[p]; }
   } catch(e) {status("Browser storage unavailable: "+e.message,true);}
 }
 function loadProvider(provider) {
+  activeProvider=provider;
   const saved=settings.providers?.[provider]||{};
   $("model").value=saved.model ?? DEFAULT_MODEL(provider);
   $("apiBase").value=saved.baseUrl || "";
   $("maxTokens").value=saved.maxTokens || 16384;
   $("apiKey").value=$("rememberKey").checked ? (keys[provider]||"") : "";
   $("customBaseWrap").hidden=provider!=="custom";
+  $("openRouterBrowser").hidden=provider!=="openrouter";
+  $("modelBrowserHint").hidden=provider!=="openrouter";
+  updateModelSummary();
+  if(provider==="openrouter" && $("modelSettings").open) modelBrowser?.activate();
 }
 function setMode(next) {
   mode=next;
@@ -152,7 +164,19 @@ function init() {
   $("rememberKey").checked=Boolean(settings.rememberKey);
   $("provider").value=PROVIDERS[settings.provider]?settings.provider:"gemini";
   loadProvider($("provider").value);
-  $("provider").addEventListener("change",(e)=>{loadProvider(e.target.value);persistSettings();});
+  modelBrowser=mountModelBrowser({getModel:()=>$("model").value.trim(),onSelect:id=>{
+    $("model").value=id;persistSettings();updateModelSummary();
+  }});
+  $("modelSettings").open=settings.modelSettingsOpen!==false;
+  if($("provider").value==="openrouter" && $("modelSettings").open) modelBrowser.activate();
+  $("modelSettings").addEventListener("toggle",()=>{
+    persistSettings();
+    if($("modelSettings").open && $("provider").value==="openrouter") modelBrowser.activate();
+  });
+  $("provider").addEventListener("change",(e)=>{
+    persistSettings(activeProvider);loadProvider(e.target.value);persistSettings();
+  });
+  $("model").addEventListener("input",updateModelSummary);
   for(const id of ["model","apiKey","apiBase","maxTokens","rememberKey"]) {
     $(id).addEventListener("change",()=>{persistSettings();});
   }

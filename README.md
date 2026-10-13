@@ -1,10 +1,17 @@
-# Card Analyzer 5.0.2 (alpha)
+# Card Analyzer 5.0.3 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.0.2 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.0.2`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.0.3 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.0.3`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
+
+## Changes in 5.0.3
+
+- Moved model/API settings to the top of the page in a collapsible panel. The selected provider/model stays visible when collapsed, and the open/closed preference is remembered.
+- Restored the original analyzer's full OpenRouter browser: search, Recommended choices, provider filters, newest/context/name sorting, reverse order, prices per million tokens, context windows, vision badges and expandable descriptions.
+- The public catalog refreshes on demand and uses a 24-hour local cache. A failed refresh preserves the saved catalog and manual model entry remains available. No API key is sent when browsing models.
+- Recommended native latest aliases are passed to OpenRouter; the DeepSeek Pro latest selector resolves a standard release before an audit request, respecting its output ceiling and image support.
 
 ## Changes in 5.0.2
 
@@ -61,7 +68,7 @@ For GitHub Pages, enable Pages with **GitHub Actions** as its source under Setti
 
 ## Known alpha limitations
 
-- CharX ZIP bundles, regex-based lorebook activation, group-chat orchestration, custom stress-test modules and provider model discovery are not yet implemented.
+- CharX ZIP bundles, regex-based lorebook activation, group-chat orchestration, custom stress-test modules and model discovery for providers other than OpenRouter are not yet implemented.
 - The application **does not simulate actual LLM roleplay**. Reviews are inference-based and can still be mistaken.
 - Scores are not calibrated across many human-rated bot examples yet. Different models will disagree.
 - AI classification consumes an additional request per card. Set primary and secondary manually to skip it.
