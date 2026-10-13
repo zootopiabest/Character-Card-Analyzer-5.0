@@ -1,10 +1,18 @@
-# Card Analyzer 5.0.1 (alpha)
+# Card Analyzer 5.0.2 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.0.1 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.0.1`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.0.2 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.0.2`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
+
+## Changes in 5.0.2
+
+- Clarified scoring ownership: missing essential anchors belong under inference, operational failures under reliability, and arbitrary identity resets under character continuity. A repeated consequence does not justify another deduction.
+- Profile-to-greeting checks now explicitly accept reasonable inference without requiring a permanent script for each joke, kindness, grief response or register change.
+- Consolidated runtime/greeting guidance into one shared component. The standalone-character rubric is approximately 24% shorter by whitespace word count (2,101 → 1,589 words); weights, report fields and the character-integrity, trauma and comedy standards are preserved.
+- Fixed base64 V3 PNG decoding, preferred valid V3 metadata over V2 regardless of chunk order, and prevented empty metadata from hanging imports. Legacy raw JSON remains supported; malformed metadata is rejected or skipped in favor of a valid chunk.
+- Added five paired [behavioral calibration cases](calibration/README.md), with offline generation of importable cards and production prompts. These are examples for human/model evaluation, not evidence of live-model calibration.
 
 ## What works
 
@@ -68,7 +76,11 @@ For GitHub Pages, enable Pages with **GitHub Actions** as its source under Setti
     npm run check
     npm test
 
-The tests exercise assembly and score contracts without requiring provider keys. Run them on Node 20+.
+The tests exercise assembly, score contracts, provider requests and PNG imports without requiring provider keys. Run them on Node 20+.
+
+    npm run calibration
+
+This writes paired cards and single/AB/BA production prompts to the ignored `calibration-output/` directory without contacting a provider. See [calibration instructions](calibration/README.md) for human review expectations and recording model results. Expected judgments are never included in generated model prompts.
 
 ## Rubric principles
 
@@ -80,5 +92,7 @@ The tests exercise assembly and score contracts without requiring provider keys.
 6. No irrelevant categories can be "high scored" as a workaround; modules are omitted if not applicable.
 7. Use textual first greeting synergy and profile support for all independent greetings; only visual continuity has an optional numeric score.
 8. Every actual deduction requires attributable evidence and a consequence.
-9. Creator Notes are non-runtime metadata, only one selected greeting initializes a given chat, and example dialogue can fall out of context.
-10. The persistent profile must adequately teach voice and load-bearing behavior rather than relying on examples or prior greetings. Missing example dialogue is fine when the profile stands on its own.
+9. Creator Notes are non-runtime metadata, only one selected greeting initializes a given chat, and example dialogue can fall out of context; respect explicit frontend context settings.
+10. Credit voice and behavior that are reasonably implied by the profile. Only genuinely unsupported central characterization requires an additional anchor; illustrative lines and ordinary reactions do not.
+11. Give each defect one primary scoring home. A separate deduction requires a separately evidenced failure, not a renamed consequence.
+

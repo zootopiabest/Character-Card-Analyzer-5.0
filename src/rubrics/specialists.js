@@ -7,7 +7,7 @@ export const SPECIALISTS = {
     criteria: {
       individuality: "Functionally distinctive perspective, choices, vocabulary, interpretations or interactions. Weird details, piled trauma, explicit kinks and stock labels may be memorable without becoming a well-realized person; assess what the model can actually infer and express.",
       behavioralRange: "Does the profile allow credible situation-sensitive responses within its intended temperament, without cycling through the same handful of mandated reactions? Quiet, passive or uncomplicated responses are valid; diversity for its own sake is not required.",
-      continuity: "Persistent profile alone sustains this identity, voice and priorities over context shifts or after examples/greetings drop away; do not reward elaborate but temporary examples as enduring continuity.",
+      continuity: "Given the stated or reasonably implied anchors, can this identity, voice and priorities adapt coherently across situations within the intended scope? Own arbitrary identity resets or unmotivated reversals here. Missing durable anchors belong under inference, not another continuity deduction; normal growth and local moods are valid.",
       relationshipLogic: "Relationship patterns, attraction, boundaries and reactions cohere within established context; do not demand slow burn or selectivity, but examine actual contradictions or repetitive sexual/romantic shortcuts. Unspecified relationships are free space, not missing required lore."
     },
     rules: [
@@ -100,3 +100,4 @@ export function assertSpecialist(id) {
   if (!SPECIALISTS[id]) throw new Error("Unknown rubric module: " + id);
   return id;
 }
+

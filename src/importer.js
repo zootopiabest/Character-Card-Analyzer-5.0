@@ -55,33 +55,49 @@ async function pngText(file) {
     throw new Error("Not a PNG file.");
   const latin = new TextDecoder("iso-8859-1");
   const utf8 = new TextDecoder("utf-8");
+  const candidates = [];
+  let metadataError = null;
   for (let pos=8;pos+12<=bytes.length;) {
     const size=readU32(bytes,pos); const type=latin.decode(bytes.slice(pos+4,pos+8));
     const start=pos+8, end=start+size;
     if (end+4>bytes.length) break;
     const chunk=bytes.slice(start,end);
+    pos=end+4; // Advance before any empty/malformed metadata can continue the loop.
     let keyword, payload;
     const nullAt=chunk.indexOf(0);
     if (nullAt > -1 && ["tEXt","zTXt","iTXt"].includes(type)) {
       keyword=latin.decode(chunk.slice(0,nullAt)).toLowerCase();
       if (keyword === "chara" || keyword === "ccv3" || keyword === "character") {
-        if(type==="tEXt") payload=latin.decode(chunk.slice(nullAt+1));
-        else if(type==="zTXt") payload=utf8.decode(await inflate(chunk.slice(nullAt+2)));
-        else {
-          let off=nullAt+3; // flag, method
-          let cut=chunk.indexOf(0,off); if(cut<0) {pos=end+4;continue;}
-          off=cut+1; cut=chunk.indexOf(0,off); if(cut<0) {pos=end+4;continue;}
-          off=cut+1;
-          const rest=chunk.slice(off);
-          payload=chunk[nullAt+1]===1 ? utf8.decode(await inflate(rest)) : utf8.decode(rest);
+        try {
+          if(type==="tEXt") payload=latin.decode(chunk.slice(nullAt+1));
+          else if(type==="zTXt") payload=utf8.decode(await inflate(chunk.slice(nullAt+2)));
+          else {
+            let off=nullAt+3; // flag, method
+            let cut=chunk.indexOf(0,off); if(cut<0) throw new Error("Incomplete PNG international text metadata.");
+            off=cut+1; cut=chunk.indexOf(0,off); if(cut<0) throw new Error("Incomplete PNG international text metadata.");
+            off=cut+1;
+            const rest=chunk.slice(off);
+            payload=chunk[nullAt+1]===1 ? utf8.decode(await inflate(rest)) : utf8.decode(rest);
+          }
+          if (!payload) continue;
+          // Both chara and ccv3 use base64 JSON; accept direct JSON from legacy exporters.
+          const trimmed = payload.trim();
+          if (!trimmed) continue;
+          const raw = trimmed.startsWith("{") ? trimmed : decodeBase64(trimmed);
+          const parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+            throw new Error("Character metadata must be a JSON object.");
+          candidates.push({ priority: keyword === "ccv3" ? 2 : keyword === "chara" ? 1 : 0,
+            text: extractCardText(raw) });
+        } catch (error) {
+          metadataError = error;
         }
-        if (!payload) continue;
-        const raw = keyword === "chara" ? decodeBase64(payload) : payload;
-        return extractCardText(raw);
       }
     }
-    pos=end+4;
   }
+  // A PNG can carry both formats. Prefer V3 regardless of chunk order.
+  if (candidates.length) return candidates.sort((a,b)=>b.priority-a.priority)[0].text;
+  if (metadataError) throw new Error("Invalid character-card PNG metadata. Try a JSON export.");
   throw new Error("No supported character-card metadata found in PNG. Try a JSON card.");
 }
 export async function importCardFile(file) {
@@ -102,3 +118,4 @@ export async function importPortrait(file) {
   if (file.size > 8 * 1024 * 1024) throw new Error("Image exceeds 8 MB limit.");
   return toDataUrl(file);
 }
+

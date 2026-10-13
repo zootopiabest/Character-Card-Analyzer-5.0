@@ -73,7 +73,7 @@ test("universal rules don't mandate conflict",()=>{
 });
 
 test("scoring anchors disallow high scores for simple clarity, shock, or rule obedience",()=>{
-  for(const re of [/8\+ EVIDENCE TEST/,/A card may make a bland loop extremely predictable, or enforce a cumbersome fixed response format/i,/shock value/i,/distinctiveness is not quality/i,/Only ONE selected greeting/i,/Creator Notes, listing tags.*NOT seen/i]) assert.match(FOUNDATION,re);
+  for(const re of [/8\+ EVIDENCE TEST/,/A card may make a bland loop extremely predictable, or enforce a cumbersome fixed response format/i,/shock value/i,/distinctiveness is not quality/i]) assert.match(FOUNDATION,re);
 });
 test("single and comparison use the same mandatory report shape",()=>{
   const kind={primary:"character",secondary:null};
@@ -88,11 +88,11 @@ test("single and comparison use the same mandatory report shape",()=>{
 test("runtime treatment separates creator metadata, alternate starts and ephemeral example dialogue",()=>{
   const kind={primary:"character",secondary:null};
   const prompt=rubricPrompt(kind);
-  assert.match(prompt,/Only the selected greeting begins a given roleplay/);
-  assert.match(prompt,/Creator Notes and listing metadata are NOT injected/);
-  assert.match(prompt,/Example dialogue is generally optional|EXAMPLE DIALOGUE: Optional/i);
+  assert.match(prompt,/Only ONE selected greeting initializes a chat/);
+  assert.match(prompt,/Creator Notes and listing metadata are non-runtime/);
+  assert.match(prompt,/EXAMPLES: Optional when the profile already supports voice and behavior/i);
   assert.match(prompt,/fall out of runtime context/);
-  assert.match(prompt,/persistent profile could plausibly generate/i);
+  assert.match(prompt,/plausibly generate this portrayal from the persistent profile/i);
   assert.doesNotMatch(prompt,/Judge EACH supplied greeting independently, as though it were the sole greeting/i);
 });
 test("rendered and markdown reports show first greeting synergy and profile coverage, not per-greeting scorecards",()=>{
@@ -140,11 +140,12 @@ test("explanation and purple prose are only useful when they carry runtime infor
   assert.match(prompt,/vivid writing alone/);
 });
 
-test("version 5.0.1 is stamped on completed results and exports",()=>{
-  assert.equal(APP_VERSION,"5.0.1");
+test("version 5.0.2 is stamped on completed results and exports",()=>{
+  assert.equal(APP_VERSION,"5.0.2");
   const kind={primary:"character",secondary:null};
   const report=validateAudit(fixture(kind),kind);
   assert.equal(report.appVersion,APP_VERSION);
-  assert.match(reportToMarkdown(report),/App version: \*\*5\.0\.1\*\*/);
-  assert.match(renderAudit(report),/v5\.0\.1/);
+  assert.match(reportToMarkdown(report),/App version: \*\*5\.0\.2\*\*/);
+  assert.match(renderAudit(report),/v5\.0\.2/);
 });
+

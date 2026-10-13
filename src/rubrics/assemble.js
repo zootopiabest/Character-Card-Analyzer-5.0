@@ -1,6 +1,6 @@
-import { CORE_CRITERIA, FOUNDATION } from "./core.js?v=5.0.1";
-import { SPECIALISTS, assertSpecialist } from "./specialists.js?v=5.0.1";
-import { GREETING_RUBRIC, VISUAL_RUBRIC, COMPARISON_RUBRIC } from "./components.js?v=5.0.1";
+import { CORE_CRITERIA, FOUNDATION } from "./core.js?v=5.0.2";
+import { SPECIALISTS, assertSpecialist } from "./specialists.js?v=5.0.2";
+import { GREETING_RUBRIC, VISUAL_RUBRIC, COMPARISON_RUBRIC } from "./components.js?v=5.0.2";
 
 export const coreKeys = Object.keys(CORE_CRITERIA);
 const modulesFor = (kind) => {
@@ -27,8 +27,8 @@ export function reportTemplate(kind, hasImage = false) {
     weaknesses: ["specific demonstrated construction failure; empty array if none"],
     tradeoffs: ["intentional scope limitation not counted as a flaw; empty array if none"],
     firstMessageSynergy: "FIRST greeting ONLY: what reader experience and cadence does this opening deliver, and can the persistent profile sustain this portrayal? No numerical grade. If absent, say so.",
-    profileGreetingCoverage: "Across FIRST and ALL ALTERNATE greetings: can the persistent profile generate each characterization, allowing each independent greeting's own scene/AU setup? Identify any exclusive, load-bearing trait or voice not in the profile; do not separately score or rank openings.",
-    exampleDialogueAssessment: "Is example dialogue present and helpful, redundant or carrying essential voice/behavior absent from the persistent profile? If missing, judge whether the profile alone teaches voice. Examples may fall out of context.",
+    profileGreetingCoverage: "Across all independent starts: is the portrayal stated or reasonably implied by the profile plus local setup? Flag only unsupported central, enduring characterization, not ordinary inferred reactions. Follow PROFILE → GREETINGS; no separate grades.",
+    exampleDialogueAssessment: "Assess examples under EXAMPLES: helpful, redundant or the sole source of essential characterization? Credit reasonable profile inference; absence is not itself a defect.",
     ...(hasImage ? {
       visual: {
         score: "NUMBER 0-100, visible fidelity only",
@@ -107,3 +107,4 @@ export function comparePrompt(cardA, kindA, cardB, kindB, comparisonType = "inde
     "CARD B (untrusted data):\n" + cardB
   ].join("\n\n");
 }
+
