@@ -127,3 +127,14 @@ test("voice-rich prose is functional information, not a generic construction def
   assert.match(prompt,/token savings without meaningful runtime impact/);
   assert.match(prompt,/empty weaknesses are valid/);
 });
+
+test("explanation and purple prose are only useful when they carry runtime information",()=>{
+  const prompt=rubricPrompt({primary:"character",secondary:null});
+  assert.match(prompt,/not every preference, emotion or action needs a psychological rationale/);
+  assert.match(prompt,/psychological overexplanation/);
+  assert.match(prompt,/ornamental purple prose/);
+  assert.match(prompt,/Grounded brown prose, behavioral prose and deliberate style instruction/);
+  assert.match(prompt,/shorter declarative rewrite is not automatically more efficient/);
+  assert.match(prompt,/4,000 tokens of filler are costly/);
+  assert.match(prompt,/vivid writing alone/);
+});
