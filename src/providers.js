@@ -1,4 +1,4 @@
-import { fetchOpenRouterCatalog, selectLatestDeepSeekPro } from "./openrouter-models.js?v=5.1.2";
+import { fetchOpenRouterCatalog, selectLatestDeepSeekPro } from "./openrouter-models.js?v=5.1.3";
 const PRESETS = {
   gemini: { label: "Google Gemini", model: "gemini-2.5-pro" },
   openai: { label: "OpenAI", model: "gpt-4.1" },
@@ -37,16 +37,26 @@ function baseUrl(config) {
     default: throw new Error("Unknown provider.");
   }
 }
+const messageText = (message) => {
+  if (typeof message?.content === "string") return message.content;
+  if (Array.isArray(message?.content)) return message.content
+    .filter((part) => part.type === "text")
+    .map((part) => part.text || "").join("\n");
+  return "";
+};
 const outputOf = (data) => {
   const choice = data.choices?.[0];
   if (!choice) throw new Error("Provider did not return any choices.");
-  if (choice.finish_reason === "length") throw new Error("Report was cut off. Increase max output tokens.");
-  const message = choice.message;
-  if (typeof message?.content === "string" && message.content.trim()) return message.content;
-  if (Array.isArray(message?.content)) {
-    const text = message.content.filter((p) => p.type === "text").map((p) => p.text || "").join("\n");
-    if (text.trim()) return text;
+  const text = messageText(choice.message);
+  const finish = [choice.finish_reason, choice.native_finish_reason]
+    .filter(Boolean).map((value) => String(value).toLowerCase());
+  if (finish.some((value) => /^(length|max_tokens|max_output_tokens|token_limit)$/.test(value))) {
+    const error = new Error("The provider cut off the response at its output-token limit. Increase max output tokens or choose a model with a higher limit.");
+    if (text.trim()) error.rawResponse = text;
+    throw error;
   }
+  if (finish.includes("content_filter")) throw new Error("The provider stopped generation due to its content filter.");
+  if (text.trim()) return text;
   throw new Error("Provider returned no usable text. Try a different model or output limit.");
 };
 export async function complete(config, system, user, imageDataUrl = null) {
@@ -82,7 +92,12 @@ export async function complete(config, system, user, imageDataUrl = null) {
     const data = await sendJson("https://generativelanguage.googleapis.com/v1beta/models/" +
       model + ":generateContent?key=" + encodeURIComponent(config.key.trim()), {}, payload);
     const candidate = data.candidates?.[0];
-    if (candidate?.finishReason === "MAX_TOKENS") throw new Error("Gemini reached its output limit.");
+    if (candidate?.finishReason === "MAX_TOKENS") {
+      const error = new Error("Gemini reached its output-token limit. Increase max output tokens or use a shorter report.");
+      const partial = candidate.content?.parts?.filter(p=>typeof p.text === "string" && !p.thought).map(p=>p.text).join("") || "";
+      if (partial.trim()) error.rawResponse = partial;
+      throw error;
+    }
     if (!candidate?.content?.parts) throw new Error("Gemini returned no content: " + (candidate?.finishReason || data.promptFeedback?.blockReason || "unknown"));
     const result = candidate.content.parts.filter((p) => typeof p.text === "string" && !p.thought).map((p) => p.text).join("");
     if (!result.trim()) throw new Error("Gemini returned empty text.");

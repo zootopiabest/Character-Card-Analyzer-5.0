@@ -63,3 +63,18 @@ test("OpenRouter 5.0 has distinct attribution URL and title", async()=>{
     assert.notEqual(headers["HTTP-Referer"],"https://zootopiabest.github.io");
   } finally { globalThis.fetch=previous; }
 });
+
+test('OpenRouter native_finish_reason reports length even if finish_reason says stop and preserves raw output',async()=>{
+  const previous=globalThis.fetch;
+  const partial='{"summary":"प्यास';
+  globalThis.fetch=async()=>new Response(JSON.stringify({choices:[{
+    finish_reason:'stop', native_finish_reason:'max_tokens', message:{content:partial}
+  }]}),{status:200});
+  try {
+    await assert.rejects(()=>complete(cfg('openrouter'),'system','card'),(error)=>{
+      assert.match(error.message,/cut off/i);
+      assert.equal(error.rawResponse,partial);
+      return true;
+    });
+  } finally {globalThis.fetch=previous;}
+});

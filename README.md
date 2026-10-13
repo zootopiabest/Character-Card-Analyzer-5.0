@@ -1,10 +1,18 @@
-# Card Analyzer 5.1.2 (alpha)
+# Card Analyzer 5.1.3 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.1.2 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.2`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.1.3 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.3`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
+
+## Changes in 5.1.3 (JSON output diagnostics)
+
+- Retained all valid Unicode, including Hindi/Devanagari and emojis. Non-Latin characters inside JSON strings do not require special handling.
+- Replaced a generic 'invalid JSON' alert with separate diagnostics for seemingly incomplete answers and malformed JSON, including bounded parser detail.
+- Detected both `finish_reason` and provider-specific `native_finish_reason` output truncation where available, including OpenRouter.
+- Added a **Download raw model response** button on parse/validation failures. The text remains in the current browser session; the site does not upload it anywhere beyond the user's normal selected model request. Raw files may contain private card details.
+- Bumped all runtime and cache tags to 5.1.3. This patch does not change character scoring or rubric rules.
 
 ## Changes in 5.1.2 (Independent Auditor Patch)
 

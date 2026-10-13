@@ -201,11 +201,11 @@ test('functional register and ordinary inference remain protected',()=>{
   assert.match(FOUNDATION,/A signature routine is not/);
   assert.match(FOUNDATION,/useful illustrative dialogue is NOT automatically over-scripting/i);
 });
-test('classification and app stamp are 5.1.2',()=>{
-  assert.equal(APP_VERSION,'5.1.2');
+test('classification and app stamp are 5.1.3',()=>{
+  assert.equal(APP_VERSION,'5.1.3');
   const rep=validateAudit(fixture(),kind);
-  assert.match(reportToMarkdown(rep),/App version: \*\*5\.1\.2\*\*/);
-  assert.match(renderAudit(rep),/v5\.1\.2/);
+  assert.match(reportToMarkdown(rep),/App version: \*\*5\.1\.3\*\*/);
+  assert.match(renderAudit(rep),/v5\.1\.3/);
   assert.match(CLASSIFY_SYSTEM,/secondary/);
 });
 test('JSON parser accepts fenced JSON and rejects nonnumeric score placeholders',()=>{
@@ -218,4 +218,27 @@ test('renderer escapes card-derived markup even in compressed rationale',()=>{
   const html=renderAudit(validateAudit(item,kind));
   assert.match(html,/&lt;script&gt;/);
   assert.doesNotMatch(html,/<script>/);
+});
+
+test('Unicode inside valid JSON strings does not cause a parser failure',()=>{
+  assert.deepEqual(parseJson('{"description":"प्यास 🌿 character study"}'),{description:'प्यास 🌿 character study'});
+  assert.deepEqual(parseJson('```json\n{"title":"अलविदा"}\n```'),{title:'अलविदा'});
+});
+test('Interrupted JSON reports expose their raw model response for local diagnostics',()=>{
+  const raw='{"summary":"An immersive third-person character study."प्यास';
+  assert.throws(()=>parseJson(raw),(error)=>{
+    assert.match(error.message,/appears unfinished/i);
+    assert.equal(error.code,'INVALID_MODEL_JSON');
+    assert.equal(error.rawResponse,raw);
+    assert.doesNotMatch(error.message,/Unicode|Devanagari/i);
+    return true;
+  });
+});
+test('Malformed but closed JSON reports parser diagnostics without inventing a truncation',()=>{
+  assert.throws(()=>parseJson('{"score": 7,}'),(error)=>{
+    assert.match(error.message,/malformed JSON/i);
+    assert.match(error.message,/Parser detail:/);
+    assert.ok(error.rawResponse);
+    return true;
+  });
 });

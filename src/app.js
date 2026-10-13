@@ -1,14 +1,19 @@
-import { mountModelBrowser } from "./model-browser.js?v=5.1.2";
-import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.2";
-import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.2";
-import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.2";
-import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.2";
-import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.2";
-import { APP_VERSION } from "./version.js?v=5.1.2";
+import { mountModelBrowser } from "./model-browser.js?v=5.1.3";
+import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.3";
+import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.3";
+import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.3";
+import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.3";
+import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.3";
+import { APP_VERSION } from "./version.js?v=5.1.3";
 
 const $ = (id) => document.getElementById(id);
 let modelBrowser=null,activeProvider=null;
 let mode = "single", result = null, resultMode = "single", cardImage = null, busy = false;
+let failedRawResponse = null;
+function resetRawResponse() {
+  failedRawResponse = null;
+  $("saveFailedResponse").hidden = true;
+}
 const storeKey = "card-analyzer-5-settings";
 let settings = {};
 try { settings = JSON.parse(localStorage.getItem(storeKey)||"{}") || {}; } catch {}
@@ -76,6 +81,7 @@ function setMode(next) {
   $("classificationB").hidden=mode!=="compare";
   $("artworkSettings").hidden=mode==="compare";
   if (!busy) $("analyzeButton").textContent=mode==="compare"?"Compare cards ↗":"Run audit ↗";
+  resetRawResponse();
   status("");
 }
 function setCardText(which,text,filename="") {
@@ -124,6 +130,7 @@ async function run() {
     a=extractCardText($("cardA").value);
     b=usedMode==="compare"?extractCardText($("cardB").value):null;
   } catch(err) { status(err.message,true);return; }
+  resetRawResponse();
   persistSettings();setBusy(true);status("Reading the card's intended scope…");
   try {
     const ka=await resolveKind(cfg,a,"A");
@@ -138,6 +145,8 @@ async function run() {
     displayResult(data,ka,kb,usedMode);
     status("Audit complete. The analyzer does not store reports on a server.");
   } catch(err) {
+    failedRawResponse = typeof err?.rawResponse === "string" && err.rawResponse ? err.rawResponse : null;
+    $("saveFailedResponse").hidden = !failedRawResponse;
     status(err?.message||String(err),true);
   } finally {setBusy(false);}
 }
@@ -183,7 +192,7 @@ function init() {
   document.querySelectorAll("[data-mode]").forEach((el)=>el.addEventListener("click",()=>setMode(el.dataset.mode)));
   $("analyzeButton").addEventListener("click",()=>run().catch((err)=>status(err.message,true)));
   $("clearButton").addEventListener("click",()=>{
-    setCardText("A","");setCardText("B","");setImage(null);$("results").hidden=true;result=null;status("");
+    setCardText("A","");setCardText("B","");setImage(null);$("results").hidden=true;result=null;resetRawResponse();status("");
   });
   $("artFile").addEventListener("change",async(e)=>{
     try{const f=e.target.files?.[0];if(f)setImage(await importPortrait(f),f.name);}catch(err){status(err.message,true);}
@@ -192,6 +201,9 @@ function init() {
   $("clearArt").addEventListener("click",()=>setImage(null));
   $("saveMarkdown").addEventListener("click",()=>{if(result)downloadText("card-analyzer-5.1-report.md",reportToMarkdown(result,resultMode),"text/markdown");});
   $("saveJson").addEventListener("click",()=>{if(result)downloadText("card-analyzer-5.1-report.json",JSON.stringify(result,null,2),"application/json");});
+  $("saveFailedResponse").addEventListener("click",()=>{
+    if(failedRawResponse) downloadText("card-analyzer-raw-model-response.txt",failedRawResponse,"text/plain");
+  });
   setMode("single");
   $("runtimeVersion").textContent = "Runtime " + APP_VERSION + " loaded · Modular grading";
 }
