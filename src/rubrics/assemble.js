@@ -69,8 +69,8 @@ export function comparePrompt(cardA, kindA, cardB, kindB, comparisonType = "inde
   return [
     sharedCore, rubrics, GREETING_RUBRIC, COMPARISON_RUBRIC, modeNote,
     "For card A, only grade modules " + modulesFor(kindA).join(", ") + ". For card B, only grade modules " + modulesFor(kindB).join(", ") + ".",
-    'Return ONLY JSON: {"cardA": ' + reportSchema(kindA, false).split("\n").slice(1,-4).join("\n") +
-      ', "cardB": ' + reportSchema(kindB, false).split("\n").slice(1,-4).join("\n") +
+    'Return ONLY JSON: {"cardA": ' + reportSchema(kindA, false).split("\n").slice(1,-3).join("\n") +
+      ', "cardB": ' + reportSchema(kindB, false).split("\n").slice(1,-3).join("\n") +
       ', "comparison": {"verdict":"one or several sentences grounded in both results", "aAdvantages":["..."], "bAdvantages":["..."], "sharedGround":["..."], "scopeDifferences":["..."]}}',
     "Keep each report compact; independent absolute scoring. No invented relative numeric verdicts.",
     "CARD A DATA:\n" + cardA,
