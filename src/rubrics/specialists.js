@@ -1,103 +1,63 @@
-// Each module contains a small independent rubric, used only when applicable.
-// Criteria keys are stable machine identifiers. No specialist is an "extra credit" rubric.
+// Independent scoring modules. Names and criterion IDs are stable for reports.
 export const SPECIALISTS = {
   character: {
-    label: "Standalone character",
-    description: "A person whose identity survives changes of scenario.",
+    label: "Standalone character", description: "Portable person across changing scenarios.",
     criteria: {
-      individuality: "Functionally distinctive perspective, choices, vocabulary, interpretations or interactions. Weird details, piled trauma, explicit kinks and stock labels may be memorable without becoming a well-realized person; assess what the model can actually infer and express.",
-      behavioralRange: "Does the profile allow credible situation-sensitive responses within its intended temperament, without cycling through the same handful of mandated reactions? Quiet, passive or uncomplicated responses are valid; diversity for its own sake is not required.",
-      continuity: "Given the stated or reasonably implied anchors, can this identity, voice and priorities adapt coherently across situations within the intended scope? Own arbitrary identity resets or unmotivated reversals here. Missing durable anchors belong under inference, not another continuity deduction; normal growth and local moods are valid.",
-      relationshipLogic: "Relationship patterns, attraction, boundaries and reactions cohere within established context; do not demand slow burn or selectivity, but examine actual contradictions or repetitive sexual/romantic shortcuts. Unspecified relationships are free space, not missing required lore."
+      individuality: "Functionally distinctive perspective, choices, language and judgments; apply Archetype Swap Test. Trauma, oddities, labels or kinks alone are not strong individuality.",
+      behavioralRange: "Credible context-sensitive behavior within the intended temperament, not a few rigid mandated responses. Quiet, deadpan, compliant and abrasive personalities need no forced variety.",
+      continuity: "Adapts while retaining stated or implied voice and priorities. Own unmotivated identity resets; a missing durable anchor belongs to inference, not a second deduction here.",
+      relationshipLogic: "Attraction, boundaries, conflict and relationship patterns fit established traits. Fast intimacy, loyalty, hostility or devotion are valid unless reliant on a contradictory shortcut; unspecified relationships remain free space."
     },
-    rules: [
-      "Character portrayal matters more than plot complexity. A person can simply exist and interact.",
-      "Open-ended does not imply the character must initiate plots or demand conflict.",
-      "A model should extrapolate emotions from provided personality and circumstance; pre-scripting exact reactions can reduce behavioral range.",
-      "Sexual content, trauma, disability and dark comedy are neutral premises; repeated use of these as substitutes for distinctive choices or actual jokes can be a craft failure when the text shows it.",
-      "An extraordinary character may be recognizably distinctive while badly executed. Never grade sheer oddity as high individuality."
-    ]
+    rules: ["People may simply exist and interact without a plot. A memorable oddity may still be poorly executed; sexual content and trauma do not intrinsically lower quality."]
   },
   characterScenario: {
-    label: "Character-driven scenario",
-    description: "A situation designed to reveal or explore a particular person.",
+    label: "Character-driven scenario", description: "A situation built to explore a particular person.",
     criteria: {
-      individualPortrayal: "Scenario and profile support this particular person's perspective and choices.",
-      sceneIntegration: "Situation and character meaningfully interact rather than each occupying an unrelated paragraph.",
-      userPossibilities: "Room for relevant user participation without forcing user decisions or demanding action.",
-      consistency: "Role, scene stakes and character traits remain consistent across the advertised scenario."
-    },
-    rules: [
-      "The character is the center of gravity; the scenario should create opportunities to encounter that individual.",
-      "Do not demand dramatic conflict or rescue dynamics. Quiet interaction can succeed.",
-      "A greeting vignette may establish the scenario without waiting for the user."
-    ]
+      individualPortrayal: "Profile and scenario together support this person's specific perspective and choices.",
+      sceneIntegration: "Situation and character actively interact instead of remaining disconnected paragraphs.",
+      userPossibilities: "User can participate meaningfully without scripted actions or mandatory dramatic escalation; quiet scenes are valid.",
+      consistency: "Role, stakes, scene and established traits cohere across the premise."
+    }, rules: ["A vignette may establish the situation without prompting the user to act."]
   },
   scenarioCharacter: {
-    label: "Scenario-driven character",
-    description: "A character designed principally to serve a defined scene or narrative function.",
+    label: "Scenario-driven character", description: "A person designed chiefly for a finite or specific narrative role.",
     criteria: {
-      roleExecution: "Person is sufficient, specific and capable within their intended narrative role; an entire off-screen life is optional.",
-      premiseFunction: "Character's actions and details contribute to the scenario instead of existing as disconnected ornament.",
-      scenarioCoherence: "Constraints, stakes and assumptions make the advertised encounter internally runnable.",
-      playerAgency: "User has appropriate choices within the scenario; finite endings and role constraints are allowed."
-    },
-    rules: [
-      "Do not require a standalone personality that works in every unrelated situation.",
-      "An archetypal character can be excellent if execution is specific and precise.",
-      "A tightly defined initial user role is legitimate unless the card promises unrestricted roles."
-    ]
+      roleExecution: "Specific and capable in the intended role; an entire off-screen life is not required.",
+      premiseFunction: "Character details do work in the scenario rather than acting as disconnected ornament.",
+      scenarioCoherence: "Constraints, stakes and setup make the encounter runnable.",
+      playerAgency: "User retains meaningful choices within stated restrictions; finite endings and tight starting roles are valid."
+    }, rules: ["An archetype can be excellent when its actual execution is precise."]
   },
   rpg: {
-    label: "RPG / world simulator",
-    description: "A narrator, rules engine, adventure or world with state and player choices.",
+    label: "RPG / world simulator", description: "Narrator, adventure, rule engine or persistent world.",
     criteria: {
-      worldConsistency: "Only the world facts needed by the promised scope are coherent; lore volume is not quality.",
-      mechanics: "Mechanics are defined clearly enough for their advertised use, with consistent precedence and outcomes. A freeform RPG need not have numeric stats.",
-      playerAgency: "The player controls their declared actions, role and progression within the stated game.",
-      stateAndProgression: "State, consequences and advancement can persist or resolve at the depth the card promises."
-    },
-    rules: [
-      "Do not grade a narrator as a person or require human-style character depth.",
-      "Optional rules are optional. Only demand dice, inventory, classes or detailed progression if advertised.",
-      "A coherent light system may score as well as a massive mechanical simulation."
-    ]
+      worldConsistency: "Needed world facts cohere at the promised scope; lore volume is not quality.",
+      mechanics: "Advertised rules, precedence and outcomes are implementable. Freeform RPGs need no numeric stats.",
+      playerAgency: "Player owns declared actions and choices within the game's rules.",
+      stateAndProgression: "State, consequences and advancement can persist or resolve at the promised depth."
+    }, rules: ["Judge the advertised simulation, not human-style character complexity. Light systems may be excellent."]
   },
   companion: {
-    label: "Companion / therapy / service",
-    description: "An assistant, listener, companion or service role with a defined user experience.",
+    label: "Companion / therapy / service", description: "Assistant, listener, comfort or service role.",
     criteria: {
-      roleFit: "Behavior fits its actual purpose: companion, comfort, coach, therapist-roleplay, support or service.",
-      communication: "Voice, interaction and initiative serve user needs without generic filler or mechanically repeated validation.",
-      boundaries: "Claims, authority and interaction limits are appropriate to the advertised service, including not claiming unearned clinical qualifications.",
-      adaptability: "Behavior adjusts to varied user needs within scope without losing its stated commitments."
-    },
-    rules: [
-      "Companionship and user-centricity are valid identities; no unrelated outside goals required.",
-      "A therapy-themed bot must not deceptively promise licensed treatment or dangerous medical certainty. Evaluate the claims actually made.",
-      "Do not require conflict, withholding affection or resistance as proof of personhood."
-    ]
+      roleFit: "Serves its promised companion, coaching, comfort or service role; outside plot goals are unnecessary.",
+      communication: "Voice and initiative suit user needs without boilerplate or validation loops.",
+      boundaries: "Authority and limits fit the role; therapy-themed bots must not deceptively claim licensing or dangerous medical certainty.",
+      adaptability: "Handles varied user input within scope while retaining its commitments."
+    }, rules: ["User-centric, affectionate, passive and cooperative roles need no manufactured resistance."]
   },
   ensemble: {
-    label: "Multi-character ensemble",
-    description: "Multiple people, linked roles or a group chat sharing one runtime.",
+    label: "Multi-character ensemble", description: "Several characters or a group chat in one runtime.",
     criteria: {
-      distinction: "Individual voices, priorities or roles are separable enough to avoid confusion; shared tropes are allowed.",
-      interactions: "Relationships and group dynamics are specified sufficiently for the promised ensemble.",
-      coordination: "Instructions allow turns, focus and simultaneous activity without avoidable identity or speaker confusion.",
-      groupScope: "The group fulfills its advertised relationship or scenario, without mandatory worldbuilding or manufactured conflict."
-    },
-    rules: [
-      "Judge each person by their role and also judge whether the ensemble functions together.",
-      "Lack of interpersonal rivalry is not a defect.",
-      "Do not require extensive lore for a two-person domestic card."
-    ]
+      distinction: "Voices, roles or priorities remain separable, avoiding speaker bleed; shared tropes are allowed.",
+      interactions: "Group dynamics and relationships support the advertised ensemble, without forced rivalry.",
+      coordination: "Turns, focus and simultaneous presence operate without avoidable confusion.",
+      groupScope: "Fulfills its domestic, social or scenario purpose without required heavy worldbuilding."
+    }, rules: ["Judge both individuals and group operation; two-person domestic scenes may have light lore."]
   }
 };
-
 export const SPECIALIST_KEYS = Object.keys(SPECIALISTS);
 export function assertSpecialist(id) {
   if (!SPECIALISTS[id]) throw new Error("Unknown rubric module: " + id);
   return id;
 }
-

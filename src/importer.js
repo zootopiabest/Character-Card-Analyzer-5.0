@@ -1,5 +1,32 @@
 const MAX_FILE = 15 * 1024 * 1024;
 
+// Keep activation metadata visible without implying that a constant entry is
+// guaranteed to survive frontend budget rules or context truncation.
+export function formatLorebook(book) {
+  const entries = Array.isArray(book) ? book : Array.isArray(book?.entries) ? book.entries :
+    book?.entries && typeof book.entries === "object" ? Object.values(book.entries) : null;
+  if (!entries) return JSON.stringify(book);
+  const header = "Activation is frontend-dependent; constant=true requests injection but does not guarantee retention.";
+  const formatted = entries.map((entry,i) => {
+    if (!entry || typeof entry !== "object") return "Entry " + (i+1) + ": " + String(entry);
+    const flag = (entry.enabled === false) ? "disabled" :
+      entry.constant === true ? "constant requested; not guaranteed" : "conditional/triggered";
+    const meta = {
+      enabled: entry.enabled ?? "unspecified",
+      constant: entry.constant ?? false,
+      keys: entry.keys ?? entry.key ?? [],
+      secondary_keys: entry.secondary_keys ?? entry.keysecondary ?? [],
+      selective: entry.selective ?? "unspecified",
+      insertion_order: entry.insertion_order ?? entry.order ?? "unspecified",
+      position: entry.position ?? "frontend-defined",
+      probability: entry.probability ?? "unspecified"
+    };
+    return "### Entry " + (i+1) + ": " + flag + "\nActivation: " + JSON.stringify(meta) +
+      "\n" + (typeof entry.content === "string" ? entry.content : JSON.stringify(entry));
+  });
+  return [header,...formatted].join("\n\n");
+}
+
 export function extractCardText(input) {
   if (typeof input !== "string" || !input.trim()) throw new Error("Card content is empty.");
   let parsed;
@@ -27,7 +54,7 @@ export function extractCardText(input) {
     const v = typeof g === "string" ? g : (g?.content || g?.text || "");
     if (v) lines.push("## Alternate Greeting " + (i+2) + " (separate roleplay start)\n" + v);
   });
-  if (root.character_book || root.lorebook) lines.push("## Lorebook\n" + JSON.stringify(root.character_book || root.lorebook));
+  if (root.character_book || root.lorebook) lines.push("## Lorebook\n" + formatLorebook(root.character_book || root.lorebook));
   if (root.extensions) lines.push("## Extensions\n" + JSON.stringify(root.extensions));
   if (!lines.length) return JSON.stringify(root, null, 2);
   return lines.join("\n\n");

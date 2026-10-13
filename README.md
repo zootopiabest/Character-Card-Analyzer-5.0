@@ -1,10 +1,32 @@
-# Card Analyzer 5.0.3 (alpha)
+# Card Analyzer 5.1.1 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.0.3 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.0.3`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.1.1 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.1`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
+
+## Changes in 5.1.1 (Independent Auditor Patch)
+
+- Added explicit **ANTI-SYCOPHANCY & INDEPENDENCE** after role and scope. The evaluator must not agree with creator claims, manufacture praise or inflate grades, or soften valid criticism. Equally, it must not invent flaws or grade harshly for show.
+- Reinforced auditor independence in the system instruction for both single-card and head-to-head audits. Card content remains untrusted.
+- Explicitly exempted agreeable, submissive, deferential and people-pleasing **character personalities**, because independence governs the **evaluator**, not a character's disposition.
+- Added anti-sycophancy regression coverage and bumped the runtime/cache tag to 5.1.1.
+
+## Changes in 5.1.0 (Lean Revision)
+
+- Revised the universal scoring rules to reward **consistency**, not artificial thematic overlap. A coherent, shallow character can earn 8+ cohesion; strong scores still require criterion-specific positive evidence.
+- Explicitly protects abrasive, hostile, passive, quiet, compliant, and antagonistic temperaments from automatic deductions. Enforces one primary scoring home for each actual defect and keeps slop severity diagnostic only.
+- Strengthened inference economy: models should infer ordinary grief, kindness, motives and situational reactions without mandated scripts. Retains legitimate behavioral prose, functional register, trauma/sexuality neutrality, the Archetype Swap Test, and comedy/drama execution standards.
+- Shortened prompts and specialist modules while preserving all six rubric types, their stable criterion keys and the existing deterministic grading weights.
+- Combined the old `evidence` and `effect` output fields into one concise `rationale` per criterion (`evidence -> likely runtime impact`). Legacy results using the two old fields can still be normalized for rendering.
+- Dynamically removes instructions **and required JSON fields** for absent alternate greetings, example dialogue, creator notes, lorebooks and optional images. For comparisons, omits redundant per-card strengths/weaknesses arrays; per-card tradeoffs and specific criterion rationales remain.
+- Preserved existing exported property names `profileGreetingCoverage`, `exampleDialogueAssessment`, `aAdvantages`, and `bAdvantages` to avoid unnecessary schema changes. Updated validator, HTML/Markdown renderer and exports for the new optional fields.
+- Added explicit frontend-dependent lorebook treatment. Imports now label disabled entries, keyword/conditional entries and constant-requested entries, without treating constant as proof of guaranteed persistence.
+- Expanded paired human-review calibration examples from five to twelve. Added updated offline regression tests for prompt pruning, score arithmetic, the new JSON schema, lorebook activation, safety escaping and cross-card comparisons.
+- All browser asset cache-version stamps now identify 5.1.1. No GitHub account or original 4.6 repository is modified by this local package.
+
+**Optimization measurements (rough character counts, excluding transport/API overhead):** On matched synthetic cards, the prompt text was ~36.1% shorter for a simple single audit, ~38.6% shorter for a simple head-to-head comparison, and ~32.1% shorter for a comparison with alternate greetings and examples. This is **not** a measured token count or a verified model-output reduction; the proposed 42% / 35% targets remain goals, not claims. Live model calibration and provider-dependent output measurement have not been performed.
 
 ## Changes in 5.0.3
 
@@ -27,7 +49,7 @@ This is a fresh, static browser application with an independent modular grading 
 - Automatic AI classification or explicit user selection of **primary and optional secondary** rubrics.
 - Small universal foundation and **six** specialist rubrics: standalone character, character-driven scenario, scenario-driven character, RPG/world, companion/support/service, and ensemble.
 - One consistent rubric used across comparison and single-card evaluation.
-- **First greeting synergy** plus a profile-to-all-greetings support assessment. Automatic per-greeting scoring has been removed; that remains a potential future opt-in feature.
+- **First greeting synergy** plus conditional profile-to-all-greetings support when multiple independent openings exist. Automatic per-greeting scoring has been removed; that remains a potential future opt-in feature.
 - Separate 0-100 slop severity index (higher means worse).
 - Calibrated evidence-first score anchors; unusual, shocking or highly scripted behavior does not earn a high score merely for being memorable or obedient.
 - Deterministically computed overall quality: core 45% + primary 55%, or core 40% + primary 45% + secondary 15%. These weights are **provisional**, not empirically calibrated.
@@ -99,7 +121,7 @@ This writes paired cards and single/AB/BA production prompts to the ignored `cal
 6. No irrelevant categories can be "high scored" as a workaround; modules are omitted if not applicable.
 7. Use textual first greeting synergy and profile support for all independent greetings; only visual continuity has an optional numeric score.
 8. Every actual deduction requires attributable evidence and a consequence.
-9. Creator Notes are non-runtime metadata, only one selected greeting initializes a given chat, and example dialogue can fall out of context; respect explicit frontend context settings.
+9. Creator Notes are non-runtime metadata; only one selected greeting initializes a chat; example dialogue can fall out of context. Lorebook activation is frontend-dependent even for constant entries; respect provided runtime settings.
 10. Credit voice and behavior that are reasonably implied by the profile. Only genuinely unsupported central characterization requires an additional anchor; illustrative lines and ordinary reactions do not.
 11. Give each defect one primary scoring home. A separate deduction requires a separately evidenced failure, not a renamed consequence.
 

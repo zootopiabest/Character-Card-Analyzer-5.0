@@ -1,10 +1,10 @@
-import { mountModelBrowser } from "./model-browser.js?v=5.0.3";
-import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.0.3";
-import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.0.3";
-import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.0.3";
-import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.0.3";
-import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.0.3";
-import { APP_VERSION } from "./version.js?v=5.0.3";
+import { mountModelBrowser } from "./model-browser.js?v=5.1.1";
+import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.1";
+import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.1";
+import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.1";
+import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.1";
+import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.1";
+import { APP_VERSION } from "./version.js?v=5.1.1";
 
 const $ = (id) => document.getElementById(id);
 let modelBrowser=null,activeProvider=null;
@@ -190,8 +190,8 @@ function init() {
     e.target.value="";
   });
   $("clearArt").addEventListener("click",()=>setImage(null));
-  $("saveMarkdown").addEventListener("click",()=>{if(result)downloadText("card-analyzer-5-report.md",reportToMarkdown(result,resultMode),"text/markdown");});
-  $("saveJson").addEventListener("click",()=>{if(result)downloadText("card-analyzer-5-report.json",JSON.stringify(result,null,2),"application/json");});
+  $("saveMarkdown").addEventListener("click",()=>{if(result)downloadText("card-analyzer-5.1-report.md",reportToMarkdown(result,resultMode),"text/markdown");});
+  $("saveJson").addEventListener("click",()=>{if(result)downloadText("card-analyzer-5.1-report.json",JSON.stringify(result,null,2),"application/json");});
   setMode("single");
   $("runtimeVersion").textContent = "Runtime " + APP_VERSION + " loaded · Modular grading";
 }

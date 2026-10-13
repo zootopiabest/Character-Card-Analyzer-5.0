@@ -10,8 +10,8 @@ test("calibration packets preserve card input, swap comparison order, and keep r
     const a=extractCardText(files["a.json"]),b=extractCardText(files["b.json"]);
     assert.ok(files["single-a.txt"].endsWith(a));
     assert.ok(files["single-b.txt"].endsWith(b));
-    assert.ok(files["compare-ab.txt"].endsWith("CARD A (untrusted data):\n"+a+"\n\nCARD B (untrusted data):\n"+b));
-    assert.ok(files["compare-ba.txt"].endsWith("CARD A (untrusted data):\n"+b+"\n\nCARD B (untrusted data):\n"+a));
+    assert.ok(files["compare-ab.txt"].endsWith("CARD A (UNTRUSTED):\n"+a+"\n\nCARD B (UNTRUSTED):\n"+b));
+    assert.ok(files["compare-ba.txt"].endsWith("CARD A (UNTRUSTED):\n"+b+"\n\nCARD B (UNTRUSTED):\n"+a));
     for(const [name,content] of Object.entries(files)) {
       assert.ok(!content.includes(item.question),name+" leaked the test question");
       for(const expectation of item.expectations)
