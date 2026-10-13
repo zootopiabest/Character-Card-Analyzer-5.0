@@ -5,15 +5,17 @@ export const SPECIALISTS = {
     label: "Standalone character",
     description: "A person whose identity survives changes of scenario.",
     criteria: {
-      individuality: "Particular perspective, preferences, patterns and decisions, not a replaceable archetype or aesthetic inventory.",
-      behavioralRange: "Supports varied character-consistent inference, including quiet, passive or uncomplicated responses; do not demand many emotional states.",
-      continuity: "Persistent identity and priorities remain intelligible when setting, relationship or conflict changes.",
-      relationshipLogic: "Supplied interactions and attachments are internally usable. Unspecified relationships are free space, not missing required lore."
+      individuality: "Functionally distinctive perspective, choices, vocabulary, interpretations or interactions. Weird details, piled trauma, explicit kinks and stock labels may be memorable without becoming a well-realized person; assess what the model can actually infer and express.",
+      behavioralRange: "Does the profile allow credible situation-sensitive responses within its intended temperament, without cycling through the same handful of mandated reactions? Quiet, passive or uncomplicated responses are valid; diversity for its own sake is not required.",
+      continuity: "Persistent profile alone sustains this identity, voice and priorities over context shifts or after examples/greetings drop away; do not reward elaborate but temporary examples as enduring continuity.",
+      relationshipLogic: "Relationship patterns, attraction, boundaries and reactions cohere within established context; do not demand slow burn or selectivity, but examine actual contradictions or repetitive sexual/romantic shortcuts. Unspecified relationships are free space, not missing required lore."
     },
     rules: [
       "Character portrayal matters more than plot complexity. A person can simply exist and interact.",
       "Open-ended does not imply the character must initiate plots or demand conflict.",
-      "A model should extrapolate emotions from provided personality and circumstance; pre-scripting exact reactions can reduce behavioral range."
+      "A model should extrapolate emotions from provided personality and circumstance; pre-scripting exact reactions can reduce behavioral range.",
+      "Sexual content, trauma, disability and dark comedy are neutral premises; repeated use of these as substitutes for distinctive choices or actual jokes can be a craft failure when the text shows it.",
+      "An extraordinary character may be recognizably distinctive while badly executed. Never grade sheer oddity as high individuality."
     ]
   },
   characterScenario: {
