@@ -1,16 +1,16 @@
 const MAX_FILE = 15 * 1024 * 1024;
 
-// Keep activation metadata visible without implying that a constant entry is
-// guaranteed to survive frontend budget rules or context truncation.
+// Keep declared activation metadata visible; assess it inside the intended
+// frontend rather than speculating about unrelated runtime configurations.
 export function formatLorebook(book) {
   const entries = Array.isArray(book) ? book : Array.isArray(book?.entries) ? book.entries :
     book?.entries && typeof book.entries === "object" ? Object.values(book.entries) : null;
   if (!entries) return JSON.stringify(book);
-  const header = "Activation is frontend-dependent; constant=true requests injection but does not guarantee retention.";
+  const header = "Activation follows the intended frontend: enabled constant entries are always-on as configured; keyword entries trigger conditionally by design.";
   const formatted = entries.map((entry,i) => {
     if (!entry || typeof entry !== "object") return "Entry " + (i+1) + ": " + String(entry);
     const flag = (entry.enabled === false) ? "disabled" :
-      entry.constant === true ? "constant requested; not guaranteed" : "conditional/triggered";
+      entry.constant === true ? "constant/always-on requested" : "conditional/triggered";
     const meta = {
       enabled: entry.enabled ?? "unspecified",
       constant: entry.constant ?? false,
@@ -35,6 +35,8 @@ export function extractCardText(input) {
   if (!parsed || typeof parsed !== "object") return input;
   const root = parsed.data && typeof parsed.data === "object" ? parsed.data : parsed;
   const lines = [];
+  if (root.extensions?.wyvern && typeof root.extensions.wyvern === "object")
+    lines.push("## Intended Frontend\nWyvern (native extensions.wyvern runtime behavior applies, including greeting-specific scenario overrides and other frontend facilities). Do not assume generic frontend behavior.");
   for (const [name, keys] of Object.entries({
     Name: ["name", "char_name"],
     Description: ["description", "char_persona"],

@@ -22,7 +22,7 @@ test("calibration packets preserve card input, swap comparison order, and keep r
 
 test("regression fixtures cover agency, trauma shortcuts, dark comedy, and false contradictions", () => {
   const ids = CALIBRATION_CASES.map(c => c.id);
-  assert.equal(ids.length,16);
+  assert.equal(ids.length,18);
   assert.equal(new Set(ids).size,ids.length);
   for (const id of ["quirk-catalog-vs-agency", "trauma-as-sexual-shortcut", "dark-humor-vs-contempt", "contact-and-past-not-contradiction"]) {
     const fixture=CALIBRATION_CASES.find(c=>c.id===id);
@@ -32,5 +32,18 @@ test("regression fixtures cover agency, trauma shortcuts, dark comedy, and false
     const emitted=calibrationPackets(fixture);
     assert.ok(emitted["compare-ab.txt"].includes("Scores 6+ require evidence"));
     assert.ok(!emitted["compare-ab.txt"].includes(fixture.question));
+  }
+});
+
+
+test('frontend regression pairs distinguish declared capabilities from real rule collisions',()=>{
+  for(const id of ['wyvern-greeting-scenarios','frontend-fear-infoboard']) {
+    const item=CALIBRATION_CASES.find(c=>c.id===id);
+    assert.ok(item,`missing ${id}`);
+    const prompt=calibrationPackets(item)['compare-ab.txt'];
+    assert.match(prompt,/FRONTEND CONTRACT/);
+    assert.match(prompt,/Wyvern/);
+    assert.match(prompt,/do not score hypothetical portability/i);
+    assert.equal(item.expectations.length,3);
   }
 });

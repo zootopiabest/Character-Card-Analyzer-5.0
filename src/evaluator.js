@@ -1,8 +1,8 @@
-import { complete } from "./providers.js?v=5.1.3";
-import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.1.3";
-import { singlePrompt, comparePrompt, coreKeys, specialistKeys, inspectCardFeatures } from "./rubrics/assemble.js?v=5.1.3";
-import { SPECIALISTS } from "./rubrics/specialists.js?v=5.1.3";
-import { APP_VERSION } from "./version.js?v=5.1.3";
+import { complete } from "./providers.js?v=5.1.4";
+import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.1.4";
+import { singlePrompt, comparePrompt, coreKeys, specialistKeys, inspectCardFeatures } from "./rubrics/assemble.js?v=5.1.4";
+import { SPECIALISTS } from "./rubrics/specialists.js?v=5.1.4";
+import { APP_VERSION } from "./version.js?v=5.1.4";
 
 // Unicode is legal JSON text. Never strip or transliterate non-Latin characters.
 // Preserve the provider's raw text for a user-controlled diagnostic download.

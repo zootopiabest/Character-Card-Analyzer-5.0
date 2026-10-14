@@ -1,10 +1,18 @@
-# Card Analyzer 5.1.3 (alpha)
+# Card Analyzer 5.1.4 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.1.3 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.3`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.1.4 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.4`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
+
+## Changes in 5.1.4 (Frontend-aware assessment)
+
+- Rate cards in **their intended frontend**, including native Wyvern extensions and per-greeting scenario overrides. Similar greeting text does not imply identical active premises when an extension swaps the scenario.
+- **Presume author-declared frontend features work**, including infoboards, fear meters, variables, counters, memory, depth prompts and lorebook triggers. Do not require standalone infoboard templates or UI markup in exported cards.
+- **No speculative compatibility deductions or tradeoffs** about other frontends, token budgets, conditional lore activation, or missing external infrastructure. Evidence of real internal conflicting instructions or genuinely disabled required features can still be criticized.
+- Importer labels Wyvern-native extensions as intended runtime context. Prompts name the intended frontend independently for A and B in comparisons.
+- Strengthened 18 calibration pairs (two new frontend-specific comparisons). Updated offline tests and frontend-aware prompt rules, without changing numerical scoring weights, report schemas, or model provider API requests.
 
 ## Changes in 5.1.3 (JSON output diagnostics)
 

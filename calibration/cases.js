@@ -105,7 +105,7 @@ export const CALIBRATION_CASES = [
     expectations:[
       "A keeps the recurring commitment in persistent description; the keyword entry may add detail.",
       "B cannot rely on triggered-only lore to provide enduring identity in sessions where the trigger does not fire.",
-      "Flag context uncertainty as a conditional prediction, never pretend a particular frontend's activation is known."
+      "Do not speculate about frontend budget failure; note that keyword-only content is conditional by design without automatically scoring that design as broken."
     ]
   },
   {
@@ -115,8 +115,8 @@ export const CALIBRATION_CASES = [
     b:card({name:"Mara",description:base.description,character_book:{entries:[{enabled:true,constant:true,content:"Mara is secretly the mayor."}]}}),
     expectations:[
       "A's disabled lore is not assumed active or used as evidence of inconsistency.",
-      "B's constant flag is a request for injection; unknown frontend budgets/preference prevent certainty of persistence.",
-      "Neither case should be treated as a guaranteed runtime failure solely from metadata."
+      "B's enabled constant flag should be treated as functioning in its intended frontend unless concrete runtime evidence refutes it.",
+      "Do not deduct for speculative token budgets or other unknown frontend behavior; genuinely disabled content stays inactive."
     ]
   },
   {
@@ -187,4 +187,25 @@ export const CALIBRATION_CASES = [
     ]
   }
 
+  ,{
+    id:"wyvern-greeting-scenarios",kind:{primary:"characterScenario",secondary:null},
+    question:"Does the evaluator understand per-greeting Wyvern scenario overrides as functional?",
+    a:card({name:"Bonnie",description:"Bonnie is a timid microbiology student, curious about her classmates and wary of unfamiliar predators.",scenario:"She deliberately joined a mixed-species dorm.",first_mes:'Bonnie walked up to Room 314. "Here goes."',alternate_greetings:['Bonnie walked up to Room 314. "Here goes."'],extensions:{wyvern:{greetings:[{scenario:"She deliberately joined mixed-species housing."},{scenario:"She unknowingly enrolled in a mixed-species dorm through a paperwork mistake."}]}}}),
+    b:card({name:"Bonnie",description:"Bonnie is a timid microbiology student, curious about her classmates and wary of unfamiliar predators.",scenario:"She deliberately joined a mixed-species dorm.",first_mes:'Bonnie walked up to Room 314. "Here goes."',alternate_greetings:['Bonnie walked up to Room 314. "Here goes."']}),
+    expectations:[
+      "A explicitly supplies two different per-greeting scenarios through Wyvern extensions; assume they activate in that runtime. Similar greeting prose is not evidence of duplicate premises.",
+      "Neither card should lose points for potential behavior on unrelated frontends or for the mere presence/absence of a portability layer.",
+      "If B's alternate actually makes no meaningful scenario change, assess its own advertised purpose without inventing a defect in A's Wyvern-native behavior."
+    ]
+  },{
+    id:"frontend-fear-infoboard",kind,
+    question:"Does the evaluator invent an infoboard failure simply because its UI template is external?",
+    a:card({name:"Bonnie",description:"Bonnie has predator-related fear tracked by the frontend infoboard. Its Fear Meter starts at 60 and changes with events; trust and fear are distinct. In danger, she may flee, freeze or seek help depending on circumstances.",extensions:{wyvern:{infoboard:{active:true}}}}),
+    b:card({name:"Bonnie",description:"Bonnie has a frontend Fear Meter that must always equal 0 and must simultaneously remain at 60 whenever she encounters a predator, including at the start of a predator encounter.",extensions:{wyvern:{infoboard:{active:true}}}}),
+    expectations:[
+      "A's author-declared frontend infoboard is assumed functional; the lack of an exported HTML template or numerical UI mockup is not a reliability flaw.",
+      "B establishes simultaneously contradictory active rules for the same situation, a real fault that can be scored with cited evidence.",
+      "No tradeoff or comparison advantage should praise generic portability or criticize frontend-specific mechanics as such."
+    ]
+  }
 ];

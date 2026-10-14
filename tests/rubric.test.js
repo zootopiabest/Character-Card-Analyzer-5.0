@@ -89,11 +89,11 @@ test('alternates and examples appear only when supplied, without individual grad
 });
 test('creator notes and lorebook blocks are present only with corresponding fields',()=>{
   const raw=formatted({name:'Mara',creator_notes:'Designer intent.',character_book:{entries:[{constant:true,enabled:true,content:'Knows the secret.'}]}});
-  assert.match(raw,/constant requested; not guaranteed/);
+  assert.match(raw,/constant\/always-on requested/);
   const prompt=singlePrompt(raw,kind);
   assert.match(prompt,/CREATOR NOTES: non-runtime intent metadata/);
-  assert.match(prompt,/LOREBOOK: inspect each entry/);
-  assert.match(prompt,/disabled entries, token budgets or truncation/);
+  assert.match(prompt,/LOREBOOK: Honor the intended frontend/);
+  assert.match(prompt,/Do not criticize conditional lore/);
 });
 test('lorebook distinguishes disabled entries, conditional triggers, and constant requests',()=>{
   const book={entries:[
@@ -105,7 +105,7 @@ test('lorebook distinguishes disabled entries, conditional triggers, and constan
   assert.match(text,/Entry 1: disabled/);
   assert.match(text,/Entry 2: conditional\/triggered/);
   assert.match(text,/"keys":\["dock"\]/);
-  assert.match(text,/Entry 3: constant requested; not guaranteed/);
+  assert.match(text,/Entry 3: constant\/always-on requested/);
   assert.match(text,/Core history/);
 });
 test('plain pasted Markdown and raw JSON are both feature-detected',()=>{
@@ -201,11 +201,11 @@ test('functional register and ordinary inference remain protected',()=>{
   assert.match(FOUNDATION,/A signature routine is not/);
   assert.match(FOUNDATION,/useful illustrative dialogue is NOT automatically over-scripting/i);
 });
-test('classification and app stamp are 5.1.3',()=>{
-  assert.equal(APP_VERSION,'5.1.3');
+test('classification and app stamp are 5.1.4',()=>{
+  assert.equal(APP_VERSION,'5.1.4');
   const rep=validateAudit(fixture(),kind);
-  assert.match(reportToMarkdown(rep),/App version: \*\*5\.1\.3\*\*/);
-  assert.match(renderAudit(rep),/v5\.1\.3/);
+  assert.match(reportToMarkdown(rep),/App version: \*\*5\.1\.4\*\*/);
+  assert.match(renderAudit(rep),/v5\.1\.4/);
   assert.match(CLASSIFY_SYSTEM,/secondary/);
 });
 test('JSON parser accepts fenced JSON and rejects nonnumeric score placeholders',()=>{
@@ -241,4 +241,31 @@ test('Malformed but closed JSON reports parser diagnostics without inventing a t
     assert.ok(error.rawResponse);
     return true;
   });
+});
+
+
+test('frontend-specific scenario overrides are treated as active, not as cross-platform defects',()=>{
+  const v3WithWyvern = v3({name:'Bonnie',description:'A college rabbit.',scenario:'Default scenario',
+    first_mes:'She reached the dorm.',alternate_greetings:['She reached the dorm.'],
+    extensions:{wyvern:{greetings:[{scenario:'Mixed-species dorm'},{scenario:'Prey-only dorm'}]}}});
+  const plain=formatted({name:'Another',description:'A college rabbit.',first_mes:'She reached the dorm.'});
+  const imported=extractCardText(v3WithWyvern);
+  assert.match(imported,/## Intended Frontend\nWyvern/);
+  const single=singlePrompt(imported,kind), comparison=comparePrompt(plain,kind,imported,kind);
+  assert.match(single,/INTENDED FRONTEND: Wyvern/);
+  assert.match(single,/greeting-specific scenario override/);
+  assert.match(single,/Do NOT mention hypothetical unsupported frontend features/);
+  assert.match(comparison,/INTENDED FRONTENDS: A=Unspecified;.* B=Wyvern:/);
+  assert.match(comparison,/each in its OWN environment/);
+  assert.match(CORE_CRITERIA.reliability,/Absence of a visible UI template.*is NOT a defect/);
+});
+
+test('frontend rules accept claimed infoboards and context-injected lore rather than inventing failures',()=>{
+  const prompt=singlePrompt(formatted({description:'Uses an infoboard to track fear from 0 to 100. Fear does not equal trust.',character_book:{entries:[{enabled:true,constant:true,content:'Fear stays separate from trust.'}]}}),kind);
+  assert.match(prompt,/FRONTEND CONTRACT/);
+  assert.match(prompt,/Assume explicitly claimed frontend facilities/);
+  assert.match(prompt,/missing infoboard UI\/templates/);
+  assert.match(prompt,/Do not criticize conditional lore/);
+  assert.match(prompt,/Only verified internal conflicts merit deduction/);
+  assert.match(SPECIALISTS.character.criteria.behavioralRange,/No artificial demand for rebellion/);
 });
