@@ -1,13 +1,14 @@
-import { mountModelBrowser } from "./model-browser.js?v=5.1.4";
-import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.4";
-import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.4";
-import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.4";
-import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.4";
-import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.4";
-import { APP_VERSION } from "./version.js?v=5.1.4";
+import { mountImmersionPanel } from "./immersion-panel.js?v=5.1.5";
+import { mountModelBrowser } from "./model-browser.js?v=5.1.5";
+import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.5";
+import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.5";
+import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.5";
+import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.5";
+import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.5";
+import { APP_VERSION } from "./version.js?v=5.1.5";
 
 const $ = (id) => document.getElementById(id);
-let modelBrowser=null,activeProvider=null;
+let modelBrowser=null,activeProvider=null,immersionPanel=null;
 let mode = "single", result = null, resultMode = "single", cardImage = null, busy = false;
 let failedRawResponse = null;
 function resetRawResponse() {
@@ -80,6 +81,7 @@ function setMode(next) {
   $("comparisonInputs").hidden=mode!=="compare";
   $("classificationB").hidden=mode!=="compare";
   $("artworkSettings").hidden=mode==="compare";
+  immersionPanel?.setMode(mode);
   if (!busy) $("analyzeButton").textContent=mode==="compare"?"Compare cards ↗":"Run audit ↗";
   resetRawResponse();
   status("");
@@ -125,6 +127,7 @@ function displayResult(data,ka,kb,usedMode) {
 async function run() {
   if(busy)return;
   const cfg=readConfig(),usedMode=mode;
+  const optionals=immersionPanel.snapshot(),comparisonType=$("comparisonType").value,image=cardImage;
   let a,b;
   try {
     a=extractCardText($("cardA").value);
@@ -140,8 +143,8 @@ async function run() {
       kb=await resolveKind(cfg,b,"B");
     }
     status("Running evidence-led audit with textual greeting diagnostics.");
-    const data=usedMode==="single" ? await runSingle(cfg,a,ka,cardImage)
-      :await runComparison(cfg,a,ka,b,kb,$("comparisonType").value);
+    const data=usedMode==="single" ? await runSingle(cfg,a,ka,image,optionals.modules)
+      :await runComparison(cfg,a,ka,b,kb,comparisonType,optionals);
     displayResult(data,ka,kb,usedMode);
     status("Audit complete. The analyzer does not store reports on a server.");
   } catch(err) {
@@ -167,6 +170,7 @@ function wireFiles(which) {
   });
 }
 function init() {
+  immersionPanel=mountImmersionPanel({onStorageError:message=>status(message,true)});
   ["A","B"].forEach((l)=>{
     populateSelector("primary"+l,true);populateSelector("secondary"+l,false);wireFiles(l);
   });

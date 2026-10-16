@@ -1,3 +1,4 @@
+import { optionalSections } from "./immersion-modules.js?v=5.1.5";
 const safe = (v) => String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const number = (n) => Number(n).toFixed(1);
 const criterion = (name, val) => '<article class="criterion"><div class="criterion-head"><b>'+
@@ -9,6 +10,15 @@ const listBlock = (title, items) => items == null ? "" : '<section class="report
 const proseBlock = (title, content) => typeof content !== "string" ? "" :
   '<section class="report-section"><h4>'+safe(title)+'</h4><p>'+safe(content)+'</p></section>';
 
+function renderOptionals(report) {
+  const sections = optionalSections(report), warnings = report.optionalWarnings || [];
+  if (!sections.length && !warnings.length) return "";
+  return '<details class="optional-results" open><summary>Optional extras · separate from scores</summary>' +
+    '<p class="micro">Illustrative interpretations, not canon or scoring evidence. Greeting grades apply only within their report cards.</p>' +
+    (warnings.length ? listBlock('Optional output incomplete',warnings) : '') +
+    sections.map(s => '<section class="report-section"><h4>'+safe(s.title)+'</h4>'+s.paragraphs.map(p=>'<p>'+safe(p)+'</p>').join('')+
+      (s.items.length ? '<ul>'+s.items.map(i=>'<li>'+safe(i)+'</li>').join('')+'</ul>' : '')+'</section>').join('')+'</details>';
+}
 export function renderAudit(report) {
   return '<div class="report">'+
     '<header class="result-header"><span class="eyebrow">'+safe('v'+(report.appVersion||'unknown')+' · '+report.kind.primary)+
@@ -34,7 +44,7 @@ export function renderAudit(report) {
     (report.visual ? '<section class="report-section"><h4>Visual continuity: '+
       Math.round(report.visual.score)+'/100</h4><p>'+safe(report.visual.notes)+'</p>'+
       listBlock('Matches',report.visual.matches)+listBlock('Mismatches',report.visual.mismatches)+'</section>' : '')+
-    '</div>';
+    renderOptionals(report)+'</div>';
 }
 export function renderComparison(data) {
   const c=data.comparison;
@@ -60,7 +70,12 @@ export function reportToMarkdown(result,mode='single') {
     '## First message synergy\n'+r.firstMessageSynergy,
     ...(r.profileGreetingCoverage != null ? ['## Profile → all greetings\n'+r.profileGreetingCoverage] : []),
     ...(r.exampleDialogueAssessment != null ? ['## Example dialogue and lasting voice\n'+r.exampleDialogueAssessment] : []),
-    ...(r.visual ? ['## Visual match: '+r.visual.score+'/100\n'+r.visual.notes] : [])
+    ...(r.visual ? ['## Visual match: '+r.visual.score+'/100\n'+r.visual.notes] : []),
+    ...(optionalSections(r).length || r.optionalWarnings?.length ? [
+      '## Optional extras\nIllustrative interpretations, not canon or scoring evidence. Greeting grades are module-local.',
+      ...(r.optionalWarnings?.length ? ['### Optional output incomplete\n'+bullets(r.optionalWarnings)] : []),
+      ...optionalSections(r).map(s => '### '+s.title+'\n'+s.paragraphs.join('\n\n')+(s.items.length ? '\n'+bullets(s.items) : ''))
+    ] : [])
   ].join('\n\n');
   if(mode==='single') return audit(result);
   return ['# Card comparison',result.comparison.verdict,

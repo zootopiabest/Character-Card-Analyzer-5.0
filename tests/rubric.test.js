@@ -201,11 +201,11 @@ test('functional register and ordinary inference remain protected',()=>{
   assert.match(FOUNDATION,/A signature routine is not/);
   assert.match(FOUNDATION,/useful illustrative dialogue is NOT automatically over-scripting/i);
 });
-test('classification and app stamp are 5.1.4',()=>{
-  assert.equal(APP_VERSION,'5.1.4');
+test('classification and app stamp are 5.1.5',()=>{
+  assert.equal(APP_VERSION,'5.1.5');
   const rep=validateAudit(fixture(),kind);
-  assert.match(reportToMarkdown(rep),/App version: \*\*5\.1\.4\*\*/);
-  assert.match(renderAudit(rep),/v5\.1\.4/);
+  assert.match(reportToMarkdown(rep),/App version: \*\*5\.1\.5\*\*/);
+  assert.match(renderAudit(rep),/v5\.1\.5/);
   assert.match(CLASSIFY_SYSTEM,/secondary/);
 });
 test('JSON parser accepts fenced JSON and rejects nonnumeric score placeholders',()=>{

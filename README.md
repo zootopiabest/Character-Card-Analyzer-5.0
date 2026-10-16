@@ -1,10 +1,18 @@
-# Card Analyzer 5.1.4 (alpha)
+# Card Analyzer 5.1.5 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.1.4 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.4`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.1.5 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.5`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
+
+## Changes in 5.1.5 (Optional extras restored)
+
+- Restored all nine original options: Dating App Profile, Against-Type Shopping List, Top 5 Songs, Demise & Obituary, Psychoanalysis, Emotional Registers, The Boring Tuesday Test, Three Ways to Piss Them Off, and Per-Greeting Report Card.
+- The collapsible **Optional extras** panel saves selections separately for single audits and each comparison card. Single audits initially enable dating/shopping, matching the original; comparisons start with none. Use Select all or Clear extras for the current mode.
+- Only selected module instructions and output fields enter requests. Core scoring weights and specialist rubrics are unchanged. Interpretations are illustrative, not canon or scoring evidence. Per-greeting scores are isolated from the main audit and respect each greeting's own AU and frontend scenario override.
+- Extras appear in HTML, Markdown, and JSON reports. Missing or malformed optional sections produce a visible warning while preserving a valid main audit. Unrequested model-generated extras are discarded.
+- More extras use more output tokens; per-greeting reports scale with greeting count. No extra model call is required.
 
 ## Changes in 5.1.4 (Frontend-aware assessment)
 
@@ -97,6 +105,8 @@ For GitHub Pages, enable Pages with **GitHub Actions** as its source under Setti
 - src/rubrics/specialists.js: one source of truth for specialist scoring modules.
 - src/rubrics/components.js: first greeting synergy, alternative-start coverage, visual and comparison policies.
 - src/rubrics/assemble.js: builds only the relevant prompt and expected output schema.
+- src/immersion-modules.js: optional module catalog, prompt fragments, validation and export content.
+- src/immersion-panel.js: saved single/per-card selection controls.
 - src/classifier.js: model-based bot type classification.
 - src/providers.js: direct BYOK model calls.
 - src/evaluator.js: parsing, strict score validation, and deterministic aggregation.
@@ -135,7 +145,7 @@ This writes paired cards and single/AB/BA production prompts to the ignored `cal
 4. Static anatomy is continuity metadata; sexuality/genre are not defects.
 5. Quiet, cooperative or dependent character behavior can be excellent.
 6. No irrelevant categories can be "high scored" as a workaround; modules are omitted if not applicable.
-7. Use textual first greeting synergy and profile support for all independent greetings; only visual continuity has an optional numeric score.
+7. Use textual first greeting synergy and profile support for all independent greetings; visual continuity and explicitly selected per-greeting report cards have separate optional scores that never enter overall quality.
 8. Every actual deduction requires attributable evidence and a consequence.
 9. Creator Notes are non-runtime metadata; only one selected greeting initializes a chat; example dialogue can fall out of context. Lorebook activation is frontend-dependent even for constant entries; respect provided runtime settings.
 10. Credit voice and behavior that are reasonably implied by the profile. Only genuinely unsupported central characterization requires an additional anchor; illustrative lines and ordinary reactions do not.
