@@ -109,7 +109,7 @@ async function withUi(run,{installed=false,failRegistration=false}={}) {
 test('install button handles supported prompts, dismissal, fallback and installed mode',async()=>{
   await withUi(async({elements:e,win,registered})=>{
     assert.equal(e.installApp.hidden,false);assert.equal(registered.options.updateViaCache,'none');
-    assert.match(registered.url.href,/\/sw\.js$/);assert.match(registered.options.scope,/analyzer5\/$/);
+    assert.equal(registered.url.href,new URL('sw.js',root).href);assert.equal(registered.options.scope,root.href);
     e.installApp.dispatchEvent(new Event('click'));assert.match(e.pwaMessage.textContent,/Add to Home screen/);
     let prompted=0;const event=new Event('beforeinstallprompt',{cancelable:true});
     Object.assign(event,{async prompt(){prompted++},userChoice:Promise.resolve({outcome:'dismissed'})});
