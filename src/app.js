@@ -1,11 +1,11 @@
-import { mountImmersionPanel } from "./immersion-panel.js?v=5.1.5";
-import { mountModelBrowser } from "./model-browser.js?v=5.1.5";
-import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.5";
-import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.5";
-import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.5";
-import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.5";
-import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.5";
-import { APP_VERSION } from "./version.js?v=5.1.5";
+import { mountImmersionPanel } from "./immersion-panel.js?v=5.1.6";
+import { mountModelBrowser } from "./model-browser.js?v=5.1.6";
+import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.6";
+import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.6";
+import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.6";
+import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.6";
+import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.6";
+import { APP_VERSION } from "./version.js?v=5.1.6";
 
 const $ = (id) => document.getElementById(id);
 let modelBrowser=null,activeProvider=null,immersionPanel=null;

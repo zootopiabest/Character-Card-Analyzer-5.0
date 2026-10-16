@@ -1,9 +1,9 @@
-import { normalizeModules, validateModules } from "./immersion-modules.js?v=5.1.5";
-import { complete } from "./providers.js?v=5.1.5";
-import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.1.5";
-import { singlePrompt, comparePrompt, coreKeys, specialistKeys, inspectCardFeatures } from "./rubrics/assemble.js?v=5.1.5";
-import { SPECIALISTS } from "./rubrics/specialists.js?v=5.1.5";
-import { APP_VERSION } from "./version.js?v=5.1.5";
+import { normalizeModules, validateModules } from "./immersion-modules.js?v=5.1.6";
+import { complete } from "./providers.js?v=5.1.6";
+import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.1.6";
+import { singlePrompt, comparePrompt, coreKeys, specialistKeys, inspectCardFeatures } from "./rubrics/assemble.js?v=5.1.6";
+import { SPECIALISTS } from "./rubrics/specialists.js?v=5.1.6";
+import { APP_VERSION } from "./version.js?v=5.1.6";
 
 // Unicode is legal JSON text. Never strip or transliterate non-Latin characters.
 // Preserve the provider's raw text for a user-controlled diagnostic download.

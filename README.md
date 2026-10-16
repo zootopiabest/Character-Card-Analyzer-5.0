@@ -1,10 +1,22 @@
-# Card Analyzer 5.1.5 (alpha)
+# Card Analyzer 5.1.6 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.1.5 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.5`. If the footer has an older version, hard-refresh the browser to clear stale code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.1.6 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.6`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
+
+## Changes in 5.1.6 (Installable web app)
+
+- Install Analyzer 5 as a standalone app from the **Install app** button or your browser's install/Add to Home screen menu. Its manifest identity and scope are separate from the original analyzer.
+- Reused the original app icons, with Android and Apple home-screen metadata.
+- A service worker caches only the public app shell so the interface opens offline after the first successful online setup. Model audits and model catalog refreshes still need internet access. API requests, keys, cards, and reports are never stored in the service-worker cache.
+- Updates download in the background. A waiting update offers **Reload to update**; finish the audit and save needed input/reports first. An active audit blocks that button. Closing all analyzer windows also lets a waiting update activate. No automatic reload interrupts work.
+- Caches are scoped to this project, and old analyzer/other GitHub Pages caches are left alone. Offline setup failure does not block online auditing.
+
+### Maintaining offline releases
+
+Bump `sw.js`'s `VERSION` alongside the runtime/cache URL version on every release. Keep its `SHELL` list synchronized with all browser modules and local assets. A test checks every versioned local module is precached. Do not add API endpoints, arbitrary requests, credentials, or report data to the shell cache.
 
 ## Changes in 5.1.5 (Optional extras restored)
 
