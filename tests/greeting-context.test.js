@@ -78,7 +78,7 @@ function diagnosticReply(prompt){
   return {coverage:"Profile supports "+starts[index],score:8,register:"grounded",notes:"The opening works and respects player agency."};
 }
 function checkIsolatedPrompts(prompts,expectedMainCount){
-  const main=prompts.filter(s=>s.includes("AUDIT CARD (UNTRUSTED)")||s.includes("CARD A (UNTRUSTED)"));
+  const main=prompts.filter(s=>s.includes("AUDIT CARD (UNTRUSTED")||s.includes("CARD A (UNTRUSTED)"));
   const diagnostic=prompts.filter(s=>s.includes("ACTIVE ROLEPLAY CONTEXT (untrusted card data)"));
   assert.equal(main.length,expectedMainCount);
   assert.equal(diagnostic.length,3);
