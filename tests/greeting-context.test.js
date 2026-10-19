@@ -39,7 +39,7 @@ test("every context contains exactly one opening and its own Wyvern scenario ove
   assert.equal((parts.base.match(/## First Message/g)||[]).length,1);
 });
 test("pasted Markdown with level-one or level-three card headings is also isolated",()=>{
-  const pasted="# Description\\nDurable character.\\n\\n### First Message\\nFIRST_ONLY.\\n\\n### Alternate Greeting 2\\nSECOND_ONLY.";
+  const pasted="# Description\nDurable character.\n\n### First Message\nFIRST_ONLY.\n\n### Alternate Greeting 2\nSECOND_ONLY.";
   const parts=isolateGreetings(pasted);
   assert.equal(parts.greetings.length,2);
   assert.match(parts.base,/FIRST_ONLY/);
