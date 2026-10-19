@@ -3,7 +3,7 @@ import { extractCardText } from "./importer.js?v=5.1.7";
 // The importer normalizes JSON, CharX and embedded-card PNGs to Markdown.
 // Split at top-level card fields, not paragraphs inside a greeting.
 // Recognize actual importer field delimiters, not arbitrary Markdown headings in prose.
-const HEADING = /^##[ \\t]+(Intended Frontend|Name|Description|Personality|Scenario|First Message|Alternate Greeting(?:\\s+\\d+)?(?:\\s*\\([^\\r\\n]*\\))?|Example Dialogue|System Prompt|Post History Instructions|Creator Notes(?:\\s*\\([^\\r\\n]*\\))?|Lorebook|Extensions)[ \\t]*\\r?\\n/gim;
+const HEADING = /^##[ \t]+(Intended Frontend|Name|Description|Personality|Scenario|First Message|Alternate Greeting(?:\s+\d+)?(?:\s*\([^\r\n]*\))?|Example Dialogue|System Prompt|Post History Instructions|Creator Notes(?:\s*\([^\r\n]*\))?|Lorebook|Extensions)[ \t]*\r?\n/gim;
 const isOpening = (name) => /^First Message$/i.test(name) ||
   /^Alternate Greeting(?:\s+\d+)?(?:\s*\(.*\))?$/i.test(name);
 function readSections(text) {
