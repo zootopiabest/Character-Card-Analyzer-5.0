@@ -1,11 +1,11 @@
-import { mountImmersionPanel } from "./immersion-panel.js?v=5.1.6";
-import { mountModelBrowser } from "./model-browser.js?v=5.1.6";
-import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.6";
-import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.6";
-import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.6";
-import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.6";
-import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.6";
-import { APP_VERSION } from "./version.js?v=5.1.6";
+import { mountImmersionPanel } from "./immersion-panel.js?v=5.1.7";
+import { mountModelBrowser } from "./model-browser.js?v=5.1.7";
+import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.7";
+import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.7";
+import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.7";
+import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.7";
+import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.7";
+import { APP_VERSION } from "./version.js?v=5.1.7";
 
 const $ = (id) => document.getElementById(id);
 let modelBrowser=null,activeProvider=null,immersionPanel=null;
@@ -142,7 +142,7 @@ async function run() {
       status("Classifying Card B, then applying selected rubrics…");
       kb=await resolveKind(cfg,b,"B");
     }
-    status("Running evidence-led audit with textual greeting diagnostics.");
+    status("Scoring the first active start; independently checking alternate greetings.");
     const data=usedMode==="single" ? await runSingle(cfg,a,ka,image,optionals.modules)
       :await runComparison(cfg,a,ka,b,kb,comparisonType,optionals);
     displayResult(data,ka,kb,usedMode);
