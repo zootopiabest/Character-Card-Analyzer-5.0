@@ -1,8 +1,8 @@
-import { normalizeModules, moduleTemplate, modulePrompt } from "../immersion-modules.js?v=5.1.7";
-import { CORE_CRITERIA, FOUNDATION } from "./core.js?v=5.1.7";
-import { SPECIALISTS, assertSpecialist } from "./specialists.js?v=5.1.7";
+import { normalizeModules, moduleTemplate, modulePrompt } from "../immersion-modules.js?v=5.1.8";
+import { CORE_CRITERIA, FOUNDATION } from "./core.js?v=5.1.8";
+import { SPECIALISTS, assertSpecialist } from "./specialists.js?v=5.1.8";
 import { RUNTIME_RUBRIC, CREATOR_RUBRIC, LOREBOOK_RUBRIC, GREETING_RUBRIC,
-  ALTERNATES_RUBRIC, EXAMPLES_RUBRIC, VISUAL_RUBRIC, COMPARISON_RUBRIC } from "./components.js?v=5.1.7";
+  ALTERNATES_RUBRIC, EXAMPLES_RUBRIC, VISUAL_RUBRIC, COMPARISON_RUBRIC } from "./components.js?v=5.1.8";
 
 export const coreKeys = Object.keys(CORE_CRITERIA);
 const modulesFor = (kind) => {

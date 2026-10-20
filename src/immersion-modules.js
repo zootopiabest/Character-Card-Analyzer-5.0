@@ -96,7 +96,7 @@ export const IMMERSION_MODULES = [
         "notes": "2-3 sentences: accomplishment and objective failures, if any"
       }
     ],
-    "warning": "Costs one graded entry per greeting. A card with a dozen alternate greetings makes this the most expensive module by far."
+    "warning": "Adds one graded entry per greeting. Uses the main audit request unless Send greetings separately? is on, which adds one request per greeting only for cards with multiple greetings. Zero or one greeting always stays in the main call."
   }
 ];
 

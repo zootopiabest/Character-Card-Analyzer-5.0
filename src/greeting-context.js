@@ -1,4 +1,4 @@
-import { extractCardText } from "./importer.js?v=5.1.7";
+import { extractCardText } from "./importer.js?v=5.1.8";
 
 // The importer normalizes JSON, CharX and embedded-card PNGs to Markdown.
 // Split at top-level card fields, not paragraphs inside a greeting.

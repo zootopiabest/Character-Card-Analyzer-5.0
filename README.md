@@ -1,10 +1,17 @@
-# Card Analyzer 5.1.7 (alpha)
+# Card Analyzer 5.1.8 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.1.7 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.7`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.1.8 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.8`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
+
+## Changes in 5.1.8 (Optional separate greeting requests)
+
+- **Send greetings separately?** is a remembered checkbox under Optional extras, off by default, applying to single and comparison audits.
+- Off: all supplied greetings and selected extras, including Per-Greeting Report Card, use one main audit request. Prompt rules still require treating greetings as independent starts, but they share model context.
+- On: the main audit uses the first active start; separate diagnostic requests each receive only their own greeting, the shared profile and applicable Wyvern scenario override. Cards with multiple greetings add one request per greeting. Cards with zero or one greeting always stay in the main call, including any selected report card. This check applies independently to each comparison card.
+- Auto classification still adds its own request per card when selected. Greeting report scores remain separate from the overall grade in both modes.
 
 ## Changes in 5.1.7 (Installable web app)
 
@@ -24,7 +31,7 @@ Bump `sw.js`'s `VERSION` alongside the runtime/cache URL version on every releas
 - The collapsible **Optional extras** panel saves selections separately for single audits and each comparison card. Single audits initially enable dating/shopping, matching the original; comparisons start with none. Use Select all or Clear extras for the current mode.
 - Only selected module instructions and output fields enter requests. Core scoring weights and specialist rubrics are unchanged. Interpretations are illustrative, not canon or scoring evidence. Per-greeting scores are isolated from the main audit and respect each greeting's own AU and frontend scenario override.
 - Extras appear in HTML, Markdown, and JSON reports. Missing or malformed optional sections produce a visible warning while preserving a valid main audit. Unrequested model-generated extras are discarded.
-- More extras use more output tokens; per-greeting reports scale with greeting count. No extra model call is required.
+- More extras use more output tokens; per-greeting reports scale with greeting count. No extra model call is required unless **Send greetings separately?** is enabled.
 
 ## Changes in 5.1.4 (Frontend-aware assessment)
 

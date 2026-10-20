@@ -1,4 +1,4 @@
-import { optionalSections } from "./immersion-modules.js?v=5.1.7";
+import { optionalSections } from "./immersion-modules.js?v=5.1.8";
 const safe = (v) => String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const number = (n) => Number(n).toFixed(1);
 const criterion = (name, val) => '<article class="criterion"><div class="criterion-head"><b>'+

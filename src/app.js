@@ -1,11 +1,11 @@
-import { mountImmersionPanel } from "./immersion-panel.js?v=5.1.7";
-import { mountModelBrowser } from "./model-browser.js?v=5.1.7";
-import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.7";
-import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.7";
-import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.7";
-import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.7";
-import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.7";
-import { APP_VERSION } from "./version.js?v=5.1.7";
+import { mountImmersionPanel } from "./immersion-panel.js?v=5.1.8";
+import { mountModelBrowser } from "./model-browser.js?v=5.1.8";
+import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.8";
+import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.8";
+import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.8";
+import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.8";
+import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.8";
+import { APP_VERSION } from "./version.js?v=5.1.8";
 
 const $ = (id) => document.getElementById(id);
 let modelBrowser=null,activeProvider=null,immersionPanel=null;
@@ -54,6 +54,7 @@ function persistSettings(providerOverride) {
     settings.providers=settings.providers||{};
     settings.providers[cfg.provider]={model:cfg.model,baseUrl:cfg.baseUrl,maxTokens:cfg.maxTokens};
     settings.provider=cfg.provider;settings.modelSettingsOpen=$("modelSettings").open;settings.rememberKey=$("rememberKey").checked;
+    settings.separateGreetings=$("separateGreetings").checked;
     localStorage.setItem(storeKey,JSON.stringify(settings));
     if(settings.rememberKey) {keys[cfg.provider]=cfg.key;localStorage.setItem(storeKey+"-keys",JSON.stringify(keys));}
     else { localStorage.removeItem(storeKey+"-keys"); for(const p of Object.keys(keys)) delete keys[p]; }
@@ -127,7 +128,7 @@ function displayResult(data,ka,kb,usedMode) {
 async function run() {
   if(busy)return;
   const cfg=readConfig(),usedMode=mode;
-  const optionals=immersionPanel.snapshot(),comparisonType=$("comparisonType").value,image=cardImage;
+  const optionals={...immersionPanel.snapshot(),separateGreetings:$("separateGreetings").checked},comparisonType=$("comparisonType").value,image=cardImage;
   let a,b;
   try {
     a=extractCardText($("cardA").value);
@@ -142,8 +143,10 @@ async function run() {
       status("Classifying Card B, then applying selected rubrics…");
       kb=await resolveKind(cfg,b,"B");
     }
-    status("Scoring the first active start; independently checking alternate greetings.");
-    const data=usedMode==="single" ? await runSingle(cfg,a,ka,image,optionals.modules)
+    status(optionals.separateGreetings
+      ? "Scoring the card; separate greeting requests only for cards with multiple greetings."
+      : "Scoring the card and selected extras in one audit request.");
+    const data=usedMode==="single" ? await runSingle(cfg,a,ka,image,optionals.modules,optionals)
       :await runComparison(cfg,a,ka,b,kb,comparisonType,optionals);
     displayResult(data,ka,kb,usedMode);
     status("Audit complete. The analyzer does not store reports on a server.");
@@ -175,6 +178,7 @@ function init() {
     populateSelector("primary"+l,true);populateSelector("secondary"+l,false);wireFiles(l);
   });
   $("rememberKey").checked=Boolean(settings.rememberKey);
+  $("separateGreetings").checked=settings.separateGreetings===true;
   $("provider").value=PROVIDERS[settings.provider]?settings.provider:"gemini";
   loadProvider($("provider").value);
   modelBrowser=mountModelBrowser({getModel:()=>$("model").value.trim(),onSelect:id=>{
@@ -190,7 +194,7 @@ function init() {
     persistSettings(activeProvider);loadProvider(e.target.value);persistSettings();
   });
   $("model").addEventListener("input",updateModelSummary);
-  for(const id of ["model","apiKey","apiBase","maxTokens","rememberKey"]) {
+  for(const id of ["model","apiKey","apiBase","maxTokens","rememberKey","separateGreetings"]) {
     $(id).addEventListener("change",()=>{persistSettings();});
   }
   document.querySelectorAll("[data-mode]").forEach((el)=>el.addEventListener("click",()=>setMode(el.dataset.mode)));

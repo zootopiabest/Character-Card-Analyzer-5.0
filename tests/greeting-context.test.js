@@ -109,7 +109,7 @@ function checkIsolatedPrompts(prompts,expectedMainCount){
 test("main audit scores only one opening; coverage and optional cards use separate calls",async()=>{
   const {result,prompts}=await interceptCalls(p=>
     p.includes("ACTIVE ROLEPLAY CONTEXT") ? diagnosticReply(p) : fakeAudit(),
-    ()=>runSingle(config,source,kind,null,["greetingBreakdown"]));
+    ()=>runSingle(config,source,kind,null,["greetingBreakdown"],{separateGreetings:true}));
   checkIsolatedPrompts(prompts,1);
   assert.equal(result.profileGreetingCoverage.includes("THIRD_START"),true);
   assert.equal(result.greetingBreakdown.length,3);
@@ -123,7 +123,7 @@ test("head-to-head also excludes inactive starts from scoring without mixing pro
     return {cardA:fakeAudit(false),cardB:fakeAudit(false),comparison:{
       verdict:"Mixed strengths.",aAdvantages:[],bAdvantages:[],sharedGround:[],scopeDifferences:[]
     }};
-  },()=>runComparison(config,source,kind,second,kind));
+  },()=>runComparison(config,source,kind,second,kind,"independent",{separateGreetings:true}));
   const main=prompts.find(p=>p.includes("CARD A (UNTRUSTED)"));
   assert.ok(main);
   assert.match(main,/GARDENER_START/);
@@ -131,4 +131,78 @@ test("head-to-head also excludes inactive starts from scoring without mixing pro
   assert.equal(prompts.filter(p=>p.includes("ACTIVE ROLEPLAY CONTEXT")).length,3);
   assert.ok(result.cardA.profileGreetingCoverage);
   assert.equal(result.cardB.profileGreetingCoverage,null);
+});
+
+for (const separateGreetings of [undefined,false]) {
+  for (const modules of [[],["greetingBreakdown"]]) {
+    test(`combined single audit makes one request (separate=${separateGreetings}, extras=${modules})`,async()=>{
+      const report={...fakeAudit(),profileGreetingCoverage:"Each start is independently plausible.",
+        greetingBreakdown:starts.map(label=>({label,score:8,register:"grounded",notes:"Works."}))};
+      const {result,prompts}=await interceptCalls(()=>report,
+        ()=>runSingle(config,source,kind,null,modules,{separateGreetings}));
+      assert.equal(prompts.length,1);
+      for(const marker of [...starts,...scenes]) assert.ok(prompts[0].includes(marker),marker);
+      assert.equal(result.profileGreetingCoverage,report.profileGreetingCoverage);
+      if(modules.length) assert.equal(result.greetingBreakdown.length,3);
+      else assert.equal(result.greetingBreakdown,undefined);
+      assert.equal(result.overallScore,8);
+    });
+    test(`combined comparison makes one request (separate=${separateGreetings}, extras=${modules})`,async()=>{
+      const report={...fakeAudit(false),profileGreetingCoverage:"All starts checked.",
+        greetingBreakdown:starts.map(label=>({label,score:8,register:"grounded",notes:"Works."}))};
+      const {result,prompts}=await interceptCalls(()=>({cardA:report,cardB:report,
+        comparison:{verdict:"Tie.",aAdvantages:[],bAdvantages:[],sharedGround:[],scopeDifferences:[]}}),
+        ()=>runComparison(config,source,kind,source,kind,"independent",{modulesA:modules,modulesB:[],separateGreetings}));
+      assert.equal(prompts.length,1);
+      for(const marker of [...starts,...scenes]) assert.ok(prompts[0].includes(marker),marker);
+      if(modules.length) assert.equal(result.cardA.greetingBreakdown.length,3);
+      else assert.equal(result.cardA.greetingBreakdown,undefined);
+      assert.equal(result.cardB.greetingBreakdown,undefined);
+      assert.equal(result.cardA.profileGreetingCoverage,"All starts checked.");
+    });
+  }
+}
+test("one greeting always stays in the main request, including its optional report card",async()=>{
+  const text="## Description\nA crafter.\n## First Message\nFIRST_START";
+  for(const separateGreetings of [false,true]) for(const graded of [false,true]) {
+    const {result,prompts}=await interceptCalls(p=>p.includes("ACTIVE ROLEPLAY CONTEXT")
+      ? diagnosticReply(p) : {...fakeAudit(),greetingBreakdown:[{label:"First Message",score:8,register:"grounded",notes:"Works."}]},
+      ()=>runSingle(config,text,kind,null,graded?["greetingBreakdown"]:[],{separateGreetings}));
+    assert.equal(prompts.length,1);
+    if(graded) assert.equal(result.greetingBreakdown.length,1);
+    else assert.equal(result.greetingBreakdown,undefined);
+  }
+});
+
+test("separate mode checks greeting counts independently for each comparison card",async()=>{
+  const one="## Description\nA crafter.\n## First Message\nSOLO_START";
+  const soloReport={...fakeAudit(false),greetingBreakdown:[{label:"First Message",score:8,register:"grounded",notes:"Works."}]};
+  for(const swap of [false,true]) {
+    const {result,prompts}=await interceptCalls(p=>p.includes("ACTIVE ROLEPLAY CONTEXT")?diagnosticReply(p):{
+      cardA:swap?soloReport:fakeAudit(false),cardB:swap?fakeAudit(false):soloReport,
+      comparison:{verdict:"Tie.",aAdvantages:[],bAdvantages:[],sharedGround:[],scopeDifferences:[]}},
+      ()=>runComparison(config,swap?one:source,kind,swap?source:one,kind,"independent",{
+        modulesA:["greetingBreakdown"],modulesB:["greetingBreakdown"],separateGreetings:true}));
+    assert.equal(prompts.length,4);
+    const diagnostics=prompts.filter(p=>p.includes("ACTIVE ROLEPLAY CONTEXT"));
+    assert.equal(diagnostics.length,3);
+    for(const p of diagnostics) assert.doesNotMatch(p,/SOLO_START/);
+    assert.equal((swap?result.cardA:result.cardB).greetingBreakdown.length,1);
+    assert.equal((swap?result.cardB:result.cardA).greetingBreakdown.length,3);
+  }
+});
+test("no-greeting and single-greeting comparisons stay in one request with separation checked",async()=>{
+  for(const first of ["", "## First Message\nHello."]) {
+    const report={...fakeAudit(false),greetingBreakdown:first?[{label:"First Message",score:8,register:"grounded",notes:"Works."}]:[]};
+    const text="## Description\nAn archivist.\n"+first;
+    const {result,prompts}=await interceptCalls(()=>({cardA:report,cardB:report,
+      comparison:{verdict:"Tie.",aAdvantages:[],bAdvantages:[],sharedGround:[],scopeDifferences:[]}}),
+      ()=>runComparison(config,text,kind,text,kind,"independent",{modulesA:["greetingBreakdown"],modulesB:["greetingBreakdown"],separateGreetings:true}));
+    assert.equal(prompts.length,1);
+    assert.equal(result.cardA.greetingBreakdown.length,first?1:0);
+    const single=await interceptCalls(()=>({...report,strengths:[],weaknesses:[]}),
+      ()=>runSingle(config,text,kind,null,["greetingBreakdown"],{separateGreetings:true}));
+    assert.equal(single.prompts.length,1);
+    assert.equal(single.result.greetingBreakdown.length,first?1:0);
+  }
 });
