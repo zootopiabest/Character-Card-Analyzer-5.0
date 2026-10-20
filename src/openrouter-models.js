@@ -48,10 +48,10 @@ export function formatPrice(price) {
   if(price===0) return "Free";
   return "$"+(price<0.01 ? price.toPrecision(2) : price.toFixed(2));
 }
-export async function fetchOpenRouterCatalog() {
+export async function fetchOpenRouterCatalog({signal}={}) {
   let response;
-  try { response=await fetch("https://openrouter.ai/api/v1/models",{signal:AbortSignal.timeout(15000)}); }
-  catch { throw new Error("Could not reach OpenRouter. Check your connection and retry."); }
+  try { response=await fetch("https://openrouter.ai/api/v1/models",{signal:signal?AbortSignal.any([signal,AbortSignal.timeout(15000)]):AbortSignal.timeout(15000)}); }
+  catch { signal?.throwIfAborted(); throw new Error("Could not reach OpenRouter. Check your connection and retry."); }
   if(!response.ok) throw new Error("OpenRouter error "+response.status+". Try again in a moment.");
   const json=await response.json().catch(()=>null);
   if(!Array.isArray(json?.data) || !toBrowserModels(json.data).length)

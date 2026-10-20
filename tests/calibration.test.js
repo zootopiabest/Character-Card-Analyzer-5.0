@@ -2,12 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { CALIBRATION_CASES } from "../calibration/cases.js";
 import { calibrationPackets } from "../scripts/calibration.js";
-import { extractCardText } from "../src/importer.js";
+import { renderCard } from "../src/card-context.js";
 
 test("calibration packets preserve card input, swap comparison order, and keep reviewer expectations private", () => {
   for(const item of CALIBRATION_CASES) {
     const files=calibrationPackets(item);
-    const a=extractCardText(files["a.json"]),b=extractCardText(files["b.json"]);
+    const a=renderCard(files["a.json"]),b=renderCard(files["b.json"]);
     assert.ok(files["single-a.txt"].endsWith(a));
     assert.ok(files["single-b.txt"].endsWith(b));
     assert.ok(files["compare-ab.txt"].endsWith("CARD A (UNTRUSTED):\n"+a+"\n\nCARD B (UNTRUSTED):\n"+b));
@@ -22,7 +22,7 @@ test("calibration packets preserve card input, swap comparison order, and keep r
 
 test("regression fixtures cover agency, trauma shortcuts, dark comedy, and false contradictions", () => {
   const ids = CALIBRATION_CASES.map(c => c.id);
-  assert.equal(ids.length,18);
+  assert.equal(ids.length,24);
   assert.equal(new Set(ids).size,ids.length);
   for (const id of ["quirk-catalog-vs-agency", "trauma-as-sexual-shortcut", "dark-humor-vs-contempt", "contact-and-past-not-contradiction"]) {
     const fixture=CALIBRATION_CASES.find(c=>c.id===id);
@@ -30,7 +30,7 @@ test("regression fixtures cover agency, trauma shortcuts, dark comedy, and false
     assert.ok(fixture.a.data.description.length>70 && fixture.b.data.description.length>70);
     assert.ok(fixture.expectations.length>=3);
     const emitted=calibrationPackets(fixture);
-    assert.ok(emitted["compare-ab.txt"].includes("Scores 6+ require evidence"));
+    assert.ok(emitted["compare-ab.txt"].includes("For 6+ identify what works in THIS criterion"));
     assert.ok(!emitted["compare-ab.txt"].includes(fixture.question));
   }
 });

@@ -1,3 +1,4 @@
+import {GREETING_ASSESSMENT} from "./rubrics/greetings.js?v=5.2.0";
 // Optional modules ported from the original analyzer. Only selected asks and fields enter a request.
 export const IMMERSION_MODULES = [
   {
@@ -87,9 +88,10 @@ export const IMMERSION_MODULES = [
     "id": "greetingBreakdown",
     "label": "Per-Greeting Report Card",
     "blurb": "Every greeting graded on its own — first message and each alternate, judged as if it were the only one.",
-    "ask": "greetingBreakdown (Per-Greeting Report Card): one entry for EVERY greeting supplied — the First Message first, then each alternate in the order the card lists them — using that greeting's own label from the card text. Grade each one by the current greeting rules and the following discipline: what register it teaches, whether the profile supports the portrayal, whether it delivers the reader experience it intends, and objective failures: grammar/formatting that impairs reading, unsupported portrayal, contradictions of stated boundaries or pacing, scripted user participation, redundant explanation that harms pacing or voice, or sustained purple/drab prose that undermines the intended experience. Judge control, not ornament; do not reward big vocabulary or demand excitement. Judge each greeting in isolation, exactly as if it were the only greeting the card had and you had never seen the others: never compare them to each other, never rank or count them, never call one an outlier or say it is outnumbered by or stands alone against the rest, and never treat the set's majority tone as the character's default register. An alternate that establishes its own AU or overrides the persistent setting is playing by its own rules and is graded on its own terms, not penalized for disagreeing with the others. Reusing profile material is never a deduction, and short, long, immediate, gradual, and vignette openings are all equally valid. These per-greeting scores are module-local: they must never change, justify, or be cited by the slop score, any core or specialist score, or any other field, and firstMessageSynergy remains the audit's judgment of the active greeting. If the card supplies only a first message, return exactly one entry; if it supplies no greeting text at all, return an empty array.",
+    "ask": GREETING_ASSESSMENT+"\ngreetingBreakdown: one entry per supplied greeting manifest ID, in manifest order, copying its id and label exactly. Only a card with zero greetings receives []. For one greeting return one entry. Scores remain module-local.",
     "schema": [
       {
+        "id": "exact stable ID from the greeting manifest",
         "label": "greeting's own label, in supplied order",
         "score": "NUMBER 0-10; higher is better; module-local only",
         "register": "register this greeting teaches",
@@ -111,7 +113,7 @@ export function modulePrompt(selected = []) {
   const ids = normalizeModules(selected);
   if (!ids.length) return "";
   return [
-    "OPTIONAL IMMERSION MODULES (USER-SELECTED): These are illustrative interpretations, not canon, actual roleplay tests, or scoring evidence. Never use generated scenes, reactions, or module-local greeting scores to justify or change core, specialist, slop, or overall scores. Infer plausible behavior without requiring the author to script it. Adapt modern concepts to the card's universe. For a roster/world card, name the supported character(s) being portrayed; do not invent a personality for the setting itself. If a request has no applicable subject, state that it is not applicable.",
+    "OPTIONAL IMMERSION MODULES (USER-SELECTED): These are illustrative interpretations, not canon, actual roleplay tests, or scoring evidence. Never use generated scenes, reactions, or module-local greeting scores to justify or change core, specialist, slop, or overall scores. Infer plausible behavior without requiring the author to script it. Adapt modern concepts to the card's universe. For a roster/world card, name the supported character(s) being portrayed; do not invent a personality for the setting itself. If an immersion request (excluding per-greeting reports) has no applicable subject, return {\"notApplicable\":\"specific reason\"} for that module instead of its normal shape. Never use this for a difficult but applicable subject.",
     "Complete the main audit before the selected extras. The general three-entry list limit does not apply to these modules; follow each selected module's requested count and keep entries concise.",
     ...IMMERSION_MODULES.filter(m => ids.includes(m.id)).map(m => m.ask)
   ].join("\n");
@@ -125,7 +127,7 @@ function validateValue(value, shape, path) {
     return value;
   }
   if (typeof shape === "string") {
-    if (typeof value !== "string") throw new Error(path);
+    if (typeof value !== "string" || !value.trim()) throw new Error(path);
     return value;
   }
   if (Array.isArray(shape)) {
@@ -135,11 +137,34 @@ function validateValue(value, shape, path) {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error(path);
   return Object.fromEntries(Object.entries(shape).map(([key, child]) => [key, validateValue(value[key], child, path + "." + key)]));
 }
-export function validateModules(report, selected = []) {
+export function validateModules(report, selected = [], {greetings}={}) {
   const ids = normalizeModules(selected), fields = {}, warnings = [];
   for (const mod of IMMERSION_MODULES.filter(m => ids.includes(m.id))) {
-    try { fields[mod.id] = validateValue(report[mod.id], mod.schema, mod.id); }
-    catch { warnings.push(mod.label + ": the model omitted this section or returned an invalid format. Try again with fewer extras or a higher output limit."); }
+    try {
+      const value=report[mod.id];
+      if(mod.id!=='greetingBreakdown'&&typeof value?.notApplicable==='string'&&value.notApplicable.trim()){
+        fields[mod.id]={notApplicable:value.notApplicable};continue;
+      }
+      if(mod.id==='greetingBreakdown'&&Array.isArray(greetings)){
+        if(!Array.isArray(value))throw new Error('expected a greeting list');
+        const valid=[];
+        for(const greeting of greetings){
+          const matches=value.filter(v=>v?.id===greeting.id);
+          try{
+            if(matches.length!==1||matches[0].label!==greeting.label)throw new Error();
+            valid.push(validateValue(matches[0],mod.schema[0],mod.id));
+          }catch{warnings.push(mod.label+': missing or invalid entry for '+greeting.label+' ('+greeting.id+').');}
+        }
+        if(value.some(v=>!greetings.some(g=>g.id===v?.id)))warnings.push(mod.label+': unknown greeting IDs were discarded.');
+        fields[mod.id]=valid;
+        if(valid.length!==greetings.length)fields.greetingBreakdownIncomplete=true;
+        continue;
+      }
+      const validated=validateValue(value,mod.schema,mod.id);
+      if(mod.id==='topSongs'&&validated.length!==5)throw new Error('expected exactly five songs');
+      if(mod.id==='shoppingList'&&(validated.items.length<5||validated.items.length>8))throw new Error('expected five to eight items');
+      fields[mod.id]=validated;
+    } catch { warnings.push(mod.label + ": the model omitted this section or returned invalid content/counts. No automatic retry was sent."); }
   }
   return ids.length ? {...fields, optionalModules:ids, optionalWarnings:warnings} : {};
 }
@@ -151,12 +176,13 @@ export function optionalSections(report) {
     const v = report[id];
     if (v == null) continue;
     let paragraphs = [], items = [];
-    if (typeof v === "string") paragraphs = [v];
+    if(v.notApplicable) paragraphs=["Not applicable: "+v.notApplicable];
+    else if (typeof v === "string") paragraphs = [v];
     else if (id === "shoppingList") { items = v.items; paragraphs = [v.notes]; }
     else if (id === "topSongs") items = v.map(s => s.title + " — " + s.artist + ": " + s.vibe);
     else if (id === "greetingBreakdown") {
       items = v.map(g => g.label + " · " + g.score + "/10 · " + g.register + ": " + g.notes);
-      if (!v.length) paragraphs = ["No greeting text supplied."];
+      if (!v.length) paragraphs = [report.greetingBreakdownIncomplete?"No valid greeting entries returned.":"No greeting text supplied."];
     } else {
       const labels = {
         howTheyDie:"Projected demise", obituary:"Obituary", sad:"Sad", angry:"Angry", happy:"Happy", grief:"Grief", comedy:"Comedy",

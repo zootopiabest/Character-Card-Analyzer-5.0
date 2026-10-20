@@ -51,7 +51,8 @@ test('legacy evidence and effect are accepted but normalized to rationale',()=>{
   const item=fixture();item.core.craft={score:7,evidence:'example',effect:'impact'};
   assert.equal(validateAudit(item,kind).core.craft.rationale,'example -> impact');
   delete item.core.craft.effect;
-  assert.throws(()=>validateAudit(item,kind),/rationale/);
+  assert.equal(validateAudit(item,kind).overallScore,null);
+  assert.match(validateAudit(item,kind).validationWarnings.join(' '),/rationale/);
 });
 test('numerical integrity and 40/45/15 weighting remain unchanged',()=>{
   const two={primary:'character',secondary:'rpg'};
@@ -59,14 +60,14 @@ test('numerical integrity and 40/45/15 weighting remain unchanged',()=>{
   for(const c of Object.values(item.specialists.rpg)) c.score=4;
   assert.ok(Math.abs(validateAudit(item,two).overallScore-7.85)<0.11);
   item.core.craft.score='10';
-  assert.throws(()=>validateAudit(item,two),/Invalid or missing score/);
+  assert.equal(validateAudit(item,two).overallScore,null);
 });
 test('single greeting without examples prunes irrelevant instructions AND JSON fields',()=>{
   const text=formatted({name:'Mara',description:'Quiet mechanic.',first_mes:'Rain.'});
   const f=inspectCardFeatures(text);
   assert.equal(f.hasAlternates,false);assert.equal(f.hasExamples,false);
   const prompt=singlePrompt(text,kind);
-  for(const key of ['profileGreetingCoverage','exampleDialogueAssessment','ALTERNATE GREETINGS:','EXAMPLE DIALOGUE:','CREATOR NOTES:','LOREBOOK:']) assert.doesNotMatch(prompt,new RegExp(key));
+  for(const key of ['profileGreetingCoverage','exampleDialogueAssessment','ALTERNATE GREETINGS / COMBINED REVIEW:','EXAMPLE DIALOGUE:','CREATOR NOTES:','LOREBOOK:']) assert.doesNotMatch(prompt,new RegExp(key));
   assert.match(prompt,/"firstMessageSynergy"/);
   const valid=validateAudit(fixture(),kind,false,{features:f});
   assert.equal(valid.profileGreetingCoverage,null);
@@ -79,21 +80,22 @@ test('alternates and examples appear only when supplied, without individual grad
   const f=inspectCardFeatures(text);
   assert.equal(f.hasAlternates,true);assert.equal(f.hasExamples,true);
   const prompt=singlePrompt(text,kind);
-  for(const key of ['ALTERNATE GREETINGS:','EXAMPLE DIALOGUE:','"profileGreetingCoverage"','"exampleDialogueAssessment"']) assert.match(prompt,new RegExp(key));
+  for(const key of ['ALTERNATE GREETINGS / COMBINED REVIEW:','EXAMPLE DIALOGUE:','"profileGreetingCoverage"','"exampleDialogueAssessment"']) assert.match(prompt,new RegExp(key));
   const audit=validateAudit(fixture(kind,f),kind,false,{features:f});
   assert.match(renderAudit(audit),/Profile → all greetings/);
   assert.match(reportToMarkdown(audit),/Example dialogue and lasting voice/);
   assert.equal(Object.hasOwn(audit,'greetings'),false);
   const absent=fixture(kind,f);delete absent.profileGreetingCoverage;
-  assert.throws(()=>validateAudit(absent,kind,false,{features:f}),/profileGreetingCoverage/);
+  assert.equal(validateAudit(absent,kind,false,{features:f}).overallScore,8.6);
+  assert.match(validateAudit(absent,kind,false,{features:f}).optionalWarnings.join(' '),/profileGreetingCoverage/);
 });
 test('creator notes and lorebook blocks are present only with corresponding fields',()=>{
   const raw=formatted({name:'Mara',creator_notes:'Designer intent.',character_book:{entries:[{constant:true,enabled:true,content:'Knows the secret.'}]}});
   assert.match(raw,/constant\/always-on requested/);
   const prompt=singlePrompt(raw,kind);
-  assert.match(prompt,/CREATOR NOTES: non-runtime intent metadata/);
-  assert.match(prompt,/LOREBOOK: Honor the intended frontend/);
-  assert.match(prompt,/Do not criticize conditional lore/);
+  assert.match(prompt,/Tags, creator notes and format\/creator metadata describe intent, not active instructions/);
+  assert.match(prompt,/LOREBOOK: Preserve book configuration/);
+  assert.match(prompt,/keyword entries trigger conditionally by design/);
 });
 test('lorebook distinguishes disabled entries, conditional triggers, and constant requests',()=>{
   const book={entries:[
@@ -148,7 +150,8 @@ test('comparison validation and renderer tolerate absent per-card bullet arrays'
 });
 test('single audit still requires strengths/weaknesses arrays, even empty',()=>{
   const item=fixture();delete item.weaknesses;
-  assert.throws(()=>validateAudit(item,kind),/weaknesses/);
+  assert.equal(validateAudit(item,kind).weaknesses,null);
+  assert.match(validateAudit(item,kind).validationWarnings.join(' '),/weaknesses/);
   item.weaknesses=[];
   assert.equal(validateAudit(item,kind).weaknesses.length,0);
 });
@@ -166,52 +169,51 @@ test('visual continuity is conditional and reports invisible details as unknown'
   assert.match(renderAudit(validated),/Visual continuity/);
   assert.equal(validateAudit(item,kind).visual,null);
 });
-test('cohesion does not demand thematic symmetry or invent sex/contact contradictions',()=>{
-  assert.match(CORE_CRITERIA.cohesion,/unrelated traits need no unifying theme/);
-  assert.match(CORE_CRITERIA.cohesion,/declining unwanted contact versus initiating intimacy/);
-  assert.match(FOUNDATION,/A simple, shallow character can be internally consistent/);
-  assert.match(FOUNDATION,/Scores 8\+ require a PARTICULAR positive achievement/);
+test('criterion-specific high anchors allow familiar simple characters and ordinary relationships',()=>{
+  assert.match(CORE_CRITERIA.cohesion,/unrelated traits need no common theme/);
+  assert.match(CORE_CRITERIA.reliability,/a simple format can excel/);
+  assert.match(SPECIALISTS.character.criteria.individuality,/familiar, simple archetype/);
+  assert.match(SPECIALISTS.character.criteria.relationshipLogic,/friends, family, colleagues, rivals, strangers/);
+  assert.match(SPECIALISTS.character.criteria.relationshipLogic,/romance.*only if supported or promised/);
+  assert.match(FOUNDATION,/Missing model output is not zero performance/);
 });
-test('anti-sycophancy stays in both modes and protects willing/compliant characters',()=>{
-  const sample = 'Name: Ami\nPersonality: Polite and eager to please.';
-  for(const prompt of [FOUNDATION,singlePrompt(sample,kind),comparePrompt(sample,kind,sample,kind)]) {
-    assert.match(prompt,/ANTI-SYCOPHANCY/);
-    assert.match(prompt,/Do not inflate ratings/);
-    assert.match(prompt,/not author intentions or moral purity/);
-    assert.match(prompt,/NEVER require defiance/);
+test('anti-sycophancy and scope neutrality stay in both modes',()=>{
+  for(const prompt of [FOUNDATION,singlePrompt('A card',kind),comparePrompt('A card',kind,'B card',kind)]){
+    assert.match(prompt,/Neither flatter nor manufacture faults/);
+    assert.match(prompt,/Do not demand rebellion or refusal/);
+    assert.match(prompt,/Judge execution, not taste, moral purity/);
   }
 });
-test('anti-leniency check distinguishes tone, quirks and character agency',()=>{
-  const prompt=singlePrompt('Name: Tess\nBehavior: She never says no.',kind);
-  for(const re of [/Scores 6\+ require evidence/,/a signature routine is not an independently functioning personality/i,/permission slip for compliance/i,/COMEDY & DRAMA EXECUTION/,/outcome-lock/,/before rating, privately distinguish/i]) assert.match(prompt,re);
-  assert.match(SPECIALISTS.character.criteria.individuality,/UNSCRIPTED choices/);
-  assert.match(SPECIALISTS.character.criteria.behavioralRange,/never refuse even when hurt/);
-  assert.match(CORE_CRITERIA.craft,/dark comedy/);
+test('trauma and comic execution checks survive consolidation',()=>{
+  const prompt=singlePrompt('A card',kind);
+  for(const re of [/For 6\+ identify what works/,/mandatory sexual availability/,/sudden boundary collapse/,/setup\/payoff/,/diagnosis punchlines/,/no moral veto/,/before rating, privately distinguish/i])assert.match(prompt,re);
+  assert.match(SPECIALISTS.character.criteria.behavioralRange,/absolute never-refuse or identical-payoff/);
 });
-test('evidence single-home and slop separation survive recalibration',()=>{
-  assert.match(FOUNDATION,/Never double-charge the SAME defect/);
-  assert.match(FOUNDATION,/primarily to behavioralRange/);
-  assert.match(FOUNDATION,/SLOP INDEX/);
-  assert.match(FOUNDATION,/not.*arithmetic penalty on overall score/i);
-  assert.match(FOUNDATION,/USER agency/);
+test('single-home ownership distinguishes context economy, prose and outcomes',()=>{
+  assert.match(FOUNDATION,/Choose ONE scoring home per defect/);
+  assert.match(CORE_CRITERIA.inference,/redundant explanation that materially burdens context/);
+  assert.match(CORE_CRITERIA.craft,/information economy belongs to inference/);
+  assert.match(FOUNDATION,/Slop is not an arithmetic penalty/);
+  assert.match(CORE_CRITERIA.inference,/world rules, causal relationships and state/);
+  assert.match(SPECIALISTS.rpg.criteria.mechanics,/prompt delivery and formatting conflicts belong to reliability/);
 });
-test('functional register and ordinary inference remain protected',()=>{
-  assert.match(CORE_CRITERIA.craft,/behavioral\/brown prose/);
-  assert.match(FOUNDATION,/ordinary grief, kindness, anger/);
-  assert.match(FOUNDATION,/A signature routine is not/);
-  assert.match(FOUNDATION,/useful illustrative dialogue is NOT automatically over-scripting/i);
+test('functional register, illustrative dialogue and ordinary inference remain valid',()=>{
+  assert.match(CORE_CRITERIA.craft,/plain behavioral prose/);
+  assert.match(FOUNDATION,/infer ordinary reactions/);
+  assert.match(FOUNDATION,/Illustrative dialogue is useful unless prescribed as inevitable/);
+  assert.match(FOUNDATION,/avoiding unwanted touch permits initiating contact/);
 });
-test('classification and app stamp are 5.1.8',()=>{
-  assert.equal(APP_VERSION,'5.1.8');
+test('classification and app stamp are 5.2.0',()=>{
+  assert.equal(APP_VERSION,'5.2.0');
   const rep=validateAudit(fixture(),kind);
-  assert.match(reportToMarkdown(rep),/App version: \*\*5\.1\.8\*\*/);
-  assert.match(renderAudit(rep),/v5\.1\.8/);
+  assert.match(reportToMarkdown(rep),/App version: \*\*5\.2\.0\*\*/);
+  assert.match(renderAudit(rep),/v5\.2\.0/);
   assert.match(CLASSIFY_SYSTEM,/secondary/);
 });
 test('JSON parser accepts fenced JSON and rejects nonnumeric score placeholders',()=>{
   assert.deepEqual(parseJson('```json\n{"a":1}\n```'),{a:1});
   const item=fixture();item.core.craft.score='NUMBER 0-10';
-  assert.throws(()=>validateAudit(item,kind),/Invalid or missing score/);
+  assert.equal(validateAudit(item,kind).overallScore,null);
 });
 test('renderer escapes card-derived markup even in compressed rationale',()=>{
   const item=fixture();item.core.craft.rationale='<script>alert(1)</script> -> bad';
@@ -253,19 +255,20 @@ test('frontend-specific scenario overrides are treated as active, not as cross-p
   assert.match(imported,/## Intended Frontend\nWyvern/);
   const single=singlePrompt(imported,kind), comparison=comparePrompt(plain,kind,imported,kind);
   assert.match(single,/INTENDED FRONTEND: Wyvern/);
-  assert.match(single,/greeting-specific scenario override/);
+  assert.match(single,/greeting-specific scenario overrides/);
   assert.match(single,/Do NOT mention hypothetical unsupported frontend features/);
-  assert.match(comparison,/INTENDED FRONTENDS: A=Unspecified;.* B=Wyvern:/);
+  assert.match(comparison,/INTENDED FRONTENDS: A=Unspecified;.* B=Wyvern/);
   assert.match(comparison,/each in its OWN environment/);
-  assert.match(CORE_CRITERIA.reliability,/Absence of a visible UI template.*is NOT a defect/);
+  assert.match(FOUNDATION,/separate UI templates need not appear/);
 });
 
 test('frontend rules accept claimed infoboards and context-injected lore rather than inventing failures',()=>{
   const prompt=singlePrompt(formatted({description:'Uses an infoboard to track fear from 0 to 100. Fear does not equal trust.',character_book:{entries:[{enabled:true,constant:true,content:'Fear stays separate from trust.'}]}}),kind);
   assert.match(prompt,/FRONTEND CONTRACT/);
-  assert.match(prompt,/Assume explicitly claimed frontend facilities/);
+  assert.match(prompt,/Presume advertised facilities/);
   assert.match(prompt,/missing infoboard UI\/templates/);
-  assert.match(prompt,/Do not criticize conditional lore/);
-  assert.match(prompt,/Only verified internal conflicts merit deduction/);
-  assert.match(SPECIALISTS.character.criteria.behavioralRange,/No artificial demand for rebellion/);
+  assert.match(prompt,/keyword entries trigger conditionally by design/);
+  assert.doesNotMatch(prompt,/Only verified internal conflicts merit deduction/);
+  assert.match(prompt,/For frontend claims, require supplied evidence/);
+  assert.match(SPECIALISTS.character.criteria.behavioralRange,/without demanding rebellion/);
 });

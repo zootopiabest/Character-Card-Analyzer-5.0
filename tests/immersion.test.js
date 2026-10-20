@@ -10,7 +10,12 @@ const kind = {primary:'character',secondary:null};
 const ids = IMMERSION_MODULES.map(m => m.id);
 const fill = v => typeof v === 'string' ? (v.startsWith('NUMBER') ? 8 : '<img src=x onerror=alert(1)> illustrative text')
   : Array.isArray(v) ? [fill(v[0])] : Object.fromEntries(Object.entries(v).map(([k,x])=>[k,fill(x)]));
-const fixture = modules => fill(reportTemplate(kind,false,{}, {modules}));
+const fixture = modules => {
+  const result=fill(reportTemplate(kind,false,{}, {modules}));
+  if(result.topSongs)result.topSongs=Array.from({length:5},()=>({...result.topSongs[0]}));
+  if(result.shoppingList)result.shoppingList.items=Array(5).fill(result.shoppingList.items[0]);
+  return result;
+};
 const card = '## Description\nA quiet mechanic.\n## First Message\nRain.\n## Alternate Greeting 1\nSunshine.';
 
 // Test the request and data contracts, not just the presence of checkbox markup.
@@ -35,11 +40,11 @@ test('unchecked extras contribute neither instructions nor schema; each selectio
 test('per-greeting option overrides only score prohibitions and retains independent frontend-aware starts',()=>{
   const on=singlePrompt(card,kind,false,['greetingBreakdown']);
   assert.doesNotMatch(on,/No per-greeting scorecards|without numeric greeting scores|numeric greeting grades or model-computed/);
-  assert.match(on,/greeting-specific runtime scenario override/);
-  assert.match(on,/never compare them to each other/);
-  assert.match(on,/empty array/);
+  assert.match(on,/intended frontend scenario override/);
+  assert.match(on,/Never compare openings/);
+  assert.match(on,/zero greetings receives \[\]/);
   assert.match(on,/module-local/);
-  assert.match(on,/firstMessageSynergy remains/);
+  assert.match(on,/First-message synergy is a separate textual assessment/);
   assert.match(singlePrompt(card,kind),/No per-greeting scorecards/);
 });
 test('comparison extras are independently scoped and shared asks occur once in either comparison mode',()=>{

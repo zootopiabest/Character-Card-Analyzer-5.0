@@ -33,10 +33,10 @@ export const CALIBRATION_CASES = [
   {
     id:"durable-anchor", kind,
     question:"Can the auditor identify a real ephemeral dependency without charging it three times?",
-    a:card({name:"Elias",description:promise,first_mes:"Elias checked the ferry timetable.",mes_example:example}),
-    b:card({name:"Elias",description:"Elias is a 36-year-old ferry clerk with mild manners.",first_mes:"Elias checked the ferry timetable.",mes_example:example,creator_notes:"The intended recurring experience centers on his secret commitment to sheltering political fugitives despite official orders."}),
+    a:card({name:"Elias",description:promise,first_mes:"Elias checked the ferry timetable.",mes_example:example,system_prompt:"This deployment drops example dialogue after the opening exchange; description remains active."}),
+    b:card({name:"Elias",description:"Elias is a 36-year-old ferry clerk with mild manners.",first_mes:"Elias checked the ferry timetable.",mes_example:example,system_prompt:"This deployment drops example dialogue after the opening exchange; description remains active.",creator_notes:"The intended recurring experience centers on his secret commitment to sheltering political fugitives despite official orders."}),
     expectations:[
-      "Under ordinary context truncation, A retains the central commitment; B's creator notes cannot supply runtime guidance and one example does not establish a durable recurring commitment.",
+      "Under the explicitly supplied example-removal lifecycle, A retains the central commitment; B's creator notes cannot supply runtime guidance and one example does not establish a durable recurring commitment.",
       "Assign B's missing essential anchor to inference. Describing the same future loss again is not grounds for additional reliability and continuity deductions.",
       "If another criterion differs, its evidence must concern a separately demonstrated issue. Do not require exact total scores or an all-criteria tie.",
       "This is a prediction under the stated lifecycle assumption, not an observed roleplay failure."
@@ -93,7 +93,7 @@ export const CALIBRATION_CASES = [
     b:card({name:"Celia",description:"Celia is terse and distrustful, reluctant to accept help, and uncomfortable with praise. Whenever someone offers help she always snaps, then looks down. When praised she always blushes, denies it, and leaves. When corrected she always glares and storms out.",first_mes:'Celia stared at the jammed lock. "Got a screwdriver?"'}),
     expectations:[
       "A permits many context-dependent responses within a stubborn temperament.",
-      "B mandates mechanically repeated reactions; the primary defect is inference/emergence, not a separate cohesion or continuity deduction.",
+      "B mandates mechanically repeated outcomes; behavioralRange owns that constraint. Do not charge the same scripts again to inference, cohesion or continuity.",
       "Do not insist that A become cheerful, agreeable, or broadly emotionally varied."
     ]
   },
@@ -104,7 +104,7 @@ export const CALIBRATION_CASES = [
     b:card({name:"Elias",description:"Elias is a 36-year-old ferry clerk with mild manners.",character_book:{entries:[{enabled:true,constant:false,keys:["fugitive"],content:promise}]},first_mes:'Elias checked the timetable.'}),
     expectations:[
       "A keeps the recurring commitment in persistent description; the keyword entry may add detail.",
-      "B cannot rely on triggered-only lore to provide enduring identity in sessions where the trigger does not fire.",
+      "B makes the commitment conditional by design. Without a promise of always-active identity, this is a scope difference rather than an automatic missing-anchor deduction.",
       "Do not speculate about frontend budget failure; note that keyword-only content is conditional by design without automatically scoring that design as broken."
     ]
   },
@@ -126,8 +126,8 @@ export const CALIBRATION_CASES = [
     b:card({name:"Mara",description:base.description+" "+Array(35).fill("Within the kaleidoscopic cathedral of her mind, the endless symphony of bittersweet feelings echoes through the shimmering galaxy of her ineffable heart.").join(" ")}),
     expectations:[
       "A's register-setting metaphor carries reusable personality information and should count as useful density.",
-      "B contains bulk ornamental prose without significant durable facts and should score worse in craft with higher slop.",
-      "Do not duplicate the craft cost under inference without separate demonstrable harm."
+      "B contains bulk ornamental prose without significant durable facts; inference owns the information-economy cost and slop records its prevalence.",
+      "Craft may differ only for a separately demonstrated delivery failure; do not relabel the same filler cost as a second deduction."
     ]
   },
   {
@@ -208,4 +208,42 @@ export const CALIBRATION_CASES = [
       "No tradeoff or comparison advantage should praise generic portability or criticize frontend-specific mechanics as such."
     ]
   }
+  ,{
+    id:"rpg-rule-ownership",kind:{primary:"rpg",secondary:null,scope:"recurring"},
+    question:"Does a world engine receive useful non-persona inference credit and one home for a mechanics conflict?",
+    a:card({name:"Tide Routes",description:"Narrate a tidal archipelago. Ferries connect nearby islands at low tide; at high tide travelers use the ridge paths. Record location and tide after each move. The player chooses routes.",first_mes:"Low tide. Two ferries wait at the north pier.",system_prompt:"A crossing advances the tide one phase. Resolve only after the player chooses a destination."}),
+    b:card({name:"Tide Routes",description:"Narrate a tidal archipelago. Ferries connect nearby islands at low tide; at high tide travelers use the ridge paths. Record location and tide after each move. The player chooses routes.",first_mes:"Low tide. Two ferries wait at the north pier.",system_prompt:"Every crossing must advance the tide one phase. Every crossing must leave the tide unchanged. Both rules have equal priority and apply simultaneously."}),
+    expectations:["A supplies usable causal/state anchors without human attitudes or a persona biography.","B's mutually exclusive transition rules belong to RPG mechanics, not repeated deductions to cohesion and reliability.","Do not require dice, numeric stats or a larger world than promised."]
+  },{
+    id:"ensemble-speaker-ownership",kind:{primary:"ensemble",secondary:null,scope:"recurring"},
+    question:"Is speaker confusion routed to ensemble coordination without penalizing a small cast's scope?",
+    a:card({name:"Tea Counter",description:"Jo listens carefully and prefers repairing old things. Ren is impatient but willing to test Jo's ideas. They run a tea counter together. Label each speaker by name and allow either to remain silent. The player owns their actions.",first_mes:'Jo turned the chipped pot. Ren put the glue within reach.'}),
+    b:card({name:"Tea Counter",description:"Jo listens carefully and prefers repairing old things. Ren is impatient but willing to test Jo's ideas. They run a tea counter together. Every character's speech must be labeled Jo, including Ren's; neither narration nor dialogue may reveal who actually spoke. The player owns their actions.",first_mes:'Jo turned the chipped pot. Ren put the glue within reach.'}),
+    expectations:["Two quiet coworkers do not need rivalry, elaborate lore or dramatic escalation.","B's mandated indistinguishable labels cause speaker attribution failure owned by coordination.","Do not also deduct for the same labeling problem under reliability or erase the separately supplied character perspectives."]
+  },{
+    id:"companion-responsive-service",kind:{primary:"companion",secondary:null,scope:"recurring"},
+    question:"Does helpful compliance remain valid while an absolute advice loop gets one primary deduction?",
+    a:card({name:"Desk Companion",description:"A friendly study companion. Listen first; ask whether the user wants planning help or quiet company. Offer short practical steps when invited. Respect a request to stop. No professional credentials or guaranteed outcomes are claimed.",first_mes:'Want help sorting your tasks, or just some company?'}),
+    b:card({name:"Desk Companion",description:"A friendly study companion. Every answer must be the same five-step study plan regardless of what the user says, including requests for silence or to stop. No professional credentials or guaranteed outcomes are claimed.",first_mes:'Here is a five-step study plan.'}),
+    expectations:["A's user-centric role needs neither private plot goals nor invented resistance.","B's universal outcome loop limits adaptability; do not duplicate that single defect under communication and inference.","Boundaries should reflect actual scope/authority evidence rather than inventing clinical claims."]
+  },{
+    id:"character-scene-continuity",kind:{primary:"characterScenario",secondary:null,scope:"finite"},
+    question:"Does a finite vignette get scene continuity credit without demanding a long campaign?",
+    a:card({name:"Suri",description:"Suri reluctantly sells her childhood home. She is careful with objects tied to her mother and blunt about practical costs.",scenario:"One afternoon packing the kitchen. Choices about keepsakes affect what Suri takes when she leaves.",first_mes:'Suri wrapped the chipped cup twice and left the expensive vase bare.'}),
+    b:card({name:"Suri",description:"Suri reluctantly sells her childhood home. She is careful with objects tied to her mother and blunt about practical costs.",scenario:"One afternoon packing the kitchen. After each exchange erase all choices about keepsakes and restart with every object unpacked, while telling the user their prior packing choices still took effect.",first_mes:'Suri wrapped the chipped cup twice and left the expensive vase bare.'}),
+    expectations:["A can fulfill a finite character-focused scene without unrelated worldbuilding or a dramatic hook.","B's explicit resetting undermines scene-level continuity under consistency; avoid echo deductions for the same reset.","The greeting's object handling demonstrates portrayal without requiring a permanent script for each keepsake."]
+  },{
+    id:"scenario-user-choice",kind:{primary:"scenarioCharacter",secondary:null,scope:"finite"},
+    question:"Can a narrow encounter preserve meaningful choices without an off-screen biography?",
+    a:card({name:"Gate Clerk",description:"A terse clerk verifies travel permits at the city gate. She cares about legible records and accepts corrected paperwork.",scenario:"The player can correct the form, ask about alternatives or leave. The encounter ends when admission is resolved or the player leaves.",first_mes:'The clerk tapped the blank date field.'}),
+    b:card({name:"Gate Clerk",description:"A terse clerk verifies travel permits at the city gate. She cares about legible records and accepts corrected paperwork.",scenario:"In every reply, narrate the player agreeing to admission and signing, even if they choose to leave or refuse. The encounter ends in admission regardless of their choice.",first_mes:'The clerk tapped the blank date field.'}),
+    expectations:["A's narrow role and finite resolution do not need an entire private life or indefinite replayability.","B takes the player's choices under playerAgency, not a second scope or reliability penalty.","Do not confuse a valid restricted starting situation with mandatory player agreement."]
+  },{
+    id:"nonromantic-relationship-scope",kind,
+    question:"Can relationship logic assess colleagues without imposing romance?",
+    a:card({tags:["Non-romantic","Workplace"],description:base.description+" She respects coworkers who own mistakes and gives new hires time to learn. Romance is outside this card's intended workplace scope."}),
+    b:card({tags:["Workplace"],description:base.description+" She respects coworkers who own mistakes and gives new hires time to learn. Romance is outside this card's intended workplace scope."}),
+    expectations:["Both supply ordinary interpersonal behavior that can fulfill relationshipLogic without attraction or dating rules.","Removing a redundant intent tag should not change the runtime facts or materially alter grades.","Do not turn an inapplicable romantic subquestion into a zero score or omit the entire relationship criterion."]
+  }
+
 ];

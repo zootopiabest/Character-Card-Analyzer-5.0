@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { CALIBRATION_CASES } from "../calibration/cases.js";
+import { APP_VERSION } from "../src/version.js";
 import { extractCardText } from "../src/importer.js";
 import { singlePrompt, comparePrompt } from "../src/rubrics/assemble.js";
 
@@ -17,6 +18,10 @@ export function calibrationPackets(item) {
 }
 async function main() {
   const out=resolve(process.argv[2] || "calibration-output");
+  await mkdir(out,{recursive:true});
+  await writeFile(resolve(out,'run-record-template.json'),JSON.stringify({appVersion:APP_VERSION,generatedAt:new Date().toISOString(),liveRun:false,
+    provider:null,requestedModel:null,resolvedModel:null,settings:null,runDate:null,repetitions:null,
+    assessments:CALIBRATION_CASES.map(c=>({id:c.id,kind:c.kind,status:'not run',reportFiles:[],findings:[]}))},null,2)+'\n');
   for(const item of CALIBRATION_CASES) {
     const directory=resolve(out,item.id);
     await mkdir(directory,{recursive:true});

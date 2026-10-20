@@ -137,7 +137,7 @@ for (const separateGreetings of [undefined,false]) {
   for (const modules of [[],["greetingBreakdown"]]) {
     test(`combined single audit makes one request (separate=${separateGreetings}, extras=${modules})`,async()=>{
       const report={...fakeAudit(),profileGreetingCoverage:"Each start is independently plausible.",
-        greetingBreakdown:starts.map(label=>({label,score:8,register:"grounded",notes:"Works."}))};
+        greetingBreakdown:isolateGreetings(source).greetings.map(({id,label})=>({id,label,score:8,register:"grounded",notes:"Works."}))};
       const {result,prompts}=await interceptCalls(()=>report,
         ()=>runSingle(config,source,kind,null,modules,{separateGreetings}));
       assert.equal(prompts.length,1);
@@ -149,7 +149,7 @@ for (const separateGreetings of [undefined,false]) {
     });
     test(`combined comparison makes one request (separate=${separateGreetings}, extras=${modules})`,async()=>{
       const report={...fakeAudit(false),profileGreetingCoverage:"All starts checked.",
-        greetingBreakdown:starts.map(label=>({label,score:8,register:"grounded",notes:"Works."}))};
+        greetingBreakdown:isolateGreetings(source).greetings.map(({id,label})=>({id,label,score:8,register:"grounded",notes:"Works."}))};
       const {result,prompts}=await interceptCalls(()=>({cardA:report,cardB:report,
         comparison:{verdict:"Tie.",aAdvantages:[],bAdvantages:[],sharedGround:[],scopeDifferences:[]}}),
         ()=>runComparison(config,source,kind,source,kind,"independent",{modulesA:modules,modulesB:[],separateGreetings}));
@@ -166,7 +166,7 @@ test("one greeting always stays in the main request, including its optional repo
   const text="## Description\nA crafter.\n## First Message\nFIRST_START";
   for(const separateGreetings of [false,true]) for(const graded of [false,true]) {
     const {result,prompts}=await interceptCalls(p=>p.includes("ACTIVE ROLEPLAY CONTEXT")
-      ? diagnosticReply(p) : {...fakeAudit(),greetingBreakdown:[{label:"First Message",score:8,register:"grounded",notes:"Works."}]},
+      ? diagnosticReply(p) : {...fakeAudit(),greetingBreakdown:[{id:"first",label:"First Message",score:8,register:"grounded",notes:"Works."}]},
       ()=>runSingle(config,text,kind,null,graded?["greetingBreakdown"]:[],{separateGreetings}));
     assert.equal(prompts.length,1);
     if(graded) assert.equal(result.greetingBreakdown.length,1);
@@ -176,7 +176,7 @@ test("one greeting always stays in the main request, including its optional repo
 
 test("separate mode checks greeting counts independently for each comparison card",async()=>{
   const one="## Description\nA crafter.\n## First Message\nSOLO_START";
-  const soloReport={...fakeAudit(false),greetingBreakdown:[{label:"First Message",score:8,register:"grounded",notes:"Works."}]};
+  const soloReport={...fakeAudit(false),greetingBreakdown:[{id:"first",label:"First Message",score:8,register:"grounded",notes:"Works."}]};
   for(const swap of [false,true]) {
     const {result,prompts}=await interceptCalls(p=>p.includes("ACTIVE ROLEPLAY CONTEXT")?diagnosticReply(p):{
       cardA:swap?soloReport:fakeAudit(false),cardB:swap?fakeAudit(false):soloReport,
@@ -193,7 +193,7 @@ test("separate mode checks greeting counts independently for each comparison car
 });
 test("no-greeting and single-greeting comparisons stay in one request with separation checked",async()=>{
   for(const first of ["", "## First Message\nHello."]) {
-    const report={...fakeAudit(false),greetingBreakdown:first?[{label:"First Message",score:8,register:"grounded",notes:"Works."}]:[]};
+    const report={...fakeAudit(false),greetingBreakdown:first?[{id:"first",label:"First Message",score:8,register:"grounded",notes:"Works."}]:[]};
     const text="## Description\nAn archivist.\n"+first;
     const {result,prompts}=await interceptCalls(()=>({cardA:report,cardB:report,
       comparison:{verdict:"Tie.",aAdvantages:[],bAdvantages:[],sharedGround:[],scopeDifferences:[]}}),

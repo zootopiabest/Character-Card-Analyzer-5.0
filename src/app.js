@@ -1,16 +1,40 @@
-import { mountImmersionPanel } from "./immersion-panel.js?v=5.1.8";
-import { mountModelBrowser } from "./model-browser.js?v=5.1.8";
-import { PROVIDERS, DEFAULT_MODEL } from "./providers.js?v=5.1.8";
-import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.1.8";
-import { extractCardText, importCardFile, importPortrait } from "./importer.js?v=5.1.8";
-import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.1.8";
-import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.1.8";
-import { APP_VERSION } from "./version.js?v=5.1.8";
+import {parseCard,greetingsOf} from "./card-context.js?v=5.2.0";
+import { mountImmersionPanel } from "./immersion-panel.js?v=5.2.0";
+import { mountModelBrowser } from "./model-browser.js?v=5.2.0";
+import { PROVIDERS, DEFAULT_MODEL, prepareRun } from "./providers.js?v=5.2.0";
+import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.2.0";
+import { importCardFile, importPortrait } from "./importer.js?v=5.2.0";
+import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.2.0";
+import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.2.0";
+import { APP_VERSION } from "./version.js?v=5.2.0";
 
 const $ = (id) => document.getElementById(id);
 let modelBrowser=null,activeProvider=null,immersionPanel=null;
 let mode = "single", result = null, resultMode = "single", cardImage = null, busy = false;
 let failedRawResponse = null;
+let runId=0,runController=null;
+const imported={A:null,B:null},importIds={A:0,B:0};let portraitImportId=0;
+function cardFor(letter){
+  const text=$('card'+letter).value,cached=imported[letter];
+  return cached&&cached.text===text?cached.card:parseCard(text);
+}
+function updateRequestPlan(){
+  const letters=mode==='compare'?['A','B']:['A'];let classifications=0,diagnostics=0;const warnings=[];
+  for(const letter of letters){
+    if($('primary'+letter).value==='auto'||$('secondary'+letter).value==='auto')classifications++;
+    try{
+      const card=cardFor(letter),n=greetingsOf(card).length;
+      if($('separateGreetings').checked&&n>1)diagnostics+=n;
+      for(const warning of card.warnings)warnings.push('Card '+letter+': '+warning);
+    }catch{}
+  }
+  $('requestPlan').textContent=(busy?'Next run: ':'Planned model requests: ')+(1+classifications+diagnostics)+' total · 1 main '+(mode==='compare'?'comparison':'audit')+' + '+classifications+' classification + '+diagnostics+' greeting diagnostics. Extras share these requests. No automatic retries.';
+  $('inputWarnings').textContent=[...new Set(warnings)].join(' ');$('inputWarnings').hidden=!warnings.length;
+}
+function cancelRun(message='Audit cancelled. No further requests will start. Already-started provider work may still be billed.'){
+  runId++;runController?.abort(new DOMException('Audit cancelled.','AbortError'));runController=null;
+  setBusy(false);status(message);
+}
 function resetRawResponse() {
   failedRawResponse = null;
   $("saveFailedResponse").hidden = true;
@@ -24,8 +48,9 @@ function status(message, error = false) {
   const el=$("status");el.hidden=!message;el.textContent=message;el.classList.toggle("error",error);
 }
 function setBusy(v) {
-  busy=v;$("analyzeButton").disabled=v;
+  busy=v;$("analyzeButton").disabled=v;$("cancelButton").hidden=!v;
   $("analyzeButton").textContent=v ? "Analyzing…" : mode==="compare" ? "Compare cards ↗" : "Run audit ↗";
+  updateRequestPlan();
 }
 function populateSelector(id, primary) {
   const el=$(id);
@@ -84,13 +109,13 @@ function setMode(next) {
   $("artworkSettings").hidden=mode==="compare";
   immersionPanel?.setMode(mode);
   if (!busy) $("analyzeButton").textContent=mode==="compare"?"Compare cards ↗":"Run audit ↗";
-  resetRawResponse();
-  status("");
+  if(!busy){resetRawResponse();status("");}
+  updateRequestPlan();
 }
 function setCardText(which,text,filename="") {
   $("card"+which).value=text;
   $("count"+which).textContent=text.length.toLocaleString()+" characters";
-  $("fileLabel"+which).textContent=filename||"JSON · Markdown · Text · Embedded-card PNG";
+  $("fileLabel"+which).textContent=filename||"JSON · Markdown · Text · PNG · CharX";
 }
 function setImage(data,label) {
   cardImage=data;
@@ -109,8 +134,8 @@ function classifyLabel(kind) {
     (kind.scope && kind.scope!=="unspecified"?" · "+kind.scope:"") +
     (kind.reason?" · "+kind.reason:"");
 }
-async function resolveKind(config,text,letter) {
-  const prim=$("primary"+letter).value,sec=$("secondary"+letter).value;
+async function resolveKind(config,text,selection) {
+  const {primary:prim,secondary:sec}=selection;
   const guessed=(prim==="auto"||sec==="auto")?await classifyCard(config,text):null;
   const primary=prim==="auto"?guessed.primary:prim;
   const secondary=sec==="none"?null:sec==="auto"?(guessed?.secondary||null):sec;
@@ -120,6 +145,7 @@ async function resolveKind(config,text,letter) {
 function displayResult(data,ka,kb,usedMode) {
   result=data;resultMode=usedMode;
   $("results").hidden=false;
+  $('resultIdentity').textContent='Result for '+(data.run?.inputs||[]).map((input,i)=>(usedMode==='compare'?'Card '+(i?'B':'A')+': ':'')+input.label).join(' · ')+' · '+(data.run?.startedAt||'')+' · '+(data.run?.resolvedModel||'')+' · Inputs and selections captured when Run was pressed.';
   $("classificationSummary").innerHTML='<div class="classify-display"><b>Rubrics chosen</b><p>Card A: '+
     escapeHtml(classifyLabel(ka))+'</p>'+(kb?'<p>Card B: '+escapeHtml(classifyLabel(kb))+'</p>':"")+'</div>';
   $("resultContent").innerHTML=usedMode==="single"?renderAudit(data):renderComparison(data);
@@ -127,55 +153,59 @@ function displayResult(data,ka,kb,usedMode) {
 }
 async function run() {
   if(busy)return;
-  const cfg=readConfig(),usedMode=mode;
-  const optionals={...immersionPanel.snapshot(),separateGreetings:$("separateGreetings").checked},comparisonType=$("comparisonType").value,image=cardImage;
+  const rawConfig=readConfig(),usedMode=mode;
+  const selections=['A','B'].map(letter=>({primary:$('primary'+letter).value,secondary:$('secondary'+letter).value}));
+  const optionals={...immersionPanel.snapshot(),separateGreetings:$('separateGreetings').checked,
+    inputLabels:['A','B'].map(letter=>imported[letter]?.text===$('card'+letter).value?imported[letter].filename:'Pasted Card '+letter)};
+  const comparisonType=$('comparisonType').value,image=cardImage;
   let a,b;
-  try {
-    a=extractCardText($("cardA").value);
-    b=usedMode==="compare"?extractCardText($("cardB").value):null;
-  } catch(err) { status(err.message,true);return; }
-  resetRawResponse();
-  persistSettings();setBusy(true);status("Reading the card's intended scope…");
-  try {
-    const ka=await resolveKind(cfg,a,"A");
-    let kb=null;
-    if(usedMode==="compare") {
-      status("Classifying Card B, then applying selected rubrics…");
-      kb=await resolveKind(cfg,b,"B");
-    }
-    status(optionals.separateGreetings
-      ? "Scoring the card; separate greeting requests only for cards with multiple greetings."
-      : "Scoring the card and selected extras in one audit request.");
-    const data=usedMode==="single" ? await runSingle(cfg,a,ka,image,optionals.modules,optionals)
+  try{a=cardFor('A');b=usedMode==='compare'?cardFor('B'):null;}
+  catch(error){status(error.message,true);return;}
+  const id=++runId;runController=new AbortController();const controller=runController;
+  resetRawResponse();persistSettings();$('results').hidden=true;setBusy(true);
+  status('Preparing the selected model and rubric…');
+  try{
+    const cfg=await prepareRun({...rawConfig,signal:controller.signal});
+    const ka=await resolveKind(cfg,a,selections[0]);
+    const kb=usedMode==='compare'?await resolveKind(cfg,b,selections[1]):null;
+    if(id!==runId)return;
+    status('Scoring the captured inputs. Any separate greeting diagnostics follow the main audit.');
+    const data=usedMode==='single'?await runSingle(cfg,a,ka,image,optionals.modules,optionals)
       :await runComparison(cfg,a,ka,b,kb,comparisonType,optionals);
+    if(id!==runId)return;
     displayResult(data,ka,kb,usedMode);
-    status("Audit complete. The analyzer does not store reports on a server.");
-  } catch(err) {
-    failedRawResponse = typeof err?.rawResponse === "string" && err.rawResponse ? err.rawResponse : null;
-    $("saveFailedResponse").hidden = !failedRawResponse;
-    status(err?.message||String(err),true);
-  } finally {setBusy(false);}
+    const incomplete=usedMode==='single'?data.incomplete:data.cardA.incomplete||data.cardB.incomplete||data.comparisonWarnings.length;
+    status(incomplete?'Audit returned partial results. See the warnings below.':'Audit complete. '+data.run.requestCount+' model request(s) sent. Reports are not stored on a server.');
+  }catch(error){
+    if(id!==runId)return;
+    controller.abort(error);
+    failedRawResponse=typeof error.rawResponse==='string'&&error.rawResponse?error.rawResponse:null;
+    $('saveFailedResponse').hidden=!failedRawResponse;
+    status(error.message||String(error),true);
+  }finally{if(id===runId){runController=null;setBusy(false);}}
 }
 function wireFiles(which) {
   $("file"+which).addEventListener("change",async(e)=>{
-    const file=e.target.files?.[0];if(!file)return;
+    const file=e.target.files?.[0];if(!file)return;const id=++importIds[which],portraitId=which==="A"?++portraitImportId:null;
     try {
       status("Importing "+file.name+"…");
       const parsed=await importCardFile(file);
-      setCardText(which,parsed.text,parsed.filename);
-      if(which==="A") setImage(parsed.image,parsed.image?file.name:null);
-      status("");
-    } catch(err){status(err.message,true);}
+      if(id!==importIds[which])return;
+      imported[which]=parsed;setCardText(which,parsed.text,parsed.filename);updateRequestPlan();
+      if(which==="A"&&portraitId===portraitImportId) setImage(parsed.image,parsed.image?file.name:null);
+      if(!busy)status("");
+    } catch(err){if(id===importIds[which])status(err.message,true);}
     e.target.value="";
   });
   $("card"+which).addEventListener("input",()=> {
-    $("count"+which).textContent=$("card"+which).value.length.toLocaleString()+" characters";
+    importIds[which]++;$("count"+which).textContent=$("card"+which).value.length.toLocaleString()+" characters";updateRequestPlan();
   });
 }
 function init() {
   immersionPanel=mountImmersionPanel({onStorageError:message=>status(message,true)});
   ["A","B"].forEach((l)=>{
     populateSelector("primary"+l,true);populateSelector("secondary"+l,false);wireFiles(l);
+    for(const prefix of ["primary","secondary"])$(prefix+l).addEventListener("change",updateRequestPlan);
   });
   $("rememberKey").checked=Boolean(settings.rememberKey);
   $("separateGreetings").checked=settings.separateGreetings===true;
@@ -195,20 +225,23 @@ function init() {
   });
   $("model").addEventListener("input",updateModelSummary);
   for(const id of ["model","apiKey","apiBase","maxTokens","rememberKey","separateGreetings"]) {
-    $(id).addEventListener("change",()=>{persistSettings();});
+    $(id).addEventListener("change",()=>{persistSettings();updateRequestPlan();});
   }
   document.querySelectorAll("[data-mode]").forEach((el)=>el.addEventListener("click",()=>setMode(el.dataset.mode)));
   $("analyzeButton").addEventListener("click",()=>run().catch((err)=>status(err.message,true)));
+  $("cancelButton").addEventListener("click",()=>cancelRun());
   $("clearButton").addEventListener("click",()=>{
-    setCardText("A","");setCardText("B","");setImage(null);$("results").hidden=true;result=null;resetRawResponse();status("");
+    cancelRun("");for(const letter of ["A","B"]){importIds[letter]++;imported[letter]=null;}portraitImportId++;
+    setCardText("A","");setCardText("B","");setImage(null);$("results").hidden=true;result=null;resetRawResponse();status("");updateRequestPlan();
   });
   $("artFile").addEventListener("change",async(e)=>{
-    try{const f=e.target.files?.[0];if(f)setImage(await importPortrait(f),f.name);}catch(err){status(err.message,true);}
+    const id=++portraitImportId;
+    try{const f=e.target.files?.[0];if(f){const data=await importPortrait(f);if(id===portraitImportId)setImage(data,f.name);}}catch(err){if(id===portraitImportId)status(err.message,true);}
     e.target.value="";
   });
-  $("clearArt").addEventListener("click",()=>setImage(null));
-  $("saveMarkdown").addEventListener("click",()=>{if(result)downloadText("card-analyzer-5.1-report.md",reportToMarkdown(result,resultMode),"text/markdown");});
-  $("saveJson").addEventListener("click",()=>{if(result)downloadText("card-analyzer-5.1-report.json",JSON.stringify(result,null,2),"application/json");});
+  $("clearArt").addEventListener("click",()=>{portraitImportId++;setImage(null);});
+  $("saveMarkdown").addEventListener("click",()=>{if(result)downloadText("card-analyzer-report.md",reportToMarkdown(result,resultMode),"text/markdown");});
+  $("saveJson").addEventListener("click",()=>{if(result)downloadText("card-analyzer-report.json",JSON.stringify(result,null,2),"application/json");});
   $("saveFailedResponse").addEventListener("click",()=>{
     if(failedRawResponse) downloadText("card-analyzer-raw-model-response.txt",failedRawResponse,"text/plain");
   });

@@ -1,10 +1,24 @@
-# Card Analyzer 5.1.8 (alpha)
+# Card Analyzer 5.2.0 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.1.8 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.1.8`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.2.0 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.2.0`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
+
+## Changes in 5.2.0 (Analyzer and rubric review)
+
+- Structured card fields survive import, editing and prompt assembly. Imported text contains field markers so headings inside a greeting cannot become profile instructions. Greeting IDs retain their original extension slots even when earlier greetings are blank. Unmarked pasted Markdown remains supported, with a warning that its boundaries are inferred.
+- Preserve intent tags, lorebook configuration, entry extensions, V3 metadata and group-only starts. Tags and creator notes remain distinct from runtime instructions.
+- Import `.charx` ZIP archives with a root `card.json` and optional embedded raster icon. Supports stored/deflated entries and prefixed archives, with size and integrity checks. Encrypted, multi-disk and ZIP64 archives are rejected explicitly. Archive assets are read locally; remote asset URLs are not fetched.
+- **Send greetings separately?** remains optional and defaults off. Zero/one greeting uses the main call even when checked. Before Run, a breakdown shows the main audit, classification and greeting request counts. Separate diagnostics start after the main response and share a concurrency limit of two across cards.
+- **Cancel audit**, a five-minute request timeout, captured input/settings and run IDs prevent stale completions or further queued requests after cancellation. Clear cancels the current run. Client cancellation cannot guarantee a refund for work already accepted by a provider; there are no automatic paid retries.
+- Missing criteria or empty rationales retain the valid findings but withhold the overall grade. Invalid portrait/optional output produces warnings without discarding valid main scores. Greeting IDs/coverage and song/shopping counts are checked; successful greeting entries survive other failures.
+- HTML, Markdown and JSON preserve portrait matches/mismatches and partial-result warnings. Run records include input identity, time, provider, selected/resolved model, generation settings, request purposes and provider-reported usage, without API keys. DeepSeek latest resolves once per run; native OpenRouter aliases are pinned for later requests when the first response supplies a concrete model ID.
+- Classification uses complete labeled fields instead of a silent 48,000-character prefix. Its scope is supplied to grading as revisable context.
+- One shared grading contract serves combined and separate greeting reports. Removed contradictory transport instructions and narrowed the frontend-only deduction restriction. Consolidated duplicated policy while preserving the substantive trauma-causality and comedy-execution checks.
+- Clarified information-economy ownership, criterion-specific high scores, non-romantic interpersonal scope, world/state inference and specialist ownership. Scoring weights remain unchanged; missing output never becomes zero or silently reweights a report.
+- Expanded calibration to 24 pairs covering all six specialists, corrected lifecycle/padding assumptions, and added run-record templates. Local regressions cover request counts, cancellation, partial outputs, import equivalence, CharX and run snapshots. These checks do not establish live-model judging quality.
 
 ## Changes in 5.1.8 (Optional separate greeting requests)
 
@@ -92,11 +106,11 @@ Bump `sw.js`'s `VERSION` alongside the runtime/cache URL version on every releas
 - Automatic AI classification or explicit user selection of **primary and optional secondary** rubrics.
 - Small universal foundation and **six** specialist rubrics: standalone character, character-driven scenario, scenario-driven character, RPG/world, companion/support/service, and ensemble.
 - One consistent rubric used across comparison and single-card evaluation.
-- **First greeting synergy** plus conditional profile-to-all-greetings support when multiple independent openings exist. Automatic per-greeting scoring has been removed; that remains a potential future opt-in feature.
+- **First greeting synergy** plus conditional profile-to-all-greetings support when multiple independent openings exist. Per-Greeting Report Card is an optional diagnostic; its scores never enter the overall grade.
 - Separate 0-100 slop severity index (higher means worse).
-- Calibrated evidence-first score anchors; unusual, shocking or highly scripted behavior does not earn a high score merely for being memorable or obedient.
+- Evidence-first score anchors; unusual, shocking or highly scripted behavior does not earn a high score merely for being memorable or obedient.
 - Deterministically computed overall quality: core 45% + primary 55%, or core 40% + primary 45% + secondary 15%. These weights are **provisional**, not empirically calibrated.
-- Imports JSON character cards (including V3 data), Markdown, text, and PNG cards containing supported embedded metadata. PNG portrait is available for image comparison.
+- Imports JSON character cards (including V3 data), Markdown, text, PNG cards containing supported embedded metadata, and CharX archives. Imported portraits are available for image comparison.
 - Optional portrait match in single-card mode.
 - BYOK Gemini, OpenAI, OpenRouter, DeepSeek, or custom OpenAI-compatible endpoint.
 - Exports JSON and Markdown reports.
@@ -106,7 +120,7 @@ Bump `sw.js`'s `VERSION` alongside the runtime/cache URL version on every releas
 
 Open index.html through an HTTP server (ES module imports will not work reliably with file://).
 
-Node 20+:
+Node 20.12+:
 
     npx serve .
 
@@ -128,14 +142,17 @@ For GitHub Pages, enable Pages with **GitHub Actions** as its source under Setti
 - src/immersion-panel.js: saved single/per-card selection controls.
 - src/classifier.js: model-based bot type classification.
 - src/providers.js: direct BYOK model calls.
-- src/evaluator.js: parsing, strict score validation, and deterministic aggregation.
+- src/evaluator.js: parsing, partial-result validation, diagnostic scheduling, and deterministic aggregation.
+- src/card-context.js: structured fields, stable greeting IDs and marked text round-trips.
+- src/charx.js: bounded local ZIP extraction.
+- src/rubrics/greetings.js: shared greeting assessment and score anchors.
 - src/importer.js: card extraction from supported formats.
 - src/report.js: escaped HTML report and downloads.
 - src/app.js: browser UI orchestration.
 
 ## Known alpha limitations
 
-- CharX ZIP bundles, regex-based lorebook activation, group-chat orchestration, custom stress-test modules and model discovery for providers other than OpenRouter are not yet implemented.
+- Runtime simulation of regex-based lorebook activation, group-chat orchestration, custom stress-test modules and model discovery for providers other than OpenRouter are not yet implemented.
 - The application **does not simulate actual LLM roleplay**. Reviews are inference-based and can still be mistaken.
 - Scores are not calibrated across many human-rated bot examples yet. Different models will disagree.
 - AI classification consumes an additional request per card. Set primary and secondary manually to skip it.
@@ -150,7 +167,7 @@ For GitHub Pages, enable Pages with **GitHub Actions** as its source under Setti
     npm run check
     npm test
 
-The tests exercise assembly, score contracts, provider requests and PNG imports without requiring provider keys. Run them on Node 20+.
+The tests exercise assembly, score contracts, cancellation, UI run state, provider requests and PNG/CharX imports without requiring provider keys. Run them on Node 20.12+.
 
     npm run calibration
 
@@ -166,7 +183,7 @@ This writes paired cards and single/AB/BA production prompts to the ignored `cal
 6. No irrelevant categories can be "high scored" as a workaround; modules are omitted if not applicable.
 7. Use textual first greeting synergy and profile support for all independent greetings; visual continuity and explicitly selected per-greeting report cards have separate optional scores that never enter overall quality.
 8. Every actual deduction requires attributable evidence and a consequence.
-9. Creator Notes are non-runtime metadata; only one selected greeting initializes a chat; example dialogue can fall out of context. Lorebook activation is frontend-dependent even for constant entries; respect provided runtime settings.
+9. Creator notes and tags describe intent; only one selected greeting initializes a chat. Do not assume examples disappear without an explicit lifecycle rule. Lorebook activation follows provided frontend settings, including enabled constant entries.
 10. Credit voice and behavior that are reasonably implied by the profile. Only genuinely unsupported central characterization requires an additional anchor; illustrative lines and ordinary reactions do not.
 11. Give each defect one primary scoring home. A separate deduction requires a separately evidenced failure, not a renamed consequence.
 
