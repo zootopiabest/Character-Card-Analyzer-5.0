@@ -1,4 +1,4 @@
-import {parseCard} from "./card-context.js?v=5.2.0";
+import {parseCard} from "./card-context.js?v=5.2.1";
 
 const MiB=1024*1024;
 const decoder=new TextDecoder('utf-8',{fatal:true});

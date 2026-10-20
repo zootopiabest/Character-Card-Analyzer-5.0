@@ -1,10 +1,18 @@
-# Card Analyzer 5.2.0 (alpha)
+# Card Analyzer 5.2.1 (alpha)
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.2.0 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.2.0`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.2.1 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.2.1`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
+
+## Changes in 5.2.1 (Grouped Markdown greetings)
+
+- Fixed Wyvern Markdown exports using `Alternate Greetings` with nested `Greeting 1`, `Greeting 2`, etc. Those starts were previously attached to the first message instead of becoming independent grading entries. Importing and pasting now recognize the same set, including fenced greeting bodies and original alternate indices.
+- Recognize `Main Prompt (Description Field)`, `Message Example`, and `Character Metadata` as separate fields; headers inside fenced card text remain inside that field.
+- With Per-Greeting Report Card selected, the main request's expected output contains an explicit entry for every detected greeting. Leaving **Send greetings separately?** off still sends all greetings in one main request; no extra paid calls are introduced.
+- Show the detected greeting count and requested grade count before Run, and graded-versus-expected coverage in reports. Missing model entries remain visible as incomplete coverage without automatic retries.
+- Added a synthetic Wyvern-format fixture and end-to-end import/prompt/validation/export regressions covering combined mode, separate mode, comparisons, empty slots and fenced subheadings.
 
 ## Changes in 5.2.0 (Analyzer and rubric review)
 

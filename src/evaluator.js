@@ -1,12 +1,12 @@
-import {parseCard,greetingsOf,renderCard} from "./card-context.js?v=5.2.0";
-import {GREETING_ASSESSMENT} from "./rubrics/greetings.js?v=5.2.0";
-import { normalizeModules, validateModules } from "./immersion-modules.js?v=5.2.0";
-import { complete, prepareRun, runRecord } from "./providers.js?v=5.2.0";
-import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.2.0";
-import { singlePrompt, comparePrompt, coreKeys, specialistKeys, inspectCardFeatures } from "./rubrics/assemble.js?v=5.2.0";
-import { SPECIALISTS } from "./rubrics/specialists.js?v=5.2.0";
-import { APP_VERSION } from "./version.js?v=5.2.0";
-import { isolateGreetings } from "./greeting-context.js?v=5.2.0";
+import {parseCard,greetingsOf,renderCard} from "./card-context.js?v=5.2.1";
+import {GREETING_ASSESSMENT} from "./rubrics/greetings.js?v=5.2.1";
+import { normalizeModules, validateModules } from "./immersion-modules.js?v=5.2.1";
+import { complete, prepareRun, runRecord } from "./providers.js?v=5.2.1";
+import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.2.1";
+import { singlePrompt, comparePrompt, coreKeys, specialistKeys, inspectCardFeatures } from "./rubrics/assemble.js?v=5.2.1";
+import { SPECIALISTS } from "./rubrics/specialists.js?v=5.2.1";
+import { APP_VERSION } from "./version.js?v=5.2.1";
+import { isolateGreetings } from "./greeting-context.js?v=5.2.1";
 
 // Unicode is legal JSON text. Never strip or transliterate non-Latin characters.
 // Preserve the provider's raw text for a user-controlled diagnostic download.
@@ -160,6 +160,7 @@ async function addDiagnostics(config,entries) {
     audit.optionalModules=entry.selected;
     if(entry.selected.includes('greetingBreakdown')){
       audit.greetingBreakdown=entry.breakdown;
+      audit.greetingBreakdownExpected=entry.isolated.greetings.length;
       audit.greetingBreakdownIncomplete=entry.breakdown.length!==entry.isolated.greetings.length;
     }
     audit.optionalWarnings=[...(audit.optionalWarnings||[]),...entry.warnings];

@@ -1,4 +1,4 @@
-import { optionalSections } from "./immersion-modules.js?v=5.2.0";
+import { optionalSections } from "./immersion-modules.js?v=5.2.1";
 const safe = (v) => String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const number = (n) => typeof n==='number'&&Number.isFinite(n)?n.toFixed(1):'Unavailable';
 const criterion = (name, val) => '<article class="criterion"><div class="criterion-head"><b>'+

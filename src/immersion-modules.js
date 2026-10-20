@@ -1,4 +1,4 @@
-import {GREETING_ASSESSMENT} from "./rubrics/greetings.js?v=5.2.0";
+import {GREETING_ASSESSMENT} from "./rubrics/greetings.js?v=5.2.1";
 // Optional modules ported from the original analyzer. Only selected asks and fields enter a request.
 export const IMMERSION_MODULES = [
   {
@@ -105,9 +105,10 @@ export const IMMERSION_MODULES = [
 export function normalizeModules(value) {
   return IMMERSION_MODULES.filter(m => Array.isArray(value) && value.includes(m.id)).map(m => m.id);
 }
-export function moduleTemplate(selected = []) {
+export function moduleTemplate(selected = [], {greetings} = {}) {
   const ids = normalizeModules(selected);
-  return Object.fromEntries(IMMERSION_MODULES.filter(m => ids.includes(m.id)).map(m => [m.id, m.schema]));
+  return Object.fromEntries(IMMERSION_MODULES.filter(m => ids.includes(m.id)).map(m => [m.id,
+    m.id==='greetingBreakdown'&&Array.isArray(greetings)?greetings.map(g=>({...m.schema[0],id:g.id,label:g.label})):m.schema]));
 }
 export function modulePrompt(selected = []) {
   const ids = normalizeModules(selected);
@@ -142,6 +143,7 @@ export function validateModules(report, selected = [], {greetings}={}) {
   for (const mod of IMMERSION_MODULES.filter(m => ids.includes(m.id))) {
     try {
       const value=report[mod.id];
+      if(mod.id==='greetingBreakdown'&&Array.isArray(greetings))fields.greetingBreakdownExpected=greetings.length;
       if(mod.id!=='greetingBreakdown'&&typeof value?.notApplicable==='string'&&value.notApplicable.trim()){
         fields[mod.id]={notApplicable:value.notApplicable};continue;
       }
@@ -182,7 +184,8 @@ export function optionalSections(report) {
     else if (id === "topSongs") items = v.map(s => s.title + " — " + s.artist + ": " + s.vibe);
     else if (id === "greetingBreakdown") {
       items = v.map(g => g.label + " · " + g.score + "/10 · " + g.register + ": " + g.notes);
-      if (!v.length) paragraphs = [report.greetingBreakdownIncomplete?"No valid greeting entries returned.":"No greeting text supplied."];
+      if(Number.isInteger(report.greetingBreakdownExpected))paragraphs=["Graded "+v.length+" of "+report.greetingBreakdownExpected+" supplied greetings."];
+      if (!v.length) paragraphs.push(report.greetingBreakdownIncomplete?"No valid greeting entries returned.":"No greeting text supplied.");
     } else {
       const labels = {
         howTheyDie:"Projected demise", obituary:"Obituary", sad:"Sad", angry:"Angry", happy:"Happy", grief:"Grief", comedy:"Comedy",

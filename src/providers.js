@@ -1,4 +1,4 @@
-import { fetchOpenRouterCatalog, selectLatestDeepSeekPro } from "./openrouter-models.js?v=5.2.0";
+import { fetchOpenRouterCatalog, selectLatestDeepSeekPro } from "./openrouter-models.js?v=5.2.1";
 const PRESETS = {
   gemini: { label: "Google Gemini", model: "gemini-2.5-pro" },
   openai: { label: "OpenAI", model: "gpt-4.1" },

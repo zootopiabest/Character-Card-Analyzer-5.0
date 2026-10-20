@@ -1,4 +1,4 @@
-import { IMMERSION_MODULES, normalizeModules } from "./immersion-modules.js?v=5.2.0";
+import { IMMERSION_MODULES, normalizeModules } from "./immersion-modules.js?v=5.2.1";
 
 const STORAGE_KEY = "card-analyzer-5-optionals";
 export function restoreSelections(raw) {
@@ -9,7 +9,7 @@ export function restoreSelections(raw) {
   ]));
 }
 
-export function mountImmersionPanel({onStorageError = () => {}} = {}) {
+export function mountImmersionPanel({onStorageError = () => {}, onChange = () => {}} = {}) {
   const panel = document.getElementById("immersionSettings");
   const list = document.getElementById("immersionChoices");
   let raw;
@@ -50,7 +50,7 @@ export function mountImmersionPanel({onStorageError = () => {}} = {}) {
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(selections)); }
     catch { onStorageError("Optional selections work for this session, but browser storage could not save them."); }
-    updateCount();
+    updateCount();onChange();
   }
   list.addEventListener("change", e => {
     const {module, selection} = e.target.dataset;

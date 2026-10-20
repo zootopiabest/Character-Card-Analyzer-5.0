@@ -1,5 +1,5 @@
 // Bump with every release and keep SHELL in sync with versioned entry points.
-const VERSION = '5.2.0';
+const VERSION = '5.2.1';
 // Cache Storage is shared by all project sites on this origin. Never delete
 // caches belonging to the original analyzer or any other GitHub Pages project.
 const PREFIX = 'card-analyzer-5:' + self.registration.scope + ':';

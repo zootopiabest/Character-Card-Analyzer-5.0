@@ -9,7 +9,67 @@ const firstKeys=['first_mes','char_greeting','first_message'];
 const alternateKeys=['alternate_greetings','alternateGreetings','alt_greetings'];
 const textOf=v=>typeof v==='string'?v:typeof v?.content==='string'?v.content:typeof v?.text==='string'?v.text:'';
 const openingName=/^(First Message|Alternate Greeting(?:\s+\d+)?(?:\s*\(.*\))?|Group-only Greeting\s+\d+(?:\s*\(.*\))?)$/i;
-const heading=/^#{1,3}[ \t]+(Intended Frontend|Name|Description|Personality|Scenario|First Message|Alternate Greeting(?:\s+\d+)?(?:\s*\([^\r\n]*\))?|Group-only Greeting\s+\d+(?:\s*\([^\r\n]*\))?|Example Dialogue|System Prompt|Post History Instructions|Creator Notes(?:\s*\([^\r\n]*\))?|Intent Tags(?:\s*\([^\r\n]*\))?|Lorebook|Extensions|Additional Card Metadata)[ \t]*\r?\n/gim;
+const fieldName=/^(Intended Frontend|Name|Description|Personality|Scenario|First Message|Alternate Greeting(?:\s+\d+)?(?:\s*\(.*\))?|Group-only Greeting\s+\d+(?:\s*\(.*\))?|Example Dialogue|System Prompt|Post History Instructions|Creator Notes(?:\s*\(.*\))?|Intent Tags(?:\s*\(.*\))?|Lorebook|Extensions|Additional Card Metadata|Card Format Metadata|Card Metadata(?:\s*\(.*\))?)$/i;
+const fieldAliases=new Map([
+  ['main prompt (description field)','Description'],
+  ['main prompt','Description'],
+  ['message example','Example Dialogue'],
+  ['message examples','Example Dialogue'],
+  ['character metadata','Card Metadata (non-runtime metadata)']
+]);
+function unwrapField(body) {
+  const lines=body.trim().split('\n'),start=lines[0]?.match(/^ {0,3}(`{3,}|~{3,})[^\r\n]*\r?$/);
+  if(start&&lines.length>1){
+    const end=lines.at(-1).match(/^ {0,3}(`{3,}|~{3,})[ \t]*\r?$/);
+    if(end&&end[1][0]===start[1][0]&&end[1].length>=start[1].length)return lines.slice(1,-1).join('\n').trim();
+  }
+  return body.trim();
+}
+function markdownSections(input) {
+  const candidates=[];let fence=null,offset=0,alternateContainer=null;
+  for(const line of input.split(/(?<=\n)/)){
+    const delimiter=line.match(/^ {0,3}(`{3,}|~{3,})([^\r\n]*)\r?\n?$/);
+    if(delimiter){
+      if(!fence)fence=delimiter[1];
+      else if(delimiter[1][0]===fence[0]&&delimiter[1].length>=fence.length&&!delimiter[2].trim())fence=null;
+    }else if(!fence){
+      const match=line.match(/^(#{1,6})[ \t]+([^\r\n]+)\r?\n?$/);
+      if(match){
+        const level=match[1].length,rawName=match[2].trim().replace(/[ \t]+#+[ \t]*$/,''),lower=rawName.toLowerCase();
+        const closedContainer=alternateContainer!==null&&level<=alternateContainer;
+        if(closedContainer)alternateContainer=null;
+        const container=/^(?:alternate|alternative) greetings$/i.test(rawName);
+        if(container)alternateContainer=level;
+        const child=alternateContainer!==null&&level>alternateContainer?rawName.match(/^Greeting\s+([1-9]\d*)(?:\s*[:(—–-].*)?$/i):null;
+        const name=fieldAliases.get(lower)||rawName;
+        if(container||child||fieldAliases.has(lower)||fieldName.test(name)){
+          const extra=child?{greetingId:'alternate:'+(Number(child[1])-1),originalIndex:Number(child[1])}:{};
+          candidates.push({name,index:offset,length:line.length,level,container,...extra});
+        }else if(closedContainer){
+          // An unrecognized sibling still ends a greeting container. Preserve it
+          // as its own field rather than attaching it to the final opening.
+          candidates.push({name,index:offset,length:line.length,level});
+        }
+      }
+    }
+    offset+=line.length;
+  }
+  const level=Math.min(...candidates.map(m=>m.level));
+  const matches=candidates.filter(m=>m.level===level||m.container||m.greetingId||openingName.test(m.name)),sections=[];
+  if(!matches.length)sections.push({name:null,body:input});
+  else{
+    if(matches[0].index>0)sections.push({name:null,body:input.slice(0,matches[0].index).trim()});
+    matches.forEach((m,i)=>{
+      const body=unwrapField(input.slice(m.index+m.length,matches[i+1]?.index??input.length));
+      if(m.container){
+        if(body)sections.push({name:'Alternate Greeting Notes (non-runtime metadata)',body});
+      }else sections.push({name:m.name,body,...(m.greetingId?{greetingId:m.greetingId,originalIndex:m.originalIndex}:{})});
+    });
+  }
+  if(/exported from WyvernChat Character Studio/i.test(sections[0]?.name===null?sections[0].body:''))
+    sections.unshift({name:'Intended Frontend',body:'Wyvern (native extensions.wyvern runtime behavior applies, including greeting-specific scenario overrides and other frontend facilities).'});
+  return {sections,matches};
+}
 export function formatLorebook(book) {
   const entries=Array.isArray(book)?book:Array.isArray(book?.entries)?book.entries:
     book?.entries&&typeof book.entries==='object'?Object.values(book.entries):null;
@@ -89,21 +149,9 @@ export function parseCard(input) {
     }
     return {cardContext:true,sections:markGreetings(sections),warnings:[],format:'marked'};
   }
-  // Unmarked Markdown is inherently ambiguous. Recognize outermost profile fields plus explicit greeting
-  // headings outside code fences, and disclose the interpretation to the user.
-  let fenced=false,offset=0;const candidates=[];
-  for(const line of input.split(/(?<=\n)/)){
-    if(/^\s*(`{3,}|~{3,})/.test(line)){fenced=!fenced;offset+=line.length;continue;}
-    if(!fenced){heading.lastIndex=0;const m=heading.exec(line.endsWith('\n')?line:line+'\n');if(m)candidates.push({name:m[1].trim(),index:offset,length:line.length,level:line.match(/^#+/)[0].length});}
-    offset+=line.length;
-  }
-  const level=Math.min(...candidates.map(m=>m.level));
-  const matches=candidates.filter(m=>m.level===level||openingName.test(m.name)),sections=[];
-  if(!matches.length)sections.push({name:null,body:input});
-  else{
-    if(matches[0].index>0)sections.push({name:null,body:input.slice(0,matches[0].index).trim()});
-    matches.forEach((m,i)=>sections.push({name:m.name,body:input.slice(m.index+m.length,matches[i+1]?.index??input.length).trim()}));
-  }
+  // Markdown fields include grouped Wyvern alternates; fenced headings belong
+  // to their field body. Keep the inferred-boundary warning for unmarked text.
+  const {sections,matches}=markdownSections(input);
   const warnings=matches.length?['Pasted Markdown uses inferred field boundaries. For reliable greeting isolation, import JSON, PNG or CharX, or paste the marked text from an import.']:[];
   return {cardContext:true,sections:markGreetings(sections),warnings,format:'markdown'};
 }

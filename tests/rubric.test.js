@@ -203,11 +203,11 @@ test('functional register, illustrative dialogue and ordinary inference remain v
   assert.match(FOUNDATION,/Illustrative dialogue is useful unless prescribed as inevitable/);
   assert.match(FOUNDATION,/avoiding unwanted touch permits initiating contact/);
 });
-test('classification and app stamp are 5.2.0',()=>{
-  assert.equal(APP_VERSION,'5.2.0');
+test('classification and app stamp are 5.2.1',()=>{
+  assert.equal(APP_VERSION,'5.2.1');
   const rep=validateAudit(fixture(),kind);
-  assert.match(reportToMarkdown(rep),/App version: \*\*5\.2\.0\*\*/);
-  assert.match(renderAudit(rep),/v5\.2\.0/);
+  assert.match(reportToMarkdown(rep),/App version: \*\*5\.2\.1\*\*/);
+  assert.match(renderAudit(rep),/v5\.2\.1/);
   assert.match(CLASSIFY_SYSTEM,/secondary/);
 });
 test('JSON parser accepts fenced JSON and rejects nonnumeric score placeholders',()=>{

@@ -60,3 +60,10 @@ test('request plan exposes classification and per-card greeting counts including
   h.element('separateGreetings').handlers.change();
   assert.equal(JSON.parse(h.storage.get('card-analyzer-5-settings')).separateGreetings,true);
 });
+test('the pre-run summary shows all parsed greetings even with separate requests off',()=>{
+  const h=harness();h.element('separateGreetings').checked=false;
+  h.element('cardA').value='## First Message\nFirst.\n## Alternate Greetings\n### Greeting 1\nSecond.\n### Greeting 2\nThird.';
+  h.ctx.review.updateRequestPlan();
+  assert.match(h.element('greetingSummary').textContent,/Card A: 3 greetings detected/);
+  assert.match(h.element('requestPlan').textContent,/1 total.*0 greeting diagnostics/);
+});

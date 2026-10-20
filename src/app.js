@@ -1,12 +1,12 @@
-import {parseCard,greetingsOf} from "./card-context.js?v=5.2.0";
-import { mountImmersionPanel } from "./immersion-panel.js?v=5.2.0";
-import { mountModelBrowser } from "./model-browser.js?v=5.2.0";
-import { PROVIDERS, DEFAULT_MODEL, prepareRun } from "./providers.js?v=5.2.0";
-import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.2.0";
-import { importCardFile, importPortrait } from "./importer.js?v=5.2.0";
-import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.2.0";
-import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.2.0";
-import { APP_VERSION } from "./version.js?v=5.2.0";
+import {parseCard,greetingsOf} from "./card-context.js?v=5.2.1";
+import { mountImmersionPanel } from "./immersion-panel.js?v=5.2.1";
+import { mountModelBrowser } from "./model-browser.js?v=5.2.1";
+import { PROVIDERS, DEFAULT_MODEL, prepareRun } from "./providers.js?v=5.2.1";
+import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.2.1";
+import { importCardFile, importPortrait } from "./importer.js?v=5.2.1";
+import { classifyCard, runSingle, runComparison } from "./evaluator.js?v=5.2.1";
+import { renderAudit, renderComparison, reportToMarkdown, downloadText } from "./report.js?v=5.2.1";
+import { APP_VERSION } from "./version.js?v=5.2.1";
 
 const $ = (id) => document.getElementById(id);
 let modelBrowser=null,activeProvider=null,immersionPanel=null;
@@ -19,16 +19,19 @@ function cardFor(letter){
   return cached&&cached.text===text?cached.card:parseCard(text);
 }
 function updateRequestPlan(){
-  const letters=mode==='compare'?['A','B']:['A'];let classifications=0,diagnostics=0;const warnings=[];
+  const letters=mode==='compare'?['A','B']:['A'];let classifications=0,diagnostics=0;const warnings=[],detected=[];
   for(const letter of letters){
     if($('primary'+letter).value==='auto'||$('secondary'+letter).value==='auto')classifications++;
     try{
       const card=cardFor(letter),n=greetingsOf(card).length;
       if($('separateGreetings').checked&&n>1)diagnostics+=n;
+      const selections=immersionPanel?.snapshot()||{},selected=mode==='single'?selections.modules:letter==='A'?selections.modulesA:selections.modulesB;
+      detected.push('Card '+letter+': '+n+' greeting'+(n===1?'':'s')+' detected'+(selected?.includes('greetingBreakdown')?' · '+n+' grade'+(n===1?'':'s')+' requested '+($('separateGreetings').checked&&n>1?'in separate requests':'in the main request'):''));
       for(const warning of card.warnings)warnings.push('Card '+letter+': '+warning);
     }catch{}
   }
   $('requestPlan').textContent=(busy?'Next run: ':'Planned model requests: ')+(1+classifications+diagnostics)+' total · 1 main '+(mode==='compare'?'comparison':'audit')+' + '+classifications+' classification + '+diagnostics+' greeting diagnostics. Extras share these requests. No automatic retries.';
+  $('greetingSummary').textContent=detected.join(' | ');
   $('inputWarnings').textContent=[...new Set(warnings)].join(' ');$('inputWarnings').hidden=!warnings.length;
 }
 function cancelRun(message='Audit cancelled. No further requests will start. Already-started provider work may still be billed.'){
@@ -202,7 +205,7 @@ function wireFiles(which) {
   });
 }
 function init() {
-  immersionPanel=mountImmersionPanel({onStorageError:message=>status(message,true)});
+  immersionPanel=mountImmersionPanel({onStorageError:message=>status(message,true),onChange:updateRequestPlan});
   ["A","B"].forEach((l)=>{
     populateSelector("primary"+l,true);populateSelector("secondary"+l,false);wireFiles(l);
     for(const prefix of ["primary","secondary"])$(prefix+l).addEventListener("change",updateRequestPlan);
