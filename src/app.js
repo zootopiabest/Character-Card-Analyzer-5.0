@@ -14,7 +14,7 @@ import {mountFieldEditor} from './field-editor.js?v=5.5';
 import {diffCardFields} from './card-diff.js?v=5.5';
 
 const $ = (id) => document.getElementById(id);
-let modelBrowser=null,activeProvider=null,immersionPanel=null;
+let modelBrowser=null,activeProvider=null,immersionPanel=null;const fieldEditors={};
 let mode = "single", result = null, resultMode = "single", cardImage = null, busy = false;
 let failedRawResponse = null;
 let runId=0,runController=null;let historyItems=[];
@@ -135,7 +135,7 @@ function setMode(next) {
   updateRequestPlan();
 }
 function setCardText(which,text,filename="") {
-  $("card"+which).value=text;
+  $("card"+which).value=text;fieldEditors[which]?.refresh();
   $("count"+which).textContent=text.length.toLocaleString()+" characters";
   $("fileLabel"+which).textContent=filename||"JSON · Markdown · Text · PNG · CharX";
 }
@@ -201,12 +201,13 @@ async function run() {
     if(id!==runId)return;
     if(usedMode==='compare'&&comparisonType==='remake')data.fieldDiff=diffCardFields(a,b);
     displayResult(data,ka,kb,usedMode);
+    let historyError='';
     try{await saveReport(data,usedMode,ka,kb);await refreshHistory();}
-    catch(error){status('Audit complete, but browser history could not save it: '+error.message,true);}
+    catch(error){historyError=' Local history save failed: '+error.message;}
     const incomplete=usedMode==='single'?data.incomplete:data.cardA.incomplete||data.cardB.incomplete||data.comparisonWarnings.length;
     const diagnosticIncomplete=usedMode==='single'?Boolean(data.greetingBreakdownIncomplete||data.optionalWarnings?.length):
       [data.cardA,data.cardB].some(c=>c.greetingBreakdownIncomplete||c.optionalWarnings?.length);
-    status(incomplete||diagnosticIncomplete?'Audit partially complete. Some required or optional results are missing; inspect the report and saved history.':'Audit complete. '+data.run.requestCount+' model request(s). Saved locally; no analyzer server stores reports.');
+    status((incomplete||diagnosticIncomplete?'Audit partially complete. Some required or optional results are missing.':'Audit complete. '+data.run.requestCount+' model request(s).')+(historyError||' Saved locally; no analyzer server stores reports.'),Boolean(historyError));
   }catch(error){
     if(id!==runId)return;
     controller.abort(error);
@@ -273,7 +274,7 @@ function init() {
     for(const panel of $('resultContent').querySelectorAll('[data-report-panel]'))panel.hidden=panel.dataset.reportPanel!==selected;
   });
   ["A","B"].forEach((l)=>{
-    mountFieldEditor({which:l,onChange:()=>{importIds[l]++;$('count'+l).textContent=$('card'+l).value.length.toLocaleString()+' characters';updateRequestPlan();}});
+    fieldEditors[l]=mountFieldEditor({which:l,onChange:()=>{importIds[l]++;$('count'+l).textContent=$('card'+l).value.length.toLocaleString()+' characters';updateRequestPlan();}});
     populateSelector("primary"+l,true);populateSelector("secondary"+l,false);wireFiles(l);
     for(const prefix of ["primary","secondary"])$(prefix+l).addEventListener("change",updateRequestPlan);
   });
