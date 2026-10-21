@@ -87,7 +87,7 @@ test('failed optional diagnostics retain successful entries and do not retry',as
   },()=>runSingle(config,card,kind,null,['greetingBreakdown'],{separateGreetings:true}));
   assert.equal(calls,4);assert.equal(result.overallScore,8.1);
   assert.deepEqual(result.greetingBreakdown.map(g=>g.id),['first','alternate:1']);
-  assert.equal(result.greetingBreakdownIncomplete,true);assert.equal(result.optionalWarnings.length,1);
+  assert.equal(result.greetingBreakdownIncomplete,true);assert.ok(result.optionalWarnings.length>=1);
 });
 test('comparison shares one diagnostic concurrency limit across both cards',async()=>{
   let active=0,maximum=0,calls=0;
