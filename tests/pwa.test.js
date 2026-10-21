@@ -9,24 +9,24 @@ const root=new URL('../',import.meta.url);
 const read=path=>readFileSync(new URL(path,root),'utf8');
 const scope='https://example.github.io/Character-Card-Analyzer-5.0/';
 function worker() {
-  const handlers={}, stores=new Map();let claimed=0,skipped=0,network=0;
+  const handlers={}, stores=new Map(), cachedRequests=[];let claimed=0,skipped=0,network=0;
   const caches={
     async open(name) {
       if(!stores.has(name)) stores.set(name,new Map());
       const cache=stores.get(name);
-      return {async addAll(urls){for(const url of urls) cache.set(url,new Response(url));},async match(url){return cache.get(url);}};
+      return {async addAll(requests){for(const request of requests){cachedRequests.push(request);const url=typeof request==='string'?request:request.url;cache.set(url,new Response(url));}},async match(url){return cache.get(url);}};
     },
     async keys(){return [...stores.keys()]}, async delete(name){return stores.delete(name)}
   };
   const self={registration:{scope},clients:{async claim(){claimed++}},async skipWaiting(){skipped++},addEventListener:(type,fn)=>handlers[type]=fn};
-  const context=vm.createContext({self,caches,URL,Set,fetch:async()=>{network++;return new Response('network')}});
+  const context=vm.createContext({self,caches,URL,Set,Request,fetch:async()=>{network++;return new Response('network')}});
   vm.runInContext(read('sw.js')+'\nglobalThis.state={CACHE,PREFIX,SHELL,INDEX,VERSION};',context);
   async function dispatch(type,props={}) {
     let lifetime=Promise.resolve(),response;
     handlers[type]({...props,waitUntil(p){lifetime=p},respondWith(p){response=p}});
     await lifetime;return response ? await response : null;
   }
-  return {state:context.state,stores,dispatch,counts:()=>({claimed,skipped,network})};
+  return {state:context.state,stores,cachedRequests,dispatch,counts:()=>({claimed,skipped,network})};
 }
 
 test('manifest has a separate project identity, standalone launch, and real PNG sizes',()=>{
@@ -54,6 +54,13 @@ test('precache is a complete matching release under the GitHub Pages subpath',()
   for(const match of read('index.html').matchAll(/(?:src|href)="\.\/([^"?]+)\?v=([^\"]+)"/g)) {
     assert.equal(match[2],APP_VERSION);assert.ok(state.SHELL.includes(new URL(match[1]+'?v='+match[2],scope).href));
   }
+});
+test('same-version hotfix installs a fresh release shell and bypasses old HTTP cache',async()=>{
+  const w=worker();assert.equal(w.state.VERSION,'5.5');
+  assert.notEqual(w.state.CACHE,w.state.PREFIX+'5.5');
+  await w.dispatch('install');
+  assert.equal(w.cachedRequests.length,w.state.SHELL.length);
+  assert.ok(w.cachedRequests.every(r=>r instanceof Request&&r.cache==='reload'));
 });
 test('offline navigations and modules use one cached release, without automatic activation',async()=>{
   const w=worker();await w.dispatch('install');assert.equal(w.counts().skipped,0);
