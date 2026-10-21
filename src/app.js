@@ -11,6 +11,7 @@ import {planEstimate,priceForModel,estimatePricing,formatUSD} from './cost-estim
 import {saveReport,allReports,pinReport,removeReport,clearReports,exportAllReports} from './report-history.js?v=5.5';
 import {lintCard} from './static-lint.js?v=5.5';
 import {mountFieldEditor} from './field-editor.js?v=5.5';
+import {diffCardFields} from './card-diff.js?v=5.5';
 
 const $ = (id) => document.getElementById(id);
 let modelBrowser=null,activeProvider=null,immersionPanel=null;
@@ -198,6 +199,7 @@ async function run() {
     const data=usedMode==='single'?await runSingle(cfg,a,ka,image,optionals.modules,optionals)
       :await runComparison(cfg,a,ka,b,kb,comparisonType,optionals);
     if(id!==runId)return;
+    if(usedMode==='compare'&&comparisonType==='remake')data.fieldDiff=diffCardFields(a,b);
     displayResult(data,ka,kb,usedMode);
     try{await saveReport(data,usedMode,ka,kb);await refreshHistory();}
     catch(error){status('Audit complete, but browser history could not save it: '+error.message,true);}
@@ -264,6 +266,12 @@ function wireFiles(which) {
 function init() {
   immersionPanel=mountImmersionPanel({onStorageError:message=>status(message,true),onChange:updateRequestPlan});
   wireHistory();
+  $('resultContent').addEventListener('click',event=>{
+    const button=event.target.closest('button[data-report-tab]');if(!button)return;
+    const selected=button.dataset.reportTab;
+    for(const tab of $('resultContent').querySelectorAll('[data-report-tab]')){const active=tab.dataset.reportTab===selected;tab.classList.toggle('active',active);tab.setAttribute('aria-selected',String(active));}
+    for(const panel of $('resultContent').querySelectorAll('[data-report-panel]'))panel.hidden=panel.dataset.reportPanel!==selected;
+  });
   ["A","B"].forEach((l)=>{
     mountFieldEditor({which:l,onChange:()=>{importIds[l]++;$('count'+l).textContent=$('card'+l).value.length.toLocaleString()+' characters';updateRequestPlan();}});
     populateSelector("primary"+l,true);populateSelector("secondary"+l,false);wireFiles(l);
