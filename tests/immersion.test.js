@@ -84,7 +84,7 @@ test('missing or malformed extras preserve main report and warn; unsolicited out
   assert.equal(validated.optionalWarnings.length,3);
   assert.ok(validated.datingProfile);assert.ok(!Object.hasOwn(validated,'topSongs'));
   assert.ok(!Object.hasOwn(validated,'demise'));assert.ok(!Object.hasOwn(validated,'greetingBreakdown'));
-  assert.equal(validated.overallScore,8);
+  assert.equal(validated.overallScore,8.1);
   assert.match(renderAudit(validated),/Optional output incomplete/);
   assert.match(reportToMarkdown(validated),/Optional output incomplete/);
   const disabled=validateAudit(raw,kind);

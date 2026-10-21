@@ -1,0 +1,3 @@
+import {parseCard} from './card-context.js?v=5.5';
+// Technical warnings only; never grade a creative choice using regex.
+export function lintCard(input){const card=parseCard(input),warnings=[...card.warnings];for(const section of card.sections){const body=section.body||'',label=section.name||'Unstructured text';const open=(body.match(/{{/g)||[]).length,close=(body.match(/}}/g)||[]).length;if(open!==close)warnings.push(label+': mismatched double-brace delimiter ('+open+' opening, '+close+' closing).');const typo=body.match(/{{(?:char|user)}(?!})/g);if(typo)warnings.push(label+': possible malformed {{char}}/{{user}} macro; check closing braces.');}return [...new Set(warnings)];}

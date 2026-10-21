@@ -63,7 +63,7 @@ test('separate mode isolates grouped Wyvern starts without losing profile, examp
   const {result,prompts}=await intercept(p=>p.includes('ACTIVE ROLEPLAY CONTEXT')?{coverage:'Supported.',score:8,register:'Quiet',notes:'Plausible.'}:report(),
     ()=>runSingle(config,text,kind,null,['greetingBreakdown'],{separateGreetings:true}));
   assert.equal(prompts.length,4);assert.deepEqual(result.greetingBreakdown.map(({id,label})=>({id,label})),expected);
-  assert.doesNotMatch(prompts[0],/SECOND_START|THIRD_START/);
+  assert.match(prompts[0],/SECOND_START|THIRD_START/);
 });
 test('comparison has separate explicit grading entries for every greeting on each card',async()=>{
   const {result,prompts}=await intercept(()=>({cardA:report(),cardB:report(),comparison:{verdict:'Tie.',aAdvantages:[],bAdvantages:[],sharedGround:[],scopeDifferences:[]}}),
@@ -87,7 +87,7 @@ test('an empty grouped alternate keeps the later original slot and nested fenced
 test('missing optional grades report explicit coverage instead of silently looking complete',async()=>{
   const raw=report();raw.greetingBreakdown=raw.greetingBreakdown.slice(0,1);
   const {result,prompts}=await intercept(()=>raw,()=>runSingle(config,text,kind,null,['greetingBreakdown']));
-  assert.equal(prompts.length,1);assert.equal(result.overallScore,8);
+  assert.equal(prompts.length,1);assert.equal(result.overallScore,8.1);
   assert.equal(result.greetingBreakdownIncomplete,true);assert.equal(result.optionalWarnings.length,2);
   assert.match(renderAudit(result),/Graded 1 of 3 supplied greetings/);
 });

@@ -1,4 +1,4 @@
-import { fetchOpenRouterCatalog, selectLatestDeepSeekPro } from "./openrouter-models.js?v=5.2.1";
+import { fetchOpenRouterCatalog, selectLatestDeepSeekPro } from "./openrouter-models.js?v=5.5";
 const PRESETS = {
   gemini: { label: "Google Gemini", model: "gemini-2.5-pro" },
   openai: { label: "OpenAI", model: "gpt-4.1" },
@@ -94,7 +94,7 @@ export async function prepareRun(config) {
       if(Number.isFinite(resolved.top_provider?.max_completion_tokens)&&resolved.top_provider.max_completion_tokens>0)ceiling=resolved.top_provider.max_completion_tokens;
     }
   }
-  config.maxTokens=Math.min(ceiling,Math.max(1024,Math.min(32768,Number(config.maxTokens)||8192)));
+  config.maxTokens=Math.min(ceiling,Math.max(1024,Math.min(131072,Number(config.maxTokens)||16384)));
   return {...config,session:{model:config.model},prepared:true};
 }
 export function runRecord(config,details={}) {

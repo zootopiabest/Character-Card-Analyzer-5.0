@@ -1,12 +1,22 @@
-# Card Analyzer 5.2.1 (alpha)
+# Card Analyzer 5.5 (alpha)
+
+## 5.5 release
+
+- Expanded slop beyond stereotypical AI prose to evidenced failures of character integrity, motivation, agency and narrative coherence. Slop cleanliness contributes 10% of final quality, leaving 90% for the primary rubric. A high-slop character can still have genuine strengths.
+- Main audit always receives the full card including all independent greetings, whether their report cards are combined or sent separately. Missing report-card results remain visible as incomplete.
+- Manual output token limit: 16K single, 32K comparison initially, plus 250 tokens per greeting when a combined Per-Greeting Report Card is requested. Independent diagnostic requests use their own cap.
+- Approximate input and maximum-output cost estimation for priced OpenRouter models, IndexedDB auto-saved history (reopen, pin, delete, JSON backup), structured editing, technical lint, and field diffs.
+- Responsive tabbed head-to-head scores and full diagnostics, collapsible release log, offline-stable CSS and clearer warnings. See [CLAUDE.md](CLAUDE.md) for rationale before reversing a design decision.
+
+
 
 **A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
-**Version check:** The footer says `Runtime 5.2.1 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.2.1`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.5 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.5`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
 
-## Changes in 5.2.1 (Grouped Markdown greetings)
+## Changes in 5.5 (Grouped Markdown greetings)
 
 - Fixed Wyvern Markdown exports using `Alternate Greetings` with nested `Greeting 1`, `Greeting 2`, etc. Those starts were previously attached to the first message instead of becoming independent grading entries. Importing and pasting now recognize the same set, including fenced greeting bodies and original alternate indices.
 - Recognize `Main Prompt (Description Field)`, `Message Example`, and `Character Metadata` as separate fields; headers inside fenced card text remain inside that field.

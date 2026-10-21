@@ -93,7 +93,7 @@ function checkIsolatedPrompts(prompts,expectedMainCount){
   assert.equal(diagnostic.length,3);
   for(const prompt of main) {
     assert.match(prompt,/FIRST_START/);
-    assert.doesNotMatch(prompt,/SECOND_START|THIRD_START|SECOND_SCENARIO|THIRD_SCENARIO/);
+    assert.match(prompt,/SECOND_START|THIRD_START/);
   }
   for(const prompt of diagnostic) {
     const hits=starts.map(s=>prompt.includes(s));
@@ -106,17 +106,17 @@ function checkIsolatedPrompts(prompts,expectedMainCount){
     }
   }
 }
-test("main audit scores only one opening; coverage and optional cards use separate calls",async()=>{
+test("main audit reviews all openings while diagnostics isolate each separate greeting",async()=>{
   const {result,prompts}=await interceptCalls(p=>
     p.includes("ACTIVE ROLEPLAY CONTEXT") ? diagnosticReply(p) : fakeAudit(),
     ()=>runSingle(config,source,kind,null,["greetingBreakdown"],{separateGreetings:true}));
   checkIsolatedPrompts(prompts,1);
   assert.equal(result.profileGreetingCoverage.includes("THIRD_START"),true);
   assert.equal(result.greetingBreakdown.length,3);
-  assert.equal(result.overallScore,8);
+  assert.equal(result.overallScore,8.2);
   assert.deepEqual(result.optionalModules,["greetingBreakdown"]);
 });
-test("head-to-head also excludes inactive starts from scoring without mixing profiles",async()=>{
+test("head-to-head considers all starts for slop without mixing diagnostic profiles",async()=>{
   const second=JSON.stringify({data:{name:"Another",description:"Quiet gardener.",first_mes:"GARDENER_START"}});
   const {result,prompts}=await interceptCalls(p=>{
     if(p.includes("ACTIVE ROLEPLAY CONTEXT"))return diagnosticReply(p);
@@ -127,7 +127,7 @@ test("head-to-head also excludes inactive starts from scoring without mixing pro
   const main=prompts.find(p=>p.includes("CARD A (UNTRUSTED)"));
   assert.ok(main);
   assert.match(main,/GARDENER_START/);
-  assert.doesNotMatch(main,/SECOND_START|THIRD_START|SECOND_SCENARIO|THIRD_SCENARIO/);
+  assert.match(main,/SECOND_START|THIRD_START/);
   assert.equal(prompts.filter(p=>p.includes("ACTIVE ROLEPLAY CONTEXT")).length,3);
   assert.ok(result.cardA.profileGreetingCoverage);
   assert.equal(result.cardB.profileGreetingCoverage,null);
@@ -145,7 +145,7 @@ for (const separateGreetings of [undefined,false]) {
       assert.equal(result.profileGreetingCoverage,report.profileGreetingCoverage);
       if(modules.length) assert.equal(result.greetingBreakdown.length,3);
       else assert.equal(result.greetingBreakdown,undefined);
-      assert.equal(result.overallScore,8);
+      assert.equal(result.overallScore,8.2);
     });
     test(`combined comparison makes one request (separate=${separateGreetings}, extras=${modules})`,async()=>{
       const report={...fakeAudit(false),profileGreetingCoverage:"All starts checked.",

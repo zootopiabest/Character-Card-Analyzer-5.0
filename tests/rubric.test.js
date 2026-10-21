@@ -40,11 +40,11 @@ test('secondary is deduplicated and unknown classifier modules are rejected',()=
   assert.throws(()=>normalizeClassification({primary:'unicorn'}),/primary/);
   assert.match(CLASSIFY_SYSTEM,/UNTRUSTED/);
 });
-test('5.1 standard rationale produces correct deterministic grade; slop cannot alter overall',()=>{
+test('5.5 weighted slop keeps a good character viable even with disastrous slop',()=>{
   const item=fixture(),first=validateAudit(item,kind);
   assert.equal(first.overallScore,8.6);
   item.slop.score=100;
-  assert.equal(validateAudit(item,kind).overallScore,first.overallScore);
+  assert.equal(validateAudit(item,kind).overallScore,7.7);
   assert.equal(first.core.craft.rationale,item.core.craft.rationale);
 });
 test('legacy evidence and effect are accepted but normalized to rationale',()=>{
@@ -54,11 +54,11 @@ test('legacy evidence and effect are accepted but normalized to rationale',()=>{
   assert.equal(validateAudit(item,kind).overallScore,null);
   assert.match(validateAudit(item,kind).validationWarnings.join(' '),/rationale/);
 });
-test('numerical integrity and 40/45/15 weighting remain unchanged',()=>{
+test('numerical integrity retains the 40/45/15 rubric split within 90% quality',()=>{
   const two={primary:'character',secondary:'rpg'};
   const item=fixture(two);
   for(const c of Object.values(item.specialists.rpg)) c.score=4;
-  assert.ok(Math.abs(validateAudit(item,two).overallScore-7.85)<0.11);
+  assert.equal(validateAudit(item,two).overallScore,7.9);
   item.core.craft.score='10';
   assert.equal(validateAudit(item,two).overallScore,null);
 });
@@ -193,7 +193,7 @@ test('single-home ownership distinguishes context economy, prose and outcomes',(
   assert.match(FOUNDATION,/Choose ONE scoring home per defect/);
   assert.match(CORE_CRITERIA.inference,/redundant explanation that materially burdens context/);
   assert.match(CORE_CRITERIA.craft,/information economy belongs to inference/);
-  assert.match(FOUNDATION,/Slop is not an arithmetic penalty/);
+  assert.match(FOUNDATION,/bounded 10%/);
   assert.match(CORE_CRITERIA.inference,/world rules, causal relationships and state/);
   assert.match(SPECIALISTS.rpg.criteria.mechanics,/prompt delivery and formatting conflicts belong to reliability/);
 });
@@ -203,11 +203,11 @@ test('functional register, illustrative dialogue and ordinary inference remain v
   assert.match(FOUNDATION,/Illustrative dialogue is useful unless prescribed as inevitable/);
   assert.match(FOUNDATION,/avoiding unwanted touch permits initiating contact/);
 });
-test('classification and app stamp are 5.2.1',()=>{
-  assert.equal(APP_VERSION,'5.2.1');
+test('classification and app stamp are 5.5',()=>{
+  assert.equal(APP_VERSION,'5.5');
   const rep=validateAudit(fixture(),kind);
-  assert.match(reportToMarkdown(rep),/App version: \*\*5\.2\.1\*\*/);
-  assert.match(renderAudit(rep),/v5\.2\.1/);
+  assert.match(reportToMarkdown(rep),/App version: \*\*5\.5\*\*/);
+  assert.match(renderAudit(rep),/v5\.5/);
   assert.match(CLASSIFY_SYSTEM,/secondary/);
 });
 test('JSON parser accepts fenced JSON and rejects nonnumeric score placeholders',()=>{

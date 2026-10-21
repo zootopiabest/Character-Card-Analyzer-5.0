@@ -1,5 +1,5 @@
 // Bump with every release and keep SHELL in sync with versioned entry points.
-const VERSION = '5.2.1';
+const VERSION = '5.5';
 // Cache Storage is shared by all project sites on this origin. Never delete
 // caches belonging to the original analyzer or any other GitHub Pages project.
 const PREFIX = 'card-analyzer-5:' + self.registration.scope + ':';
@@ -9,6 +9,7 @@ const SHELL = [
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png',
   ...['app', 'pwa', 'classifier', 'evaluator', 'greeting-context', 'card-context', 'charx', 'immersion-modules', 'immersion-panel',
     'importer', 'model-browser', 'openrouter-models', 'providers', 'report', 'version',
+    'report-history', 'cost-estimate', 'static-lint', 'field-editor', 'card-diff',
     'rubrics/greetings', 'rubrics/assemble', 'rubrics/components', 'rubrics/core', 'rubrics/specialists'
   ].map(name => './src/' + name + '.js?v=' + VERSION)
 ].map(path => new URL(path, self.registration.scope).href);

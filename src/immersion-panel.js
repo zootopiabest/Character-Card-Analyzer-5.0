@@ -1,4 +1,4 @@
-import { IMMERSION_MODULES, normalizeModules } from "./immersion-modules.js?v=5.2.1";
+import { IMMERSION_MODULES, normalizeModules } from "./immersion-modules.js?v=5.5";
 
 const STORAGE_KEY = "card-analyzer-5-optionals";
 export function restoreSelections(raw) {

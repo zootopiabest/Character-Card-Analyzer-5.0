@@ -1,4 +1,4 @@
-import { optionalSections } from "./immersion-modules.js?v=5.2.1";
+import { optionalSections } from "./immersion-modules.js?v=5.5";
 const safe = (v) => String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const number = (n) => typeof n==='number'&&Number.isFinite(n)?n.toFixed(1):'Unavailable';
 const criterion = (name, val) => '<article class="criterion"><div class="criterion-head"><b>'+
@@ -24,7 +24,7 @@ export function renderAudit(report) {
     '<header class="result-header"><span class="eyebrow">'+safe('v'+(report.appVersion||'unknown')+' · '+report.kind.primary)+
     (report.kind.secondary?' + '+safe(report.kind.secondary):'')+
     '</span><div class="result-score'+(report.overallScore===null?' incomplete-score':'')+'"><span>'+number(report.overallScore)+
-    (report.overallScore===null?'':'<small>/10</small>')+'</span><div><b>Overall quality</b><p>'+(report.overallScore===null?'Withheld: required criteria are incomplete.':'Deterministically weighted from selected rubrics')+'</p></div></div>'+
+    (report.overallScore===null?'':'<small>/10</small>')+'</span><div><b>Overall quality</b><p>'+(report.overallScore===null?'Withheld: required criteria or slop unavailable.':'90% rubric quality + 10% slop cleanliness')+'</p></div></div>'+
     proseBlock('Finding',report.summary)+'</header>'+listBlock('Incomplete audit',report.validationWarnings?.length?report.validationWarnings:null)+
     '<div class="score-strip"><div><small>Slop severity</small><strong>'+(report.slop?Math.round(report.slop.score):'Unavailable')+
     (report.slop?'<span>/100 ↑ worse</span>':'')+'</strong></div><div><small>Core dimensions</small><strong>'+
@@ -47,12 +47,29 @@ export function renderAudit(report) {
     renderOptionals(report)+'</div>';
 }
 export function renderComparison(data) {
-  const c=data.comparison;
-  return '<div class="comparison-summary"><h3>Head-to-head verdict</h3><p>'+safe(c.verdict)+'</p><div class="compare-cols">'+
-    listBlock('Card A advantages',c.aAdvantages)+listBlock('Card B advantages',c.bAdvantages)+'</div>'+
-    listBlock('Shared ground',c.sharedGround)+listBlock('Scope differences',c.scopeDifferences)+listBlock('Comparison output incomplete',data.comparisonWarnings?.length?data.comparisonWarnings:null)+
-    '</div><div class="compare-cols"><section><h3>Card A</h3>'+renderAudit(data.cardA)+
-    '</section><section><h3>Card B</h3>'+renderAudit(data.cardB)+'</section></div>';
+  const c=data.comparison, A=data.cardA,B=data.cardB;
+  const score=a=>number(a.overallScore);
+  const row=(label,left,right)=>'<tr><th>'+safe(label)+'</th><td>'+safe(left)+'</td><td>'+safe(right)+'</td></tr>';
+  const rubricKeys=new Set([...Object.keys(A.core),...Object.keys(B.core)]);
+  const coreRows=[...rubricKeys].map(k=>row(k.replace(/([A-Z])/g,' $1'),A.core[k]?.score??'—',B.core[k]?.score??'—')).join('');
+  const specialistRows=[...new Set([...Object.keys(A.specialists).flatMap(id=>Object.keys(A.specialists[id]).map(k=>id+'.'+k)),
+    ...Object.keys(B.specialists).flatMap(id=>Object.keys(B.specialists[id]).map(k=>id+'.'+k))])]
+    .map(key=>{const [module,criterion]=key.split('.');return row(key,A.specialists[module]?.[criterion]?.score??'—',B.specialists[module]?.[criterion]?.score??'—');}).join('');
+  const diffs=(data.fieldDiff||[]).map(d=>'<li>'+safe(d.field)+': '+safe(d.status)+' ('+d.before+' → '+d.after+' chars)</li>').join('');
+  return '<div class="compare-tabs" role="tablist" aria-label="Comparison report views">'+
+    '<button type="button" class="tab active" data-report-tab="overview" aria-selected="true">Side by side</button>'+
+    '<button type="button" class="tab" data-report-tab="cardA" aria-selected="false">Card A details</button>'+
+    '<button type="button" class="tab" data-report-tab="cardB" aria-selected="false">Card B details</button></div>'+
+    '<section data-report-panel="overview" class="comparison-summary"><h3>Head-to-head verdict</h3><p>'+safe(c.verdict)+'</p>'+
+    '<div class="compare-score-cards"><article><small>Card A</small><strong>'+score(A)+'/10</strong><span>Slop '+(A.slop?A.slop.score+'/100':'—')+'</span></article>'+
+    '<article><small>Card B</small><strong>'+score(B)+'/10</strong><span>Slop '+(B.slop?B.slop.score+'/100':'—')+'</span></article></div>'+
+    '<details open><summary>Aligned grading criteria</summary><div class="compare-table-wrap"><table class="compare-table"><thead>'+row('Criterion','Card A','Card B')+'</thead><tbody>'+coreRows+specialistRows+'</tbody></table></div></details>'+
+    '<div class="compare-cols">'+listBlock('Card A advantages',c.aAdvantages)+listBlock('Card B advantages',c.bAdvantages)+'</div>'+
+    listBlock('Shared ground',c.sharedGround)+listBlock('Scope differences',c.scopeDifferences)+
+    listBlock('Comparison output incomplete',data.comparisonWarnings?.length?data.comparisonWarnings:null)+
+    (diffs?'<details><summary>Field changes · deterministic, not scored</summary><ul>'+diffs+'</ul></details>':'')+'</section>'+
+    '<section data-report-panel="cardA" hidden><h3>Card A · full diagnostics</h3>'+renderAudit(A)+'</section>'+
+    '<section data-report-panel="cardB" hidden><h3>Card B · full diagnostics</h3>'+renderAudit(B)+'</section>';
 }
 export function reportToMarkdown(result,mode='single') {
   const bullets = (items) => items?.length ? items.map(x=>'- '+x).join('\n') : 'None evidenced.';

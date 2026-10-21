@@ -1,0 +1,12 @@
+// Browser-only IndexedDB report archive. No API keys or card source text stored.
+const DB_NAME='card-analyzer-5-history',STORE='reports',LIMIT=50;
+function db(){return new Promise((resolve,reject)=>{if(!globalThis.indexedDB)return reject(new Error('IndexedDB unavailable'));const request=indexedDB.open(DB_NAME,1);request.onupgradeneeded=()=>{const d=request.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});};request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});}
+async function transact(mode,work){const database=await db();try{return await new Promise((resolve,reject)=>{const transaction=database.transaction(STORE,mode),store=transaction.objectStore(STORE);let result;try{result=work(store);}catch(e){reject(e);return;}transaction.oncomplete=()=>resolve(result);transaction.onerror=()=>reject(transaction.error);transaction.onabort=()=>reject(transaction.error);});}finally{database.close();}}
+function read(request){return new Promise((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});}
+export async function allReports(){return (await readAll()).sort((a,b)=>b.createdAt-a.createdAt);}
+async function readAll(){const database=await db();try{const tx=database.transaction(STORE,'readonly');return await read(tx.objectStore(STORE).getAll());}finally{database.close();}}
+export async function saveReport(result,mode,kindA,kindB){const now=Date.now(),label=(result.run?.inputs||[]).map(x=>x.label).join(' vs ')||'Pasted card';const entry={id:now+'-'+Math.random().toString(36).slice(2),createdAt:now,label,mode,kindA,kindB,pinned:false,report:result};await transact('readwrite',store=>store.put(entry));const entries=await allReports();for(const old of entries.filter(r=>!r.pinned).slice(LIMIT))await removeReport(old.id);return entry;}
+export async function removeReport(id){await transact('readwrite',store=>store.delete(id));}
+export async function pinReport(id,pinned){const entry=(await allReports()).find(e=>e.id===id);if(!entry)return;entry.pinned=Boolean(pinned);await transact('readwrite',store=>store.put(entry));}
+export async function clearReports(){await transact('readwrite',store=>store.clear());}
+export async function exportAllReports(){return JSON.stringify({format:'card-analyzer-history-1',exportedAt:new Date().toISOString(),reports:await allReports()},null,2);}
