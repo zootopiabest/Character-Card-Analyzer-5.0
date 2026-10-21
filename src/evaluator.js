@@ -177,7 +177,7 @@ export async function inputIdentity(input,label) {
   return {label:label||name||'Pasted card',name:name||null,characters:text.length,sha256,greetingCount:greetingsOf(card).length,warnings:card.warnings};
 }
 export async function classifyCard(config,cardText) {
-  const raw=await complete({...config,requestLabel:'classification'},CLASSIFY_SYSTEM,classificationPrompt(cardText));
+  const raw=await complete({...config,maxTokens:Math.min(config.maxTokens,1024),requestLabel:'classification'},CLASSIFY_SYSTEM,classificationPrompt(cardText));
   try{return normalizeClassification(parseJson(raw));}catch(error){preserveRaw(error,raw);}
 }
 export async function runSingle(config,text,kind,image=null,modules=[],{separateGreetings=false,inputLabels=[]}={}) {
