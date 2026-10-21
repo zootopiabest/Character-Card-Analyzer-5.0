@@ -39,7 +39,7 @@ test('cost display is a priced upper budget, not an output forecast',()=>{
  assert.equal(estimate.requestCount,1);
 });
 test('technical lint refuses to grade taste and catches malformed macro braces',()=>{
- assert.deepEqual(lintCard('## Description\nPlain prose with {{char}} and {{user}}.'),['Pasted Markdown uses inferred field boundaries. For reliable greeting isolation, import JSON, PNG or CharX, or paste the marked text from an import.'].filter(()=>false).length?[]:lintCard('## Description\nPlain prose with {{char}} and {{user}}.').filter(x=>!x.includes('Pasted Markdown')));
+ assert.deepEqual(lintCard(JSON.stringify({data:{description:'Plain prose with {{char}} and {{user}}.'}})),[]);
  assert.ok(lintCard(JSON.stringify({data:{description:'Broken {{char}'}})).some(x=>/delimiter|macro/.test(x)));
 });
 test('remake field diff reports structural changes without storing full field text',()=>{
