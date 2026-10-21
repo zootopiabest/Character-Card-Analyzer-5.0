@@ -3,7 +3,9 @@ const VERSION = '5.5';
 // Cache Storage is shared by all project sites on this origin. Never delete
 // caches belonging to the original analyzer or any other GitHub Pages project.
 const PREFIX = 'card-analyzer-5:' + self.registration.scope + ':';
-const CACHE = PREFIX + VERSION;
+// A cache revision can change without a user-visible version bump. The 5.5 hotfix
+// must replace the existing 5.5 shell instead of reusing its already-populated cache.
+const CACHE = PREFIX + VERSION + ':hotfix-1';
 const SHELL = [
   './index.html', './manifest.webmanifest', './styles.css?v=' + VERSION,
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png',
@@ -18,7 +20,8 @@ const INDEX = new URL('./index.html', self.registration.scope).href;
 
 self.addEventListener('install', event => {
   // Atomic precache: a failed download must not activate a partial offline app.
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)));
+  // Bypass stale HTTP cache when URLs retain ?v=5.5 for a same-version hotfix.
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL.map(url => new Request(url, {cache:'reload'})))));
   // Updates wait until all old clients close, or the user explicitly reloads.
 });
 self.addEventListener('activate', event => {

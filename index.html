@@ -22,17 +22,24 @@
 <div id="pwaNotice" class="status pwa-notice" hidden><span id="pwaMessage" role="status" aria-live="polite"></span><button id="updateApp" class="quiet-button" type="button" hidden>Reload to update</button></div>
 <main>
 <details id="whatsNew" class="panel whats-new"><summary>✨ What's New <span class="summary-hint">Release notes, by version</span></summary>
-  <details open><summary>5.5 · Better grading, fewer lost reports</summary><ul>
-  <li>Slop now measures bad execution from any author and contributes a bounded 10% to quality.</li>
-  <li>The main audit always considers every greeting; isolated report cards still grade starts separately.</li>
-  <li>Manual output ceilings, 250 extra tokens per combined greeting grade, and approximate cost previews.</li>
-  <li>Auto-saved local report history with reopen, pin, delete and bulk backup.</li>
-  <li>Tabbed side-by-side comparisons, remake field diff, structured editor and technical lint warnings.</li>
-  <li>Offline-stable fonts, clearer warnings, and mobile/UX fixes.</li>
-  </ul></details>
-  <details><summary>5.5 · Every greeting counts</summary><p>Fixed nested Wyvern Markdown alternates and marked incomplete grading coverage.</p></details>
-  <details><summary>5.2.0 · Structural integrity</summary><p>Imported field preservation, scenario overrides, complete classifier context and partial-result diagnostics.</p></details>
-  <details><summary>5.1.8 · Independent greetings</summary><p>Added optional isolated greeting requests without forcing extra API calls.</p></details>
+  <details open><summary>5.5 · Better grading, more control, fewer lost reports</summary>
+    <ul>
+      <li><strong>Slop affects the final grade (10%).</strong> Now recognizes characterization collapse, contrivance, incoherence and weak human-written prose, not just stereotypical AI filler. Slop never automatically disqualifies a compelling character.</li>
+      <li><strong>Every greeting is considered.</strong> The main quality and slop audit always sees every selectable opening, including when individual greeting reports are sent separately. Alternate starts are never treated as simultaneous events.</li>
+      <li><strong>Manual output limits.</strong> Start at 16,384 tokens for single audits or 32,768 for comparisons. Combined per-greeting grading adds 250 output tokens per greeting; separate diagnostic calls get their own smaller limit.</li>
+      <li><strong>Price estimator.</strong> Preview approximate input tokens and input cost, plus a worst-case output-budget cost based on your selected limit. Uses cached OpenRouter pricing where available; actual generated output cannot be predicted.</li>
+      <li><strong>Saved audit history.</strong> Reports save automatically to this browser, including partially completed reports. Reopen without another API request, pin or delete individual entries, and export a JSON history backup.</li>
+      <li><strong>Structured card editor.</strong> Switch between raw imported card text and collapsible, individually editable fields. Character information, greetings and metadata retain their distinct boundaries.</li>
+      <li><strong>Side-by-side comparison.</strong> Compare aligned criterion scores and slop at a glance, with separate Card A and Card B diagnostic tabs rather than one long report.</li>
+      <li><strong>Remake field diff.</strong> Show which card fields were added, removed or changed and their relative sizes. The diff is informational, never an automatic reason to prefer a remake.</li>
+      <li><strong>Static technical lint.</strong> Surface genuinely suspicious macro/delimiter errors before an audit. This 5.5 hotfix also prevents valid serialized Extensions JSON from being misread as broken braces.</li>
+      <li><strong>Offline and accessibility polish.</strong> Reliable system-font fallback offline, clearer input warnings and more accurate disabled-button cursors.</li>
+      <li><strong>Persistent design decisions.</strong> Added a documented <code>CLAUDE.md</code> rationale log for future modifications, so prior decisions can be challenged rather than silently forgotten.</li>
+    </ul>
+  </details>
+  <details><summary>5.2.1 · Every greeting counts</summary><p>Fixed nested Wyvern Markdown alternate greetings, verified original greeting slots and made missing per-greeting scores visible rather than silently dropping them.</p></details>
+  <details><summary>5.2.0 · Structural integrity</summary><p>Preserved imported fields, runtime/frontend-specific scenario overrides, complete classifier context and partial-result diagnostics.</p></details>
+  <details><summary>5.1.8 · Independent greetings</summary><p>Added optional isolated grading calls for each greeting without forcing extra API calls when combined grading is chosen.</p></details>
 </details>
 <details id="modelSettings" class="panel config-panel" open>
 <summary class="model-settings-summary"><span class="settings-title">Model &amp; API settings</span><span id="modelSettingsSummary" class="settings-selection"></span><span class="settings-toggle" aria-hidden="true">⌄</span></summary>

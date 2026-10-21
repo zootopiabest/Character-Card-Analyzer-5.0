@@ -28,6 +28,7 @@ Read this before modifying the analyzer or arguing for reversing an old decision
 - 5.2.0 preserved field markers, frontend contracts, lifecycle handling and partial-output validation.
 - 5.5 (2026-10-21) broadens slop beyond AI-isms, uses a bounded 10% weight, keeps complete greeting evidence for main scoring regardless of diagnostic option, permits manual budgets with +250 grading overhead, adds approximate price previews, local history, structured editor, technical lint, side-by-side comparisons, field diffs, nested What's New and offline UX polish.
 - Do not invent a 5.5.1 entry until a 5.5.1 release exists.
+- 5.5 same-version hotfix (2026-10-21): Extensions and serialized JSON metadata contain legitimate adjacent closing braces, so prose brace lint does not apply there. Expanded feature-by-feature 5.5 release notes and corrected the mislabeled 5.2.1 history entry. Visible app version remains 5.5. The PWA uses a private cache revision `5.5:hotfix-1` and `Request(..., {cache:'reload'})` so the service worker refreshes cached assets without lying about the public version. For future same-version fixes, change the private cache revision and tests; do not change app version without the owner's permission.
 
 ## Workflow and guardrails
 - Prefer discussing contradictions with this log to silently acquiescing to either owner or an AI code review. Explain tradeoffs and run tests, e.g. `npm test` and `npm run check`.
