@@ -11,14 +11,16 @@ function harness({classifyCard=async()=>({primary:'character'}),runSingle=async(
   const els=new Map(),storage=new Map();
   const element=id=>{
     if(!els.has(id))els.set(id,{id,value:'',checked:false,hidden:false,disabled:false,open:false,innerHTML:'',textContent:'',dataset:{},handlers:{},classList:{toggle(){}},
-      appendChild(){},setAttribute(){},removeAttribute(){},scrollIntoView(){},addEventListener(type,fn){this.handlers[type]=fn;}});
+      appendChild(){},replaceChildren(){},setAttribute(){},removeAttribute(){},scrollIntoView(){},addEventListener(type,fn){this.handlers[type]=fn;}});
     return els.get(id);
   };
   const ctx=vm.createContext({document:{getElementById:element,querySelectorAll:()=>[],createElement:()=>element(Symbol())},
     localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},
     mountImmersionPanel:()=>({snapshot:()=>({modules:[],modulesA:[],modulesB:[]}),setMode(){}}),mountModelBrowser:()=>({syncSelection(){},activate(){}}),
     PROVIDERS:{gemini:{label:'Gemini'}},DEFAULT_MODEL:()=> 'test-model',SPECIALISTS,SPECIALIST_KEYS,parseCard,greetingsOf,extractCardText,
-    AbortController,DOMException,prepareRun:async c=>c,classifyCard,runSingle,runComparison,renderAudit:r=>r.summary,renderComparison:()=> 'comparison',APP_VERSION:'test'});
+    mountFieldEditor:()=>({}),allReports:async()=>[],saveReport:async()=>{},pinReport:async()=>{},removeReport:async()=>{},clearReports:async()=>{},exportAllReports:async()=>'{}',
+    planEstimate:({baseOutput})=>({inputTokens:0,mainOutput:baseOutput||16384,maxOutputTokens:baseOutput||16384,requestCount:1}),priceForModel:()=>null,estimatePricing:()=>null,formatUSD:()=>'$0',
+    diffCardFields:()=>[],AbortController,DOMException,prepareRun:async c=>c,classifyCard,runSingle,runComparison,renderAudit:r=>r.summary,renderComparison:()=> 'comparison',APP_VERSION:'test'});
   vm.runInContext(source+'\nglobalThis.review={run,setMode,updateRequestPlan};',ctx);
   for(const letter of ['A','B']){element('card'+letter).value='CARD_'+letter;element('primary'+letter).value='character';element('secondary'+letter).value='none';}
   element('apiKey').value='TEST_ONLY';element('comparisonType').value='independent';
