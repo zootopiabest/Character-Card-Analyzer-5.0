@@ -206,8 +206,8 @@ test('functional register, illustrative dialogue and ordinary inference remain v
 test('classification and app stamp are 5.5',()=>{
   assert.equal(APP_VERSION,'5.5');
   const rep=validateAudit(fixture(),kind);
-  assert.match(reportToMarkdown(rep),/App version: \*\*5\.2\.1\*\*/);
-  assert.match(renderAudit(rep),/v5\.2\.1/);
+  assert.match(reportToMarkdown(rep),/App version: \*\*5\.5\*\*/);
+  assert.match(renderAudit(rep),/v5\.5/);
   assert.match(CLASSIFY_SYSTEM,/secondary/);
 });
 test('JSON parser accepts fenced JSON and rejects nonnumeric score placeholders',()=>{
