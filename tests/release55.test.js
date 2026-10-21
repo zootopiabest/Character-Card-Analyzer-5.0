@@ -42,6 +42,24 @@ test('technical lint refuses to grade taste and catches malformed macro braces',
  assert.deepEqual(lintCard(JSON.stringify({data:{description:'Plain prose with {{char}} and {{user}}.'}})),[]);
  assert.ok(lintCard(JSON.stringify({data:{description:'Broken {{char}'}})).some(x=>/delimiter|macro/.test(x)));
 });
+test('serialized Extensions and metadata JSON do not trigger false broken macro warnings',()=>{
+ const input=JSON.stringify({data:{description:'Works with {{char}}.',first_mes:'Hello {{user}}.',
+   extensions:{wyvern:{greetings:[{scenario:'A quiet forest',prompt:{nested:true}}],config:{enabled:true}}}}});
+ assert.deepEqual(lintCard(input),[]);
+ const markdown='## Description\nValid {{char}} macro.\n## Extensions\n{"wyvern":{"enabled":true}}';
+ const warnings=lintCard(markdown);
+ assert.ok(!warnings.some(w=>w.includes('mismatched double-brace')||w.includes('malformed')));
+ assert.ok(lintCard(JSON.stringify({data:{description:'Broken {{char}'}})).some(w=>w.includes('mismatched')));
+});
+test('What\'s New explicitly documents shipped 5.5 features and historical version',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+ for(const feature of ['Slop affects the final grade','Price estimator','Saved audit history',
+   'Structured card editor','Side-by-side comparison','Remake field diff','Static technical lint','Persistent design decisions'])
+   assert.ok(html.includes(feature),feature);
+ assert.ok(html.includes('5.2.1 · Every greeting counts'));
+ assert.ok(html.includes('Card Analyzer <span>5.5</span>'));
+});
 test('remake field diff reports structural changes without storing full field text',()=>{
  const a={data:{name:'A',description:'Short.',first_mes:'Hello.'}};
  const b={data:{name:'A',description:'Much longer.',first_mes:'Hello.',alternate_greetings:['Bye.']}};
