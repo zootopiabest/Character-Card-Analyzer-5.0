@@ -169,7 +169,9 @@ public final class MainActivity extends Activity {
                     connection.setInstanceFollowRedirects(false);
                     connection.setRequestMethod(method);
                     JSONObject headers = new JSONObject(headersJson);
-                    for (String key : headers.keySet()) {
+                    java.util.Iterator<String> names = headers.keys();
+                    while (names.hasNext()) {
+                        String key = names.next();
                         if (!key.matches("(?i)Content-Type|Authorization|HTTP-Referer|X-Title|Accept"))
                             continue;
                         connection.setRequestProperty(key, headers.optString(key));
