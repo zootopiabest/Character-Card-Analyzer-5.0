@@ -89,6 +89,18 @@ test('alternates and examples appear only when supplied, without individual grad
   assert.equal(validateAudit(absent,kind,false,{features:f}).overallScore,8.6);
   assert.match(validateAudit(absent,kind,false,{features:f}).optionalWarnings.join(' '),/profileGreetingCoverage/);
 });
+test('example dialogue remains temporary register instruction, not permanent lore or characterization',()=>{
+  const card=formatted({description:'A calm archivist.',first_mes:'Hello.',mes_example:'{{char}}: Good evening.'});
+  const prompt=singlePrompt(card,kind);
+  for(const phrase of ['temporary register-conditioning','not persistent characterization or canonical lore',
+    'hypothetical scenario','noncanonical or contradictory settings','under Inference',
+    'essential recurring behaviors','incidental actions','No examples is not a defect','do not double-penalize'])
+    assert.ok(prompt.includes(phrase),phrase);
+  assert.doesNotMatch(prompt,/lifecycle risk only when explicitly evidenced|only when the supplied lifecycle explicitly removes it/);
+  assert.match(prompt,/"exampleDialogueAssessment":"register teaching;/);
+  const comparison=comparePrompt(card,kind,formatted({description:'Other person.',first_mes:'Hi.'}),kind);
+  assert.match(comparison,/EXAMPLE DIALOGUE: Optional, temporary register-conditioning/);
+});
 test('creator notes and lorebook blocks are present only with corresponding fields',()=>{
   const raw=formatted({name:'Mara',creator_notes:'Designer intent.',character_book:{entries:[{constant:true,enabled:true,content:'Knows the secret.'}]}});
   assert.match(raw,/constant\/always-on requested/);
