@@ -3,9 +3,9 @@ const VERSION = '5.5';
 // Cache Storage is shared by all project sites on this origin. Never delete
 // caches belonging to the original analyzer or any other GitHub Pages project.
 const PREFIX = 'card-analyzer-5:' + self.registration.scope + ':';
-// A cache revision can change without a user-visible version bump. The 5.5 hotfix
-// must replace the existing 5.5 shell instead of reusing its already-populated cache.
-const CACHE = PREFIX + VERSION + ':hotfix-1';
+// A private cache revision changes without a public version bump. Each same-version
+// fix replaces the populated shell so the updated rubric reaches installed PWAs.
+const CACHE = PREFIX + VERSION + ':hotfix-2';
 const SHELL = [
   './index.html', './manifest.webmanifest', './styles.css?v=' + VERSION,
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png',
