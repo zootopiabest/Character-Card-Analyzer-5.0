@@ -21,7 +21,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      # GitHub's Ubuntu Android SDK already includes sdkmanager; avoid obsolete 'tools' package setup.
       - name: Install Android SDK API 36
         run: sdkmanager --install "platforms;android-36" "build-tools;36.0.0"
       - uses: gradle/actions/setup-gradle@v4
