@@ -1,5 +1,7 @@
 # Card Analyzer 5.5 (alpha)
 
+> **Google Play Android branch only:** This is `google-play-android`, never merge it into `main`. The Android Studio project is in [android/](android/README.md); Play publishing and remaining blockers are in [play/PLAY_RELEASE_CHECKLIST.md](play/PLAY_RELEASE_CHECKLIST.md). No public email/domain is configured.
+
 ## 5.5 release
 
 - Expanded slop beyond stereotypical AI prose to evidenced failures of character integrity, motivation, agency and narrative coherence. Slop cleanliness contributes 10% of final quality, leaving 90% for the primary rubric. A high-slop character can still have genuine strengths.

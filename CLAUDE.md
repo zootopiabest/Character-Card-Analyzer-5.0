@@ -1,5 +1,7 @@
 # Project continuity contract · Character Card Analyzer 5
 
+> **BRANCH-ONLY NOTICE:** `google-play-android` is a permanent isolated Android packaging/policy variant. NEVER merge, cherry-pick, or port its files back into `main` or the original 4.6 project. Main is the web analyzer; Android work belongs only here. This branch deliberately leaves public support email, domain, policy URL and AI reporting endpoint blank until proper non-personal services are provided. Documentation alone cannot technically enforce GitHub branch protection; repository administration must set rules if desired.
+
 Read this before modifying the analyzer or arguing for reversing an old decision. This is a living log of **what we decided and why**, not a command to automatically agree with the owner. If a request contradicts a documented design choice, point out the conflict and its original reasoning before changing it; the owner can choose to override knowingly.
 
 ## Scope and architecture
