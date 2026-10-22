@@ -1,0 +1,58 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'app.cardanalyzer.mobile'
+    compileSdk 36
+
+    defaultConfig {
+        // PROVISIONAL. Decide the permanent ID before the FIRST Play Console upload.
+        applicationId 'app.cardanalyzer.mobile'
+        minSdk 26
+        targetSdk 36
+        versionCode 1
+        versionName '5.5-play.1'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // Never ship a release signed with a debug key.
+            if (project.hasProperty('playStoreFile') &&
+                    project.hasProperty('playStorePassword') &&
+                    project.hasProperty('playKeyAlias') &&
+                    project.hasProperty('playKeyPassword')) {
+                signingConfig signingConfigs.create('upload') {
+                    storeFile file(project.property('playStoreFile'))
+                    storePassword project.property('playStorePassword')
+                    keyAlias project.property('playKeyAlias')
+                    keyPassword project.property('playKeyPassword')
+                }
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.16.0'
+}
+
+// Build from current branch source. Do not duplicate or maintain a second web codebase.
+def webRoot = rootProject.file('..')
+def generatedWeb = layout.buildDirectory.dir('generated/playAssets/web')
+tasks.register('syncWebAssets', Sync) {
+    from(webRoot) {
+        include 'index.html', 'styles.css', 'manifest.webmanifest'
+        include 'src/**', 'icons/**', 'play/privacy.html', 'play/play-native.js'
+        exclude '**/.DS_Store'
+    }
+    into generatedWeb
+}
+android.sourceSets.main.assets.srcDir(layout.buildDirectory.dir('generated/playAssets'))
+tasks.named('preBuild').configure { dependsOn tasks.named('syncWebAssets') }

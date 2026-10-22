@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy Policy | Card Analyzer</title>
+<style>body{font:16px/1.6 system-ui;background:#101219;color:#f2f2f6;max-width:740px;margin:auto;padding:24px}a{color:#b4a0ff}h1,h2{line-height:1.2}</style></head><body>
+<h1>Card Analyzer: Privacy Policy (Draft)</h1>
+<p><strong>Publication status:</strong> Draft for the separate Android test branch. Not yet published as the final policy.</p>
+<p>Card Analyzer is an on-device character card review client. You can import or paste text, JSON,
+Markdown, character exports, and optional images. Cards and generated model reports are kept on
+your device unless you choose to send them to a model provider or export them.</p>
+<h2>Information and destinations</h2>
+<p>When you choose Run Audit, the card contents, selected model, prompts and any optional portrait
+are sent over HTTPS to the AI provider you configure (Google Gemini, OpenAI, OpenRouter,
+DeepSeek or your custom HTTPS endpoint). Your API credential is sent only to the selected
+provider endpoint to authenticate that request. The provider independently handles data under
+its own terms, privacy notices, retention settings and policies. Review them before using this app.</p>
+<p>OpenRouter model browser metadata may be requested from OpenRouter when you open it.
+The Android package contains no advertising SDK or analytics SDK and does not send card contents,
+API keys or report history to an analyzer-operated server. The app does not create an account.</p>
+<h2>On-device storage and deletion</h2>
+<p>Settings and any API keys you deliberately choose to remember are stored in local application
+storage. Audit results are saved locally in an IndexedDB database. Remove saved credentials
+by unchecking Remember API key. Clear saved reports via Audit History; clearing Android app
+storage or uninstalling removes all remaining local data. File exports you saved separately must
+be deleted by you. Model-provider data cannot be deleted by this app; consult your provider.</p>
+<h2>Permissions</h2>
+<p>Internet is used to contact your selected AI provider and retrieve a model catalog. Device
+document pickers let you select cards/images and export text to files you choose. The app does
+not request broad file storage access, device location, camera, microphone or contacts.</p>
+<h2>Safety reports and privacy inquiries</h2>
+<p>The in-app flagging form is disabled from transmission until a developer-operated receiving
+endpoint is configured and privacy-reviewed. No safety reports are silently submitted.</p>
+<p>Public support contact: <strong>not yet configured</strong>.</p>
+<p>Public privacy policy URL: <strong>not yet configured</strong>.</p>
+<p>This draft must be completed and hosted at a public, stable HTTPS URL before Google Play release.</p>
+<p><a href="../index.html">Return to analyzer</a></p>
+</body></html>

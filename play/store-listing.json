@@ -1,0 +1,13 @@
+{
+  "app_name": "Card Analyzer",
+  "short_description": "Analyze character cards with flexible rubrics and your own AI provider.",
+  "full_description": "Import a character card, pick an AI model, and review its consistency, characterization, writing, player agency, and other criteria. Compare two cards, view individual opening diagnostics, and save or export reports. You supply your own API key for supported model providers. Model usage may incur separate provider charges. Generated results may be inaccurate.",
+  "category": "TOOLS",
+  "contact_email": "",
+  "website": "",
+  "privacy_policy_url": "",
+  "public_domain": "",
+  "privacy_contact": "",
+  "package_id": "app.cardanalyzer.mobile",
+  "status": "DRAFT_NOT_FOR_PUBLICATION"
+}
