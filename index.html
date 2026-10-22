@@ -12,6 +12,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
 <title>Card Analyzer 5.5 | Modular Audit</title>
 <link rel="stylesheet" href="./styles.css?v=5.5">
+<script src="./play/play-native.js"></script>
 </head>
 <body>
 <div class="app-shell">
@@ -67,7 +68,7 @@
 <section class="hero"><span class="overline">PURPOSE-FIRST · MODULAR · EVIDENCE-LED</span>
 <h1>Grade the bot.<br><em>Not the genre.</em></h1>
 <p>A ground-up rebuild of character-card auditing. Only the rubrics that fit the bot's intended job. No mandatory drama, no psychology padding, no invented flaws.</p>
-<div class="hero-pills"><span>6 specialist modules</span><span>First-greeting synergy</span><span>BYOK, browser-only</span></div>
+<div class="hero-pills"><span>6 specialist modules</span><span>First-greeting synergy</span><span>Bring your own API key</span></div>
 </section>
 <div class="workspace">
 <section class="panel editor-panel" aria-label="Card input">
@@ -112,6 +113,7 @@
 <p id="greetingSummary" class="micro" aria-live="polite"></p>
 <p id="requestPlan" class="micro" aria-live="polite"></p><p id="costEstimate" class="micro cost-estimate" aria-live="polite"></p>
 <p id="inputWarnings" class="micro input-warning" role="status" hidden></p>
+<label class="checkline"><input id="playProviderConsent" type="checkbox"><span>I understand that running an audit sends the selected card text, prompts and optional portrait to my chosen AI provider over HTTPS. My API key is sent to authenticate that request, and the provider may charge me.</span></label>
 <div class="footer-actions"><button id="analyzeButton" class="primary-button" type="button">Run audit <span>↗</span></button><button id="cancelButton" class="quiet-button" type="button" hidden>Cancel audit</button><button id="clearButton" class="quiet-button" type="button">Clear input</button></div>
 <div id="status" class="status" role="status" aria-live="polite" hidden></div>
 <div class="error-actions"><button id="saveFailedResponse" class="quiet-button" type="button" hidden>↓ Download raw model response (diagnostics)</button></div>
@@ -129,8 +131,13 @@
 <div class="result-actions"><button id="saveMarkdown" class="quiet-button" type="button">↓ Markdown</button><button id="saveJson" class="quiet-button" type="button">↓ JSON</button></div></div>
 <p id="resultIdentity" class="micro"></p>
 <div id="classificationSummary"></div><div id="resultContent"></div></section>
+<details class="panel"><summary>Privacy &amp; report unsafe AI output</summary>
+<p class="micro"><a href="./play/privacy.html">Read this Android variant’s privacy-policy draft</a>. The public support domain and report service are intentionally not configured in the current test build.</p>
+<form id="playFlagForm"><label for="playFlagDetails">Describe offensive, unsafe, or prohibited AI-generated output</label><textarea id="playFlagDetails" rows="3" maxlength="4000" placeholder="Describe the result. Do not include secrets or API keys."></textarea><button type="submit" class="quiet-button">Flag result</button><p id="playFlagStatus" class="micro" role="status"></p></form>
+</details>
 </main><footer class="site-footer"><span id="runtimeVersion">Runtime not confirmed · Refresh to load 5.5</span><span>Fresh project, not retrofitted onto 4.6.</span></footer></div>
 <script type="module" src="./src/app.js?v=5.5"></script>
 <script type="module" src="./src/pwa.js?v=5.5"></script>
+<script type="module" src="./play/feedback.js"></script>
 </body></html>
 

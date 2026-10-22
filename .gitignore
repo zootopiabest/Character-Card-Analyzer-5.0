@@ -1,1 +1,12 @@
 calibration-output/
+.gradle/
+android/.gradle/
+android/.idea/
+android/local.properties
+android/**/build/
+*.jks
+*.keystore
+key.properties
+*.aab
+*.apk
+

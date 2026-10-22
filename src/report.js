@@ -119,6 +119,7 @@ function runMarkdown(run){
   ].join('\n\n');
 }
 export function downloadText(name,data,mime) {
+  if (globalThis.AndroidExport?.saveText) { globalThis.AndroidExport.saveText(name,data,mime); return; }
   const blob=new Blob([data],{type:mime}),url=URL.createObjectURL(blob);
   const anchor=document.createElement('a');anchor.href=url;anchor.download=name;
   anchor.click();setTimeout(()=>URL.revokeObjectURL(url),3000);

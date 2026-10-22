@@ -73,4 +73,4 @@ export function initPwa() {
   });
 }
 
-if (typeof document !== 'undefined') initPwa();
+if (typeof document !== 'undefined' && !globalThis.AndroidHttp) initPwa();

@@ -75,9 +75,9 @@ export const IMMERSION_MODULES = [
   },
   {
     "id": "pissThemOff",
-    "label": "Three Ways to Piss Them Off",
+    "label": "Three Ways to Irritate Them",
     "blurb": "A trivial irritation, a personal hurt, and something they claim doesn't bother them.",
-    "ask": "pissThemOff (Three Ways to Piss Them Off): three compact entries — a trivial irritation, a personal hurt, and something they claim does not bother them. Ground each trigger in supplied characterization and describe the supported response; hurt may produce withdrawal, humor, silence, or indifference rather than anger. Distinguish explicit facts from plausible interpretation. Do not invent hidden hurt or denial to complete the third entry — say it is not established when unsupported. Different triggers need not produce different reactions.",
+    "ask": "pissThemOff (Three Ways to Irritate Them): three compact entries — a trivial irritation, a personal hurt, and something they claim does not bother them. Ground each trigger in supplied characterization and describe the supported response; hurt may produce withdrawal, humor, silence, or indifference rather than anger. Distinguish explicit facts from plausible interpretation. Do not invent hidden hurt or denial to complete the third entry — say it is not established when unsupported. Different triggers need not produce different reactions.",
     "schema": {
       "trivial": "trivial irritation and supported response",
       "personal": "personal hurt and supported response",

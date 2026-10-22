@@ -17,6 +17,10 @@ test('Play variant restricts API and privacy data while deliberately holding con
   assert.equal(listing.public_domain,'');
   assert.equal(listing.privacy_policy_url,'');
   assert.match(config,/REPORT_ENDPOINT = ""/);
+  assert.match(read('index.html'),/playProviderConsent/);
+  assert.match(read('src/app.js'),/acknowledge provider data sharing/);
+  assert.match(read('src/report.js'),/AndroidExport/);
+  assert.match(read('android/app/build.gradle'),/play\/report-config.js/);
 });
 test('Play Android variant never changes the public version nor pretends reporting works without a destination', () => {
   assert.match(read('play/feedback.js'),/Nothing was sent/);

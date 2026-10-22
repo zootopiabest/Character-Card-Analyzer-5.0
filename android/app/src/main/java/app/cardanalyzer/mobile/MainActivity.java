@@ -20,6 +20,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.webkit.WebViewAssetLoader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -182,9 +183,13 @@ public final class MainActivity extends Activity {
                     try (InputStream in = status >= 400 ? connection.getErrorStream() : connection.getInputStream()) {
                         String text = "";
                         if (in != null) {
-                            byte[] result = in.readNBytes(MAX_RESPONSE + 1);
-                            if (result.length > MAX_RESPONSE) throw new IllegalStateException("Response too large.");
-                            text = new String(result, StandardCharsets.UTF_8);
+                            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                            byte[] chunk = new byte[8192]; int n;
+                            while ((n = in.read(chunk)) != -1) {
+                                if (buffer.size() + n > MAX_RESPONSE) throw new IllegalStateException("Response too large.");
+                                buffer.write(chunk, 0, n);
+                            }
+                            text = buffer.toString("UTF-8");
                         }
                         sendResult(id, status, text, "");
                     }
@@ -212,7 +217,7 @@ public final class MainActivity extends Activity {
                 return;
             }
             String safeName = filename == null ? "card-analyzer-report.txt" : filename.replaceAll("[^a-zA-Z0-9._-]", "_");
-            if (safeName.isBlank()) safeName = "card-analyzer-report.txt";
+            if (safeName.trim().isEmpty()) safeName = "card-analyzer-report.txt";
             final String name = safeName;
             final String type = "application/json".equals(mime) ? "application/json"
                 : "text/markdown".equals(mime) ? "text/markdown" : "text/plain";

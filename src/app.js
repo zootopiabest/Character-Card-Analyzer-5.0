@@ -175,6 +175,7 @@ function displayResult(data,ka,kb,usedMode) {
 }
 async function run() {
   if(busy)return;
+  if(!$('playProviderConsent').checked){status('Please acknowledge provider data sharing and possible API charges before running an audit.',true);return;}
   const rawConfig=readConfig(),usedMode=mode;
   const selections=['A','B'].map(letter=>({primary:$('primary'+letter).value,secondary:$('secondary'+letter).value}));
   const optionals={...immersionPanel.snapshot(),separateGreetings:$('separateGreetings').checked,

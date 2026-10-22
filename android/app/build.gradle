@@ -5,6 +5,7 @@ plugins {
 android {
     namespace 'app.cardanalyzer.mobile'
     compileSdk 36
+    buildFeatures { buildConfig true }
 
     defaultConfig {
         // PROVISIONAL. Decide the permanent ID before the FIRST Play Console upload.
@@ -49,7 +50,7 @@ def generatedWeb = layout.buildDirectory.dir('generated/playAssets/web')
 tasks.register('syncWebAssets', Sync) {
     from(webRoot) {
         include 'index.html', 'styles.css', 'manifest.webmanifest'
-        include 'src/**', 'icons/**', 'play/privacy.html', 'play/play-native.js'
+        include 'src/**', 'icons/**', 'play/privacy.html', 'play/play-native.js', 'play/feedback.js', 'play/report-config.js'
         exclude '**/.DS_Store'
     }
     into generatedWeb
