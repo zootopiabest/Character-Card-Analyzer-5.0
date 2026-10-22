@@ -61,7 +61,7 @@ export function reportTemplate(kind, hasImage = false, features = {}, {forCompar
     tradeoffs:["0-3 intentional scope tradeoffs; [] is valid"],
     firstMessageSynergy:"first opening reader experience, cadence, agency and supported portrayal; no numeric grade",
     ...(features.hasAlternates ? {profileGreetingCoverage:"persistent profile plus each independent start; no separate grades"} : {}),
-    ...(features.hasExamples ? {exampleDialogueAssessment:"illustrative value; lifecycle risk only when explicitly evidenced"} : {}),
+    ...(features.hasExamples ? {exampleDialogueAssessment:"register teaching; temporary examples-only essential recurring traits assessed under Inference, not canonical lore"} : {}),
     ...(hasImage ? {visual:{score:"NUMBER 0-100",matches:["visible matches"],mismatches:["visible contradictions"],notes:"only visible evidence"}} : {}),
     ...moduleTemplate(modules,{greetings})
   };
