@@ -24,6 +24,8 @@ function harness({classifyCard=async()=>({primary:'character'}),runSingle=async(
   vm.runInContext(source+'\nglobalThis.review={run,setMode,updateRequestPlan};',ctx);
   for(const letter of ['A','B']){element('card'+letter).value='CARD_'+letter;element('primary'+letter).value='character';element('secondary'+letter).value='none';}
   element('apiKey').value='TEST_ONLY';element('comparisonType').value='independent';
+  // Existing behavioral tests have explicitly accepted Play provider-data disclosure.
+  element('playProviderConsent').checked=true;
   return {ctx,element,storage};
 }
 test('clear cancels and invalidates a run even if its completion ignores cancellation',async()=>{
