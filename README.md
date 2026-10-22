@@ -7,6 +7,7 @@
 - Manual output token limit: 16K single, 32K comparison initially, plus 250 tokens per greeting when a combined Per-Greeting Report Card is requested. Independent diagnostic requests use their own cap.
 - Approximate input and maximum-output cost estimation for priced OpenRouter models, IndexedDB auto-saved history (reopen, pin, delete, JSON backup), structured editing, technical lint, and field diffs.
 - Responsive tabbed head-to-head scores and full diagnostics, collapsible release log, offline-stable CSS and clearer warnings. See [CLAUDE.md](CLAUDE.md) for rationale before reversing a design decision.
+- Same-version 5.5 rubric fix (2026-10-22): Example dialogue teaches temporary register rather than permanent characterization or canonical lore. Any hypothetical scenario is valid; essential recurring traits confined to examples receive a proportional Inference deduction, unlike incidental actions. Examples remain optional.
 
 
 
@@ -201,7 +202,7 @@ This writes paired cards and single/AB/BA production prompts to the ignored `cal
 6. No irrelevant categories can be "high scored" as a workaround; modules are omitted if not applicable.
 7. Use textual first greeting synergy and profile support for all independent greetings; visual continuity and explicitly selected per-greeting report cards have separate optional scores that never enter overall quality.
 8. Every actual deduction requires attributable evidence and a consequence.
-9. Creator notes and tags describe intent; only one selected greeting initializes a chat. Do not assume examples disappear without an explicit lifecycle rule. Lorebook activation follows provided frontend settings, including enabled constant entries.
+9. Creator notes and tags describe intent; only one selected greeting initializes a chat. Example dialogue is temporary register conditioning, not persistent canon; unique essential recurring traits in examples can weaken durable Inference. Lorebook activation follows provided frontend settings, including enabled constant entries.
 10. Credit voice and behavior that are reasonably implied by the profile. Only genuinely unsupported central characterization requires an additional anchor; illustrative lines and ordinary reactions do not.
 11. Give each defect one primary scoring home. A separate deduction requires a separately evidenced failure, not a renamed consequence.
 
