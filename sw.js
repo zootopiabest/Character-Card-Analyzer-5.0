@@ -5,13 +5,13 @@ const VERSION = '5.5';
 const PREFIX = 'card-analyzer-5:' + self.registration.scope + ':';
 // A private cache revision changes without a public version bump. Each same-version
 // fix replaces the populated shell so the updated rubric reaches installed PWAs.
-const CACHE = PREFIX + VERSION + ':hotfix-4';
+const CACHE = PREFIX + VERSION + ':hotfix-5';
 const SHELL = [
   './index.html', './manifest.webmanifest', './styles.css?v=' + VERSION,
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png',
   ...['app', 'pwa', 'classifier', 'evaluator', 'greeting-context', 'card-context', 'charx', 'immersion-modules', 'immersion-panel',
     'importer', 'model-browser', 'openrouter-models', 'providers', 'report', 'version',
-    'report-history', 'cost-estimate', 'static-lint', 'field-editor', 'card-diff', 'model-output', 'output-review', 'quoted-json',
+    'report-history', 'cost-estimate', 'static-lint', 'field-editor', 'card-diff', 'model-output', 'output-review', 'quoted-json', 'font-size',
     'vendor/jsonrepair/regular/jsonrepair', 'vendor/jsonrepair/utils/JSONRepairError', 'vendor/jsonrepair/utils/stringUtils',
     'rubrics/greetings', 'rubrics/assemble', 'rubrics/components', 'rubrics/core', 'rubrics/specialists'
   ].map(name => './src/' + name + '.js?v=' + VERSION)

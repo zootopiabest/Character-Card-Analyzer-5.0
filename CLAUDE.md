@@ -37,6 +37,8 @@ Read this before modifying the analyzer or arguing for reversing an old decision
 
 - 5.5 follow-up hotfix (2026-10-28): Repeated unescaped prose quotations next to commas/macros could defeat jsonrepair or split one list item into several. Prefer a narrow quote-escape pass that only inserts backslashes and requires otherwise complete JSON syntax, then retain general local repair and request-specific validation. Verified against the supplied failing comparison without checking private report text into the repository; regressions use synthetic content. PWA cache revision is `5.5:hotfix-4`; no public version bump or automatic LLM requests.
 
+- 5.5 text-size update (2026-10-28): User-requested font adjustment with a sticky A− / A+, slider (80–200%) and Reset toolbar. Store the local preference separately from provider/run settings. Use rem-based typography rather than page zoom so report/editor/control text scales while layouts reflow. Keep ordinary browser text scaling available. Public version stays 5.5; precache includes font-size.js and private cache revision is `5.5:hotfix-5`.
+
 ## Workflow and guardrails
 - Prefer discussing contradictions with this log to silently acquiescing to either owner or an AI code review. Explain tradeoffs and run tests, e.g. `npm test` and `npm run check`.
 - Keep tests for greeting slot isolation, 0/1 greeting call counts, metadata lifecycle, optional validation, and final deterministic grade. Missing fields must not get fake zeroes.
