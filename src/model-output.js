@@ -1,5 +1,6 @@
 import { jsonrepair } from './vendor/jsonrepair/regular/jsonrepair.js?v=5.5';
 import { complete } from './providers.js?v=5.5';
+import { escapeProseQuotes } from './quoted-json.js?v=5.5';
 
 function outputError(message, rawResponse) {
   return Object.assign(new Error(message), {code:'INVALID_MODEL_JSON', rawResponse});
@@ -22,6 +23,10 @@ export function decodeJson(text) {
   // turn cut-off prose or an arbitrary extracted fragment into a complete report.
   const closed=/^(?:\{[\s\S]*\}|\[[\s\S]*\])$/.test(candidate);
   if (closed) {
+    // Prefer the insertion-only pass: general repair can mistake a quoted comma
+    // in prose for an array boundary and silently split one finding into two.
+    const quoted=escapeProseQuotes(candidate);
+    if(quoted!==null)return {value:JSON.parse(quoted),repaired:true};
     try {return {value:JSON.parse(jsonrepair(candidate)),repaired:true};} catch(error) {failure=error;}
   }
   const explanation=unfinished
