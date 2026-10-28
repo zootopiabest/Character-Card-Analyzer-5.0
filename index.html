@@ -26,6 +26,7 @@
     <ul>
       <li><strong>Slop affects the final grade (10%).</strong> Now recognizes characterization collapse, contrivance, incoherence and weak human-written prose, not just stereotypical AI filler. Slop never automatically disqualifies a compelling character.</li>
       <li><strong>Example dialogue lifecycle.</strong> Optional examples teach register, not permanent characterization or canonical lore. Hypothetical scenarios are fine; essential recurring traits found only in temporary examples now earn a proportionate Inference deduction, unlike incidental actions.</li>
+      <li><strong>JSON repair and review.</strong> Common formatting errors are repaired locally, then validated. If a response still needs attention, choose Review or Send off for repair? An LLM repair makes one additional request only when clicked, and comes back for review before applying. Original output remains downloadable; missing content is never given fake scores.</li>
       <li><strong>Every greeting is considered.</strong> The main quality and slop audit always sees every selectable opening, including when individual greeting reports are sent separately. Alternate starts are never treated as simultaneous events.</li>
       <li><strong>Manual output limits.</strong> Start at 16,384 tokens for single audits or 32,768 for comparisons. Combined per-greeting grading adds 250 output tokens per greeting; separate diagnostic calls get their own smaller limit.</li>
       <li><strong>Price estimator.</strong> Preview approximate input tokens and input cost, plus a worst-case output-budget cost based on your selected limit. Uses cached OpenRouter pricing where available; actual generated output cannot be predicted.</li>
@@ -114,6 +115,23 @@
 <p id="inputWarnings" class="micro input-warning" role="status" hidden></p>
 <div class="footer-actions"><button id="analyzeButton" class="primary-button" type="button">Run audit <span>↗</span></button><button id="cancelButton" class="quiet-button" type="button" hidden>Cancel audit</button><button id="clearButton" class="quiet-button" type="button">Clear input</button></div>
 <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+<section id="outputRecovery" class="output-recovery" aria-label="Model response recovery" hidden>
+  <h3>Response needs review</h3>
+  <p id="outputRecoveryMessage"></p>
+  <p class="micro">Review and validation happen locally. Sending for repair makes one additional model request using this run’s provider, model and output limit. The repair is shown for review before applying. The original response stays available to download.</p>
+  <div class="recovery-actions">
+    <button id="reviewModelOutput" class="quiet-button" type="button" aria-expanded="false" aria-controls="outputReviewEditor">Review</button>
+    <button id="repairModelOutput" class="quiet-button" type="button">Send off for repair?</button>
+    <button id="keepPartialOutput" class="text-button" type="button" hidden>Keep partial report</button>
+    <button id="skipModelOutput" class="text-button" type="button" hidden>Skip this diagnostic</button>
+  </div>
+  <div id="outputReviewEditor" hidden>
+    <label for="outputReviewText">Response JSON · edit locally if needed</label>
+    <textarea id="outputReviewText" rows="12" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+    <button id="applyReviewedOutput" class="quiet-button" type="button">Validate &amp; continue</button>
+  </div>
+  <p id="outputRecoveryFeedback" class="micro recovery-feedback" role="status" aria-live="polite"></p>
+</section>
 <div class="error-actions"><button id="saveFailedResponse" class="quiet-button" type="button" hidden>↓ Download raw model response (diagnostics)</button></div>
 </section>
 <aside class="sidebar">

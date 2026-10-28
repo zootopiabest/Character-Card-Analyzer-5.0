@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 import {parseCard,greetingsOf,extractCardText} from '../src/card-context.js';
 import {SPECIALISTS,SPECIALIST_KEYS} from '../src/rubrics/specialists.js';
+import {mountOutputReview} from '../src/output-review.js';
 const source=readFileSync(new URL('../src/app.js',import.meta.url),'utf8').replace(/^import .*;\n/gm,'');
 const tick=()=>new Promise(r=>setImmediate(r));
 const fakeResult=()=>({summary:'Snapshot result',run:{inputs:[{label:'Captured card'}],startedAt:'TEST_DATE',resolvedModel:'test',requestCount:1}});
@@ -18,7 +19,7 @@ function harness({classifyCard=async()=>({primary:'character'}),runSingle=async(
     localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},
     mountImmersionPanel:()=>({snapshot:()=>({modules:[],modulesA:[],modulesB:[]}),setMode(){}}),mountModelBrowser:()=>({syncSelection(){},activate(){}}),
     PROVIDERS:{gemini:{label:'Gemini'}},DEFAULT_MODEL:()=> 'test-model',SPECIALISTS,SPECIALIST_KEYS,parseCard,greetingsOf,extractCardText,
-    mountFieldEditor:()=>({refresh(){}}),allReports:async()=>[],saveReport:async()=>{},pinReport:async()=>{},removeReport:async()=>{},clearReports:async()=>{},exportAllReports:async()=>'{}',
+    mountOutputReview,mountFieldEditor:()=>({refresh(){}}),allReports:async()=>[],saveReport:async()=>{},pinReport:async()=>{},removeReport:async()=>{},clearReports:async()=>{},exportAllReports:async()=>'{}',
     planEstimate:({baseOutput})=>({inputTokens:0,mainOutput:baseOutput||16384,maxOutputTokens:baseOutput||16384,requestCount:1}),priceForModel:()=>null,estimatePricing:()=>null,formatUSD:()=>'$0',
     diffCardFields:()=>[],AbortController,DOMException,prepareRun:async c=>c,classifyCard,runSingle,runComparison,renderAudit:r=>r.summary,renderComparison:()=> 'comparison',APP_VERSION:'test'});
   vm.runInContext(source+'\nglobalThis.review={run,setMode,updateRequestPlan};',ctx);
@@ -68,4 +69,14 @@ test('the pre-run summary shows all parsed greetings even with separate requests
   h.ctx.review.updateRequestPlan();
   assert.match(h.element('greetingSummary').textContent,/Card A: 3 greetings detected/);
   assert.match(h.element('requestPlan').textContent,/1 total.*0 greeting diagnostics/);
+});
+test('Clear aborts a run paused in the output review panel',async()=>{
+  const h=harness({runSingle:cfg=>cfg.onOutputIssue({label:'main audit',rawResponse:'BROKEN',message:'Invalid JSON',warnings:[],partial:null,allowSkip:false},cfg.signal)});
+  const run=h.ctx.review.run();await tick();
+  assert.equal(h.element('outputRecovery').hidden,false);
+  assert.equal(h.element('analyzeButton').disabled,true);
+  h.element('clearButton').handlers.click();await run;
+  assert.equal(h.element('outputRecovery').hidden,true);
+  assert.equal(h.element('analyzeButton').disabled,false);
+  assert.equal(h.element('results').hidden,true);
 });

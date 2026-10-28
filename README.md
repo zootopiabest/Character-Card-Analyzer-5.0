@@ -8,6 +8,7 @@
 - Approximate input and maximum-output cost estimation for priced OpenRouter models, IndexedDB auto-saved history (reopen, pin, delete, JSON backup), structured editing, technical lint, and field diffs.
 - Responsive tabbed head-to-head scores and full diagnostics, collapsible release log, offline-stable CSS and clearer warnings. See [CLAUDE.md](CLAUDE.md) for rationale before reversing a design decision.
 - Same-version 5.5 rubric fix (2026-10-22): Example dialogue teaches temporary register rather than permanent characterization or canonical lore. Any hypothetical scenario is valid; essential recurring traits confined to examples receive a proportional Inference deduction, unlike incidental actions. Examples remain optional.
+- Same-version 5.5 output recovery fix (2026-10-28): Try local JSON syntax repair, then validate the expected report, classification or greeting fields. Responses that still fail pause for adjacent **Review** and **Send off for repair?** buttons. Review/edit/validate is local; each repair click makes exactly one additional call using the captured provider/model/output ceiling. Repaired model output is displayed for review before applying. Missing findings stay visibly incomplete, with an explicit option to keep a partial report or skip a failed separate diagnostic. Cancel/Clear abort pending recovery. The original response stays downloadable in memory; repair calls appear in the run record without storing raw output or keys.
 
 
 
@@ -15,7 +16,7 @@
 
 **Version check:** The footer says `Runtime 5.5 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.5`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
 
-This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no npm packages and no build step.
+This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no package installation and no build step. The small JSON repair dependency is vendored with its license for local and offline use.
 
 ## Changes in 5.5 (Grouped Markdown greetings)
 

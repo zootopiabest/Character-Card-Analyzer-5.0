@@ -68,3 +68,11 @@ input[type=search]{width:100%;background:#11151e;color:var(--ink);border:1px sol
 .compare-table th:first-child{overflow-wrap:anywhere}
 [data-report-panel] {max-width:100%}
 @media(max-width:640px){.compare-score-cards{gap:7px}.compare-score-cards article{padding:12px 6px}.history-row button{padding:8px}.compare-tabs .tab{font-size:11px;padding:9px 10px}.field-editor{max-height:70vh}}
+
+/* Model output recovery: readable on phones, with local JSON editing. */
+.output-recovery { margin-top: 16px; padding: 18px; border: 1px solid var(--border, #64404d); border-radius: 14px; background: rgba(130, 70, 90, .08); }
+.output-recovery h3 { margin: 0 0 10px; }
+.output-recovery p { overflow-wrap: anywhere; }
+.recovery-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0; }
+#outputReviewText { display: block; width: 100%; min-height: 220px; max-height: 60vh; margin: 8px 0 12px; font: 13px/1.5 ui-monospace, monospace; resize: vertical; }
+.recovery-feedback { white-space: pre-wrap; }

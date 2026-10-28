@@ -248,13 +248,8 @@ test('Interrupted JSON reports expose their raw model response for local diagnos
     return true;
   });
 });
-test('Malformed but closed JSON reports parser diagnostics without inventing a truncation',()=>{
-  assert.throws(()=>parseJson('{"score": 7,}'),(error)=>{
-    assert.match(error.message,/malformed JSON/i);
-    assert.match(error.message,/Parser detail:/);
-    assert.ok(error.rawResponse);
-    return true;
-  });
+test('Malformed but closed JSON is repaired locally without inventing a truncation',()=>{
+  assert.deepEqual(parseJson('{"score": 7,}'),{score:7});
 });
 
 
