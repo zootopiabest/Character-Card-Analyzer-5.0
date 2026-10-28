@@ -64,7 +64,7 @@ test('What\'s New explicitly documents shipped 5.5 features and historical versi
  assert.match(guide,/temporary register conditioning/);
  assert.match(guide,/under Inference only/);
  assert.doesNotMatch(readme,/Do not assume examples disappear without an explicit lifecycle rule/);
- assert.match(readFileSync(new URL('../sw.js',import.meta.url),'utf8'),/hotfix-4/);
+ assert.match(readFileSync(new URL('../sw.js',import.meta.url),'utf8'),/hotfix-5/);
 });
 test('remake field diff reports structural changes without storing full field text',()=>{
  const a={data:{name:'A',description:'Short.',first_mes:'Hello.'}};

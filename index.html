@@ -19,6 +19,15 @@
  <div class="brand"><div class="brand-mark">V</div><div><span class="eyebrow">INDEPENDENT PROJECT</span><div class="brand-name">Card Analyzer <span>5.5</span> <b class="alpha">ALPHA</b></div></div></div>
  <div class="topbar-actions"><button id="installApp" class="quiet-button" type="button" hidden>Install app</button><a class="ghost-link" href="https://github.com/zootopiabest/Character-Card-Analyzer-5.0" target="_blank" rel="noreferrer">Repository ↗</a></div>
 </header>
+<section class="font-size-control" aria-label="Text size">
+  <div class="font-size-heading"><label for="fontSizeRange">Text size</label><output id="fontSizeValue" for="fontSizeRange" aria-live="polite">100%</output></div>
+  <div class="font-size-actions">
+    <button id="fontSizeDecrease" class="quiet-button" type="button" aria-label="Decrease font size">A−</button>
+    <input id="fontSizeRange" type="range" min="80" max="200" step="10" value="100">
+    <button id="fontSizeIncrease" class="quiet-button" type="button" aria-label="Increase font size">A+</button>
+    <button id="fontSizeReset" class="quiet-button" type="button" aria-label="Reset font size to 100 percent" disabled>Reset</button>
+  </div>
+</section>
 <div id="pwaNotice" class="status pwa-notice" hidden><span id="pwaMessage" role="status" aria-live="polite"></span><button id="updateApp" class="quiet-button" type="button" hidden>Reload to update</button></div>
 <main>
 <details id="whatsNew" class="panel whats-new"><summary>✨ What's New <span class="summary-hint">Release notes, by version</span></summary>
@@ -28,6 +37,7 @@
       <li><strong>Example dialogue lifecycle.</strong> Optional examples teach register, not permanent characterization or canonical lore. Hypothetical scenarios are fine; essential recurring traits found only in temporary examples now earn a proportionate Inference deduction, unlike incidental actions.</li>
       <li><strong>JSON repair and review.</strong> Common formatting errors are repaired locally, then validated. If a response still needs attention, choose Review or Send off for repair? An LLM repair makes one additional request only when clicked, and comes back for review before applying. Original output remains downloadable; missing content is never given fake scores.</li>
       <li><strong>Quoted prose recovery.</strong> Local repair now handles repeated unescaped quotations beside commas and <code>{{user}}</code> macros, preserving the original wording and list entries before attempting broader JSON repair.</li>
+      <li><strong>Adjustable text size.</strong> Use the always-available A− / A+ buttons or slider for 80–200% text, with Reset and a saved preference. Scales report text, inputs and the JSON review editor.</li>
       <li><strong>Every greeting is considered.</strong> The main quality and slop audit always sees every selectable opening, including when individual greeting reports are sent separately. Alternate starts are never treated as simultaneous events.</li>
       <li><strong>Manual output limits.</strong> Start at 16,384 tokens for single audits or 32,768 for comparisons. Combined per-greeting grading adds 250 output tokens per greeting; separate diagnostic calls get their own smaller limit.</li>
       <li><strong>Price estimator.</strong> Preview approximate input tokens and input cost, plus a worst-case output-budget cost based on your selected limit. Uses cached OpenRouter pricing where available; actual generated output cannot be predicted.</li>
@@ -151,5 +161,6 @@
 </main><footer class="site-footer"><span id="runtimeVersion">Runtime not confirmed · Refresh to load 5.5</span><span>Fresh project, not retrofitted onto 4.6.</span></footer></div>
 <script type="module" src="./src/app.js?v=5.5"></script>
 <script type="module" src="./src/pwa.js?v=5.5"></script>
+<script type="module" src="./src/font-size.js?v=5.5"></script>
 </body></html>
 
