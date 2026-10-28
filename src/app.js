@@ -12,9 +12,10 @@ import {saveReport,allReports,pinReport,removeReport,clearReports,exportAllRepor
 import {lintCard} from './static-lint.js?v=5.5';
 import {mountFieldEditor} from './field-editor.js?v=5.5';
 import {diffCardFields} from './card-diff.js?v=5.5';
+import {mountOutputReview} from './output-review.js?v=5.5';
 
 const $ = (id) => document.getElementById(id);
-let modelBrowser=null,activeProvider=null,immersionPanel=null;const fieldEditors={};
+let modelBrowser=null,activeProvider=null,immersionPanel=null,outputReview=null;const fieldEditors={};
 let mode = "single", result = null, resultMode = "single", cardImage = null, busy = false;
 let failedRawResponse = null;
 let runId=0,runController=null;let historyItems=[];
@@ -191,7 +192,7 @@ async function run() {
      perGreeting:(usedMode==='compare'?[optionals.modulesA,optionals.modulesB]:[optionals.modules]).map(m=>m.includes('greetingBreakdown')),
      autoClassifications:selections.slice(0,usedMode==='compare'?2:1).filter(x=>x.primary==='auto'||x.secondary==='auto').length,
      baseOutput:rawConfig.maxTokens});
-   const cfg=await prepareRun({...rawConfig,maxTokens:plan.mainOutput,signal:controller.signal});
+   const cfg=await prepareRun({...rawConfig,maxTokens:plan.mainOutput,signal:controller.signal,onOutputIssue:outputReview.review});
     const ka=await resolveKind(cfg,a,selections[0]);
     const kb=usedMode==='compare'?await resolveKind(cfg,b,selections[1]):null;
     if(id!==runId)return;
@@ -207,7 +208,8 @@ async function run() {
     const incomplete=usedMode==='single'?data.incomplete:data.cardA.incomplete||data.cardB.incomplete||data.comparisonWarnings.length;
     const diagnosticIncomplete=usedMode==='single'?Boolean(data.greetingBreakdownIncomplete||data.optionalWarnings?.length):
       [data.cardA,data.cardB].some(c=>c.greetingBreakdownIncomplete||c.optionalWarnings?.length);
-    status((incomplete||diagnosticIncomplete?'Audit partially complete. Some required or optional results are missing.':'Audit complete. '+data.run.requestCount+' model request(s).')+(historyError||' Saved locally; no analyzer server stores reports.'),Boolean(historyError));
+    const recoveryNote=data.run.outputRepairs?.length?' '+data.run.outputRepairs.length+' response(s) recovered or reviewed.':'';
+    status((incomplete||diagnosticIncomplete?'Audit partially complete. Some required or optional results are missing.':'Audit complete. '+data.run.requestCount+' model request(s).')+recoveryNote+(historyError||' Saved locally; no analyzer server stores reports.'),Boolean(historyError));
   }catch(error){
     if(id!==runId)return;
     controller.abort(error);
@@ -265,6 +267,9 @@ function wireFiles(which) {
   });
 }
 function init() {
+  outputReview=mountOutputReview({getElement:$,status,onShow:issue=>{
+    failedRawResponse=issue.rawResponse;$('saveFailedResponse').hidden=!failedRawResponse;
+  }});
   immersionPanel=mountImmersionPanel({onStorageError:message=>status(message,true),onChange:updateRequestPlan});
   wireHistory();
   $('resultContent').addEventListener('click',event=>{

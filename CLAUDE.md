@@ -33,6 +33,8 @@ Read this before modifying the analyzer or arguing for reversing an old decision
 
 - 5.5 same-version hotfix (2026-10-22): Restored example-dialogue lifecycle semantics: examples teach register and may use any hypothetical setting, but exclusive essential recurring characterization is a durability weakness under Inference. Corrected report diagnostics and documentation without a public version bump. PWA private cache revision is `5.5:hotfix-2`.
 
+- 5.5 same-version hotfix (2026-10-28): Local JSON repair (vendored jsonrepair 3.15.0) followed by request-specific validation. Unrecoverable or incomplete responses pause for Review and Send off for repair?; only the latter button sends one additional model call. The repair prompt preserves existing text/scores and never invents absent findings. Model repairs require review before application. Original raw output stays in memory/downloadable; accepted partial reports keep withheld grades and warnings. Classifier, comparison and isolated greeting outputs use the same path, with a skip option for failed optional diagnostics. Cancel/Clear invalidate review and in-flight repair. Public version remains 5.5; PWA private cache revision is `5.5:hotfix-3`.
+
 ## Workflow and guardrails
 - Prefer discussing contradictions with this log to silently acquiescing to either owner or an AI code review. Explain tradeoffs and run tests, e.g. `npm test` and `npm run check`.
 - Keep tests for greeting slot isolation, 0/1 greeting call counts, metadata lifecycle, optional validation, and final deterministic grade. Missing fields must not get fake zeroes.

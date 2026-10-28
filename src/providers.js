@@ -103,7 +103,7 @@ export function runRecord(config,details={}) {
     requestedModel:config.requestedModel||config.model,resolvedModel:config.session?.model||config.model,
     returnedModels:[...new Set(requests.map(r=>r.model).filter(Boolean))],
     settings:{maxOutputTokens:config.maxTokens,temperature:config.provider==='gemini'?0.25:'provider default',timeoutMs:config.timeoutMs||300000},
-    requests,requestCount:requests.length,...details};
+    requests,requestCount:requests.length,outputRepairs:(config.session?.outputRepairs||[]).map(r=>({...r})),...details};
 }
 export async function complete(config, system, user, imageDataUrl = null) {
   config=await prepareRun(config);
