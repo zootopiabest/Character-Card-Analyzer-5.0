@@ -5,6 +5,7 @@ import {mountOutputReview} from '../src/output-review.js';
 import {runSingle,runComparison,classifyCard} from '../src/evaluator.js';
 import {reportTemplate,comparisonTemplate} from '../src/rubrics/assemble.js';
 import {prepareRun} from '../src/providers.js';
+import {escapeProseQuotes} from '../src/quoted-json.js';
 
 const config={provider:'custom',baseUrl:'https://example.invalid',key:'TEST_SECRET_KEY',model:'test-model',maxTokens:4096};
 const kind={primary:'character',secondary:null};
@@ -18,6 +19,49 @@ async function withFetch(fetcher,run) {
   try{return await run();}finally{globalThis.fetch=previous;}
 }
 const tick=()=>new Promise(r=>setImmediate(r));
+
+test('quote-only recovery preserves repeated quoted directives, comma-adjacent quotes and macros',()=>{
+  const expected={rationale:'Instructions say "Never speak for {{user}}" and "Voice additional characters," preserving turn boundaries.',score:6,
+    nested:{rationale:'Directives say "Constant menace," "Never yield," and "Strategic sweetness," with distinct effects.'}};
+  const json=JSON.stringify(expected),raw=json.replaceAll('\\"','"');
+  assert.equal(escapeProseQuotes(raw),json);
+  assert.deepEqual(decodeJson(raw),{value:expected,repaired:true});
+});
+test('quoted commas never split one list finding into several entries',()=>{
+  const expected={items:['She says "Hello," then "Wait," and stops.','Other finding.'],score:0};
+  const json=JSON.stringify(expected),raw=json.replaceAll('\\"','"');
+  assert.equal(escapeProseQuotes(raw),json);
+  assert.deepEqual(decodeJson(raw).value,expected);
+  assert.equal(decodeJson(raw).value.items.length,2);
+});
+test('quote-only recovery preserves existing escapes, escaped keys, nested arrays and Unicode',()=>{
+  const expected={'quoted"key':{notes:'Already escaped "valid" text, path C:\\cards, newline\nthen "unescaped," text. अलविदा 🌿',
+    values:[0,true,false,null,{rationale:'"Keep," then speak.'}]}};
+  const json=JSON.stringify(expected),raw=json.replace('\\"unescaped,\\"','"unescaped,"').replace('\\"Keep,\\"','"Keep,"');
+  assert.equal(escapeProseQuotes(raw),json);
+  assert.deepEqual(decodeJson(raw).value,expected);
+  assert.equal(decodeJson(json).repaired,false);
+});
+test('quote-only recovery refuses missing content and ambiguous closing delimiters',()=>{
+  for(const raw of ['{"rationale":"Say "Go," then wait.','{"rationale":"Say "Go," then wait.","score":}',
+    '{"rationale":"Quoted "}" inside prose.","score":7}', '{"rationale":"Say "Go," then wait.","score":undefined}'])
+    assert.equal(escapeProseQuotes(raw),null);
+});
+test('a full comparison with repeated unescaped prose quotes is recovered without a review or paid retry',async()=>{
+  const expected=fill(comparisonTemplate(card,kind,card,kind));
+  expected.cardA.core.reliability.rationale='Instructions mandate "Never speak for {{user}}" and "Voice other characters," keeping boundaries intact.';
+  expected.cardA.tradeoffs=['One opening says "Hello," she says, leaving the reaction open.'];
+  expected.cardB.core.craft.rationale='Uses "word one," "word two," and "word three," without changing the assessment.';
+  const raw=JSON.stringify(expected).replaceAll('\\"','"');let calls=0;
+  const result=await withFetch(async()=>{calls++;return reply(raw);},()=>runComparison({...config,
+    onOutputIssue:()=>{throw Error('This response should be recovered locally.');}},card,kind,card,kind));
+  assert.equal(calls,1);assert.equal(result.run.requestCount,1);
+  assert.equal(result.cardA.incomplete,false);assert.equal(result.cardB.incomplete,false);
+  assert.equal(result.cardA.core.reliability.rationale,expected.cardA.core.reliability.rationale);
+  assert.deepEqual(result.cardA.tradeoffs,expected.cardA.tradeoffs);
+  assert.equal(result.cardB.core.craft.rationale,expected.cardB.core.craft.rationale);
+  assert.equal(result.cardA.overallScore,8.1);assert.equal(result.cardB.overallScore,8.1);
+});
 
 test('local repair preserves unescaped dialogue, Unicode, multiline strings and real zero scores',()=>{
   assert.deepEqual(decodeJson('{"text":"He said "hello". अलविदा 🌿\nNext line." "score":0,}'),
