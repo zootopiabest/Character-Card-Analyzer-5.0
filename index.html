@@ -33,6 +33,7 @@
 <details id="whatsNew" class="panel whats-new"><summary>✨ What's New <span class="summary-hint">Release notes, by version</span></summary>
   <details open><summary>5.5 · Better grading, more control, fewer lost reports</summary>
     <ul>
+      <li><strong>Creator's Notes Notes.</strong> Optional, non-scoring commentary on what the creator's notes claim or reveal, whether those claims fit the written character, and the analyzer's independent interpretation. Missing notes are not invented.</li>
       <li><strong>Slop affects the final grade (10%).</strong> Now recognizes characterization collapse, contrivance, incoherence and weak human-written prose, not just stereotypical AI filler. Slop never automatically disqualifies a compelling character.</li>
       <li><strong>Example dialogue lifecycle.</strong> Optional examples teach register, not permanent characterization or canonical lore. Hypothetical scenarios are fine; essential recurring traits found only in temporary examples now earn a proportionate Inference deduction, unlike incidental actions.</li>
       <li><strong>JSON repair and review.</strong> Common formatting errors are repaired locally, then validated. If a response still needs attention, choose Review or Send off for repair? An LLM repair makes one additional request only when clicked, and comes back for review before applying. Original output remains downloadable; missing content is never given fake scores.</li>
@@ -112,7 +113,7 @@
 <details id="immersionSettings"><summary>Optional extras <span id="immersionCount" class="immersion-count"></span></summary>
 <label class="checkline"><input id="separateGreetings" type="checkbox" aria-describedby="separateGreetingsHint"><span>Send greetings separately?</span></label>
 <p id="separateGreetingsHint" class="micro">Off by default: all greetings and selected extras share the main audit request. On: each greeting assessment receives only that greeting, the shared profile and its active scenario. Adds one request per greeting only for cards with multiple greetings. Cards with zero or one greeting always stay in the main call, even with Per-Greeting Report Card selected. Applies to each card separately in comparisons.</p>
-<p class="micro">Character interpretations and per-greeting report cards, separate from the main scores. Only checked extras are requested. Choices are remembered separately for single audits and each comparison card.</p>
+<p class="micro">Non-scoring creator-notes commentary, character interpretations and per-greeting report cards, separate from the main scores. Only checked extras are requested. Choices are remembered separately for single audits and each comparison card.</p>
 <div class="immersion-actions"><button type="button" class="text-button" data-optional-action="all">Select all</button><button type="button" class="text-button" data-optional-action="none">Clear extras</button></div>
 <div id="immersionChoices"></div>
 <p class="micro">More extras mean a longer report. Per-Greeting Report Card adds scores; it only adds requests when “Send greetings separately?” is on. Auto classification adds its own requests.</p>
