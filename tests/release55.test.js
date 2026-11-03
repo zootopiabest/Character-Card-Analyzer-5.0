@@ -55,7 +55,7 @@ test('What\'s New explicitly documents shipped 5.5 features and historical versi
  const {readFileSync}=await import('node:fs');
  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
  for(const feature of ['Slop affects the final grade','Price estimator','Saved audit history',
-   'Structured card editor','Side-by-side comparison','Remake field diff','Static technical lint','Persistent design decisions','Example dialogue lifecycle',"Creator's Notes Notes"])
+   'Structured card editor','Side-by-side comparison','Remake field diff','Static technical lint','Persistent design decisions','Example dialogue lifecycle',"Creator's Notes Notes",'Readable, characterful reports'])
    assert.ok(html.includes(feature),feature);
  assert.ok(html.includes('5.2.1 · Every greeting counts'));
  assert.ok(html.includes('Card Analyzer <span>5.5</span>'));
@@ -64,7 +64,7 @@ test('What\'s New explicitly documents shipped 5.5 features and historical versi
  assert.match(guide,/temporary register conditioning/);
  assert.match(guide,/under Inference only/);
  assert.doesNotMatch(readme,/Do not assume examples disappear without an explicit lifecycle rule/);
- assert.match(readFileSync(new URL('../sw.js',import.meta.url),'utf8'),/hotfix-6/);
+ assert.match(readFileSync(new URL('../sw.js',import.meta.url),'utf8'),/hotfix-7/);
 });
 test('remake field diff reports structural changes without storing full field text',()=>{
  const a={data:{name:'A',description:'Short.',first_mes:'Hello.'}};
