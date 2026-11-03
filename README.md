@@ -2,6 +2,8 @@
 
 ## 5.5 release
 
+- Creator's Notes Notes (2026-11-02): Optional and non-scoring. Compares what the creator's notes say, suggest or leave out with the character as written, offering an independent evidence-based reflection rather than automatically summarizing or agreeing. Missing notes display Not applicable, not invented analysis. Available independently for each comparison card and included in exports when selected. Private PWA cache hotfix-6, public version stays 5.5.
+
 - Expanded slop beyond stereotypical AI prose to evidenced failures of character integrity, motivation, agency and narrative coherence. Slop cleanliness contributes 10% of final quality, leaving 90% for the primary rubric. A high-slop character can still have genuine strengths.
 - Main audit always receives the full card including all independent greetings, whether their report cards are combined or sent separately. Missing report-card results remain visible as incomplete.
 - Manual output token limit: 16K single, 32K comparison initially, plus 250 tokens per greeting when a combined Per-Greeting Report Card is requested. Independent diagnostic requests use their own cap.

@@ -85,6 +85,13 @@ export const IMMERSION_MODULES = [
     }
   },
   {
+    "id": "creatorNotesNotes",
+    "label": "Creator's Notes Notes",
+    "blurb": "An independent, non-scoring reflection on what the creator's notes claim, reveal or overlook about their character.",
+    "ask": "creatorNotesNotes (Creator's Notes Notes): Write an independent, thoughtful critical reflection on CREATOR NOTES as non-runtime commentary, read against the actual supplied character profile. Do NOT merely recap or paraphrase the notes. Examine any claims about who the character is, what the creator emphasizes, and what that framing suggests about the presentation. When the notes interpret the character, decide whether that interpretation is supported, oversimplified, incomplete, unexpectedly insightful or contradicted by the card; explain WHY with specific notes-versus-card evidence. Give your own considered perspective, including genuinely interesting alignment and subtext, not reflexive agreement or a forced gotcha. Distinguish evidence from reasonable inference: marketing hype, jokes, omissions and alternate interpretations are not proof the creator misunderstands their creation. Never invent creator psychology, motives, personal traits or hidden intentions; do not treat notes as executable characterization or change the scored audit over this reflection. For only administrative notes, discuss what the presentation does or does not reveal without fabricating character claims. If no creator notes were provided, return an object with notApplicable set to 'No creator notes supplied.' rather than inventing notes. Write one to three substantive, natural paragraphs, not a bullet list, grade, checklist or bland summary.",
+    "schema": "1-3 substantive natural paragraphs offering an evidence-based independent reflection on the creator's notes versus the actual character; never a score or recap"
+  },
+  {
     "id": "greetingBreakdown",
     "label": "Per-Greeting Report Card",
     "blurb": "Every greeting graded on its own — first message and each alternate, judged as if it were the only one.",
@@ -105,9 +112,10 @@ export const IMMERSION_MODULES = [
 export function normalizeModules(value) {
   return IMMERSION_MODULES.filter(m => Array.isArray(value) && value.includes(m.id)).map(m => m.id);
 }
-export function moduleTemplate(selected = [], {greetings} = {}) {
+export function moduleTemplate(selected = [], {greetings,hasCreatorNotes} = {}) {
   const ids = normalizeModules(selected);
   return Object.fromEntries(IMMERSION_MODULES.filter(m => ids.includes(m.id)).map(m => [m.id,
+    m.id==='creatorNotesNotes'&&hasCreatorNotes===false?{notApplicable:'No creator notes supplied.'}:
     m.id==='greetingBreakdown'&&Array.isArray(greetings)?greetings.map(g=>({...m.schema[0],id:g.id,label:g.label})):m.schema]));
 }
 export function modulePrompt(selected = []) {
@@ -138,11 +146,15 @@ function validateValue(value, shape, path) {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error(path);
   return Object.fromEntries(Object.entries(shape).map(([key, child]) => [key, validateValue(value[key], child, path + "." + key)]));
 }
-export function validateModules(report, selected = [], {greetings}={}) {
+export function validateModules(report, selected = [], {greetings,hasCreatorNotes}={}) {
   const ids = normalizeModules(selected), fields = {}, warnings = [];
   for (const mod of IMMERSION_MODULES.filter(m => ids.includes(m.id))) {
     try {
       const value=report[mod.id];
+      // Missing creator metadata must never cause speculative reflection or a spurious warning.
+      if(mod.id==='creatorNotesNotes'&&hasCreatorNotes===false){
+        fields[mod.id]={notApplicable:'No creator notes supplied.'};continue;
+      }
       if(mod.id==='greetingBreakdown'&&Array.isArray(greetings))fields.greetingBreakdownExpected=greetings.length;
       if(mod.id!=='greetingBreakdown'&&typeof value?.notApplicable==='string'&&value.notApplicable.trim()){
         fields[mod.id]={notApplicable:value.notApplicable};continue;
@@ -179,7 +191,7 @@ export function optionalSections(report) {
     if (v == null) continue;
     let paragraphs = [], items = [];
     if(v.notApplicable) paragraphs=["Not applicable: "+v.notApplicable];
-    else if (typeof v === "string") paragraphs = [v];
+    else if (typeof v === "string") paragraphs = id==='creatorNotesNotes' ? v.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean) : [v];
     else if (id === "shoppingList") { items = v.items; paragraphs = [v.notes]; }
     else if (id === "topSongs") items = v.map(s => s.title + " — " + s.artist + ": " + s.vibe);
     else if (id === "greetingBreakdown") {

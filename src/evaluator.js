@@ -61,7 +61,7 @@ export function validateAudit(report, kind, hasImage = false, {features = {}, fo
     const rubricScore=secondary===null?coreScore*0.45+primary*0.55:coreScore*0.4+primary*0.45+secondary*0.15;
     overallScore=Number((rubricScore*0.9+(100-slop.score)/10*0.1).toFixed(1));
   }
-  const extras=validateModules(report,modules,{greetings});
+  const extras=validateModules(report,modules,{greetings,hasCreatorNotes:features.hasCreatorNotes});
   const result={
     ...extras,kind,overallScore,appVersion:APP_VERSION,core,specialists,slop,visual,
     summary:recover(()=>assertString(report.summary,'summary'),'Summary unavailable'),

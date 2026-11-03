@@ -63,7 +63,7 @@ export function reportTemplate(kind, hasImage = false, features = {}, {forCompar
     ...(features.hasAlternates ? {profileGreetingCoverage:"persistent profile plus each independent start; no separate grades"} : {}),
     ...(features.hasExamples ? {exampleDialogueAssessment:"register teaching; temporary examples-only essential recurring traits assessed under Inference, not canonical lore"} : {}),
     ...(hasImage ? {visual:{score:"NUMBER 0-100",matches:["visible matches"],mismatches:["visible contradictions"],notes:"only visible evidence"}} : {}),
-    ...moduleTemplate(modules,{greetings})
+    ...moduleTemplate(modules,{greetings,hasCreatorNotes:features.hasCreatorNotes})
   };
 }
 

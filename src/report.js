@@ -14,7 +14,7 @@ function renderOptionals(report) {
   const sections = optionalSections(report), warnings = report.optionalWarnings || [];
   if (!sections.length && !warnings.length) return "";
   return '<details class="optional-results" open><summary>Optional extras · separate from scores</summary>' +
-    '<p class="micro">Illustrative interpretations, not canon or scoring evidence. Greeting grades apply only within their report cards.</p>' +
+    '<p class="micro">Non-scoring commentary and illustrative interpretations, not canon or scoring evidence. Greeting grades apply only within their report cards.</p>' +
     (warnings.length ? listBlock('Optional output incomplete',warnings) : '') +
     sections.map(s => '<section class="report-section"><h4>'+safe(s.title)+'</h4>'+s.paragraphs.map(p=>'<p>'+safe(p)+'</p>').join('')+
       (s.items.length ? '<ul>'+s.items.map(i=>'<li>'+safe(i)+'</li>').join('')+'</ul>' : '')+'</section>').join('')+'</details>';
@@ -90,7 +90,7 @@ export function reportToMarkdown(result,mode='single') {
     ...(r.exampleDialogueAssessment != null ? ['## Example dialogue and lasting voice\n'+r.exampleDialogueAssessment] : []),
     ...(r.visual ? ['## Visual match: '+r.visual.score+'/100\n'+r.visual.notes,'### Matches\n'+bullets(r.visual.matches),'### Mismatches\n'+bullets(r.visual.mismatches)] : []),
     ...(optionalSections(r).length || r.optionalWarnings?.length ? [
-      '## Optional extras\nIllustrative interpretations, not canon or scoring evidence. Greeting grades are module-local.',
+      '## Optional extras\nNon-scoring commentary and illustrative interpretations, not canon or scoring evidence. Greeting grades are module-local.',
       ...(r.optionalWarnings?.length ? ['### Optional output incomplete\n'+bullets(r.optionalWarnings)] : []),
       ...optionalSections(r).map(s => '### '+s.title+'\n'+s.paragraphs.join('\n\n')+(s.items.length ? '\n'+bullets(s.items) : ''))
     ] : [])
