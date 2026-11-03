@@ -268,3 +268,6 @@ input[type=search]{width:100%;background:#11151e;color:var(--ink);border:1px sol
   .font-size-actions .quiet-button{min-width:35px;min-height:34px;padding:5px 7px;font-size:.69rem}
   .font-size-actions input[type=range]{height:34px}
 }
+
+/* Keep optional auditor guidance compact without shrinking the card editor. */
+#analyzerNotes{height:145px;min-height:105px}
