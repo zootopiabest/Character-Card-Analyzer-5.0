@@ -1,6 +1,12 @@
 import { optionalSections } from "./immersion-modules.js?v=5.5";
 const safe = (v) => String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const number = (n) => typeof n==='number'&&Number.isFinite(n)?n.toFixed(1):'Unavailable';
+
+// Support the model's basic Markdown emphasis without ever trusting its HTML.
+// Card text is escaped FIRST, then only our own strong/em tags are inserted.
+const rich = text => safe(text).replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>')
+  .replace(/(^|[\s(\[])\*([^*\n]+)\*(?=$|[\s.,!?;:)\]])/g,'$1<em>$2</em>');
+const prose = (text, className='') => '<p'+(className?' class="'+className+'"':'')+'>'+rich(text)+'</p>';
 const criterion = (name, val) => '<article class="criterion"><div class="criterion-head"><b>'+
   safe(name.replace(/([A-Z])/g," $1").replace(/^./,(c)=>c.toUpperCase()))+
   '</b><strong>'+number(val.score)+'/10</strong></div><p>'+safe(val.rationale)+'</p></article>';
@@ -10,14 +16,84 @@ const listBlock = (title, items) => items == null ? "" : '<section class="report
 const proseBlock = (title, content) => typeof content !== "string" ? "" :
   '<section class="report-section"><h4>'+safe(title)+'</h4><p>'+safe(content)+'</p></section>';
 
+const EXTRA_PRESENTATION = {
+  datingProfile: {symbol:'♡', eyebrow:'IN CHARACTER', tone:'rose', layout:'wide'},
+  shoppingList: {symbol:'◇', eyebrow:'OFF SCRIPT', tone:'mint', layout:'standard'},
+  topSongs: {symbol:'♫', eyebrow:'ON REPEAT', tone:'mint', layout:'standard'},
+  demise: {symbol:'✧', eyebrow:'HYPOTHETICAL FATE', tone:'violet', layout:'wide'},
+  psychoanalysis: {symbol:'◌', eyebrow:'BEHAVIORAL READING', tone:'violet', layout:'wide'},
+  emotionalRegisters: {symbol:'◈', eyebrow:'REACTION MAP', tone:'mint', layout:'wide'},
+  boringTuesday: {symbol:'☕', eyebrow:'EVERYDAY MOMENT', tone:'mint', layout:'standard'},
+  pissThemOff: {symbol:'⚡', eyebrow:'PRESSURE POINTS', tone:'rose', layout:'standard'},
+  creatorNotesNotes: {symbol:'✎', eyebrow:'EDITORIAL LENS', tone:'violet', layout:'wide'},
+  greetingBreakdown: {symbol:'✦', eyebrow:'EACH OPENING, ITS OWN WORLD', tone:'violet', layout:'wide'}
+};
+
+const extraFallback = section => '<div class="extra-copy">'+
+  section.paragraphs.map(p=>prose(p)).join('')+
+  (section.items.length ? '<ul class="extra-simple-list">'+section.items.map(i=>'<li>'+rich(i)+'</li>').join('')+'</ul>' : '')+
+  '</div>';
+const extraPair = (label, content, variant='') =>
+  '<div class="extra-pair'+(variant?' '+variant:'')+'"><span class="extra-pair-label">'+safe(label)+'</span>'+prose(content)+'</div>';
+
+function greetingCards(report) {
+  const greetings=Array.isArray(report.greetingBreakdown)?report.greetingBreakdown:[];
+  const expected=Number.isInteger(report.greetingBreakdownExpected)?report.greetingBreakdownExpected:greetings.length;
+  const status='Graded '+greetings.length+' of '+expected+' supplied greetings.';
+  const cards=greetings.map((g,i)=>{
+    const score=typeof g.score==='number'&&Number.isFinite(g.score)?Math.max(0,Math.min(10,g.score)):0;
+    return '<article class="greeting-card">'+
+      '<div class="greeting-top"><span class="greeting-index" aria-label="Greeting '+(i+1)+'">'+String(i+1).padStart(2,'0')+'</span>'+
+      '<div class="greeting-identity"><h5>'+safe(g.label)+'</h5><span class="greeting-register">'+safe(g.register)+'</span></div>'+
+      '<strong class="greeting-rating">'+safe(g.score)+'/10</strong></div>'+
+      '<div class="greeting-meter" aria-hidden="true"><span style="width:'+score*10+'%"></span></div>'+
+      prose(g.notes,'greeting-observation')+'</article>';
+  }).join('');
+  return '<div class="greeting-intro"><span class="greeting-count">'+safe(status)+'</span>'+
+    '<span class="greeting-disclaimer">Individual opening scores. Not included in the overall grade.</span></div>'+
+    (greetings.length?'<div class="greeting-list">'+cards+'</div>':
+      '<p class="extra-empty">'+(report.greetingBreakdownIncomplete?'No valid greeting entries returned.':'No greeting text supplied.')+'</p>');
+}
+function extraBody(section, report) {
+  const value=report[section.id];
+  if(value?.notApplicable)return '<p class="extra-empty">Not applicable: '+safe(value.notApplicable)+'</p>';
+  switch(section.id) {
+    case 'greetingBreakdown': return greetingCards(report);
+    case 'datingProfile': return '<div class="dating-letter"><span aria-hidden="true" class="dating-quote">“</span>'+
+      '<div class="extra-copy">'+section.paragraphs.map(p=>prose(p)).join('')+'</div></div>';
+    case 'demise': return '<div class="demise-layout">'+extraPair('The projected exit',value.howTheyDie)+
+      extraPair('In memoriam',value.obituary,'obituary-panel')+'</div>';
+    case 'shoppingList': return '<ol class="extra-number-list">'+value.items.map(item=>'<li>'+rich(item)+'</li>').join('')+'</ol>'+
+      '<div class="extra-outro"><span>WHAT IT REVEALS</span>'+prose(value.notes)+'</div>';
+    case 'topSongs': return '<ol class="track-list">'+value.map((song,i)=>'<li><span class="track-number">'+String(i+1).padStart(2,'0')+'</span>'+
+      '<div class="track-info"><strong>'+rich(song.title)+'</strong><small>'+rich(song.artist)+'</small>'+prose(song.vibe)+'</div></li>').join('')+'</ol>';
+    case 'emotionalRegisters': return '<div class="reaction-grid">'+
+      [['sad','Sad'],['angry','Angry'],['happy','Happy'],['grief','Grief'],['comedy','Comedy']].map(([key,label])=>
+        '<div class="reaction-tile"><span>'+label+'</span>'+prose(value[key])+'</div>').join('')+'</div>';
+    case 'boringTuesday': return '<div class="everyday-pair">'+
+      extraPair('The inconvenience',value.inconvenience)+extraPair('What actually happens',value.beat)+'</div>';
+    case 'pissThemOff': return '<div class="pressure-list">'+
+      [['trivial','A small irritation'],['personal','A personal hurt'],['denied','The claimed non-issue']].map(([key,label])=>
+        extraPair(label,value[key])).join('')+'</div>';
+    case 'psychoanalysis': return '<div class="reading-note extra-copy">'+section.paragraphs.map(p=>prose(p)).join('')+'</div>';
+    case 'creatorNotesNotes': return '<div class="creator-reading extra-copy">'+section.paragraphs.map(p=>prose(p)).join('')+'</div>';
+    default: return extraFallback(section);
+  }
+}
 function renderOptionals(report) {
-  const sections = optionalSections(report), warnings = report.optionalWarnings || [];
-  if (!sections.length && !warnings.length) return "";
-  return '<details class="optional-results" open><summary>Optional extras · separate from scores</summary>' +
-    '<p class="micro">Non-scoring commentary and illustrative interpretations, not canon or scoring evidence. Greeting grades apply only within their report cards.</p>' +
-    (warnings.length ? listBlock('Optional output incomplete',warnings) : '') +
-    sections.map(s => '<section class="report-section"><h4>'+safe(s.title)+'</h4>'+s.paragraphs.map(p=>'<p>'+safe(p)+'</p>').join('')+
-      (s.items.length ? '<ul>'+s.items.map(i=>'<li>'+safe(i)+'</li>').join('')+'</ul>' : '')+'</section>').join('')+'</details>';
+  const sections=optionalSections(report), warnings=report.optionalWarnings||[];
+  if(!sections.length&&!warnings.length)return '';
+  const cards=sections.map(section=>{
+    const meta=EXTRA_PRESENTATION[section.id]||{symbol:'✦',eyebrow:'EXTRA INSIGHT',tone:'violet',layout:'standard'};
+    return '<article class="extra-card extra-card--'+safe(meta.tone)+' extra-card--'+safe(meta.layout)+' extra-card--'+safe(section.id)+'">'+
+      '<div class="extra-card-header"><span class="extra-symbol" aria-hidden="true">'+meta.symbol+'</span>'+
+      '<div class="extra-card-heading"><span class="extra-kicker">'+meta.eyebrow+'</span><h4>'+safe(section.title)+'</h4></div></div>'+
+      '<div class="extra-card-content">'+extraBody(section,report)+'</div></article>';
+  }).join('');
+  return '<details class="optional-results" open><summary>Optional extras <span class="extras-count">'+sections.length+' perspectives</span></summary>'+
+    '<p class="extras-intro">Character explorations and critical commentary, kept separate from the scored audit. Greeting grades apply only to their individual openings.</p>'+
+    (warnings.length?listBlock('Optional output incomplete',warnings):'')+
+    '<div class="extras-grid">'+cards+'</div></details>';
 }
 export function renderAudit(report) {
   return '<div class="report">'+
