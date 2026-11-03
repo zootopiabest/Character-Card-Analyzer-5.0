@@ -43,7 +43,7 @@ function updateRequestPlan(){
     const selections=immersionPanel?.snapshot()||{};
     const perGreeting=letters.map(l=>(mode==='single'?selections.modules:l==='A'?selections.modulesA:selections.modulesB)?.includes('greetingBreakdown'));
     const cfg=readConfig();
-    const plan=planEstimate({cards,mode,separateGreetings:$('separateGreetings').checked,perGreeting,autoClassifications:classifications,baseOutput:cfg.maxTokens});
+    const plan=planEstimate({cards,mode,separateGreetings:$('separateGreetings').checked,perGreeting,autoClassifications:classifications,baseOutput:cfg.maxTokens,analyzerNotes:$('analyzerNotes').value});
     const estimate=estimatePricing(plan,priceForModel(cfg.provider,cfg.model));
     $('costEstimate').textContent='Approx. '+plan.inputTokens.toLocaleString()+' input tokens · '+plan.maxOutputTokens.toLocaleString()+' total output-token ceiling across '+plan.requestCount+' calls'+(estimate?' · estimated input '+formatUSD(estimate.input)+' · worst-case budget '+formatUSD(estimate.ceiling):' · price unavailable for selected provider/model')+'. Output is a maximum, not a prediction; token counts are approximate.';
   }catch{$('costEstimate').textContent='Cost estimate unavailable until inputs can be parsed.';}
@@ -157,9 +157,9 @@ function classifyLabel(kind) {
     (kind.scope && kind.scope!=="unspecified"?" · "+kind.scope:"") +
     (kind.reason?" · "+kind.reason:"");
 }
-async function resolveKind(config,text,selection) {
+async function resolveKind(config,text,selection,analyzerNotes="",targetCard=null) {
   const {primary:prim,secondary:sec}=selection;
-  const guessed=(prim==="auto"||sec==="auto")?await classifyCard(config,text):null;
+  const guessed=(prim==="auto"||sec==="auto")?await classifyCard(config,text,analyzerNotes,targetCard):null;
   const primary=prim==="auto"?guessed.primary:prim;
   const secondary=sec==="none"?null:sec==="auto"?(guessed?.secondary||null):sec;
   return { primary,secondary:secondary===primary?null:secondary,
@@ -178,7 +178,7 @@ async function run() {
   if(busy)return;
   const rawConfig=readConfig(),usedMode=mode;
   const selections=['A','B'].map(letter=>({primary:$('primary'+letter).value,secondary:$('secondary'+letter).value}));
-  const optionals={...immersionPanel.snapshot(),separateGreetings:$('separateGreetings').checked,
+  const optionals={...immersionPanel.snapshot(),separateGreetings:$('separateGreetings').checked,analyzerNotes:$('analyzerNotes').value.trim(),
     inputLabels:['A','B'].map(letter=>imported[letter]?.text===$('card'+letter).value?imported[letter].filename:'Pasted Card '+letter)};
   const comparisonType=$('comparisonType').value,image=cardImage;
   let a,b;
@@ -191,10 +191,10 @@ async function run() {
     const plan=planEstimate({cards:usedMode==='compare'?[a,b]:[a],mode:usedMode,separateGreetings:optionals.separateGreetings,
      perGreeting:(usedMode==='compare'?[optionals.modulesA,optionals.modulesB]:[optionals.modules]).map(m=>m.includes('greetingBreakdown')),
      autoClassifications:selections.slice(0,usedMode==='compare'?2:1).filter(x=>x.primary==='auto'||x.secondary==='auto').length,
-     baseOutput:rawConfig.maxTokens});
+     baseOutput:rawConfig.maxTokens,analyzerNotes:optionals.analyzerNotes});
    const cfg=await prepareRun({...rawConfig,maxTokens:plan.mainOutput,signal:controller.signal,onOutputIssue:outputReview.review});
-    const ka=await resolveKind(cfg,a,selections[0]);
-    const kb=usedMode==='compare'?await resolveKind(cfg,b,selections[1]):null;
+    const ka=await resolveKind(cfg,a,selections[0],optionals.analyzerNotes,usedMode==='compare'?'A':null);
+    const kb=usedMode==='compare'?await resolveKind(cfg,b,selections[1],optionals.analyzerNotes,'B'):null;
     if(id!==runId)return;
     status('Scoring the captured inputs. Any separate greeting diagnostics follow the main audit.');
     const data=usedMode==='single'?await runSingle(cfg,a,ka,image,optionals.modules,optionals)
@@ -283,6 +283,7 @@ function init() {
     populateSelector("primary"+l,true);populateSelector("secondary"+l,false);wireFiles(l);
     for(const prefix of ["primary","secondary"])$(prefix+l).addEventListener("change",updateRequestPlan);
   });
+  $("analyzerNotes").addEventListener("input",updateRequestPlan);
   $("rememberKey").checked=Boolean(settings.rememberKey);
   $("separateGreetings").checked=settings.separateGreetings===true;
   $("provider").value=PROVIDERS[settings.provider]?settings.provider:"gemini";
@@ -308,7 +309,7 @@ function init() {
   $("cancelButton").addEventListener("click",()=>cancelRun());
   $("clearButton").addEventListener("click",()=>{
     cancelRun("");for(const letter of ["A","B"]){importIds[letter]++;imported[letter]=null;}portraitImportId++;
-    setCardText("A","");setCardText("B","");setImage(null);$("results").hidden=true;result=null;resetRawResponse();status("");updateRequestPlan();
+    setCardText("A","");setCardText("B","");$("analyzerNotes").value="";setImage(null);$("results").hidden=true;result=null;resetRawResponse();status("");updateRequestPlan();
   });
   $("artFile").addEventListener("change",async(e)=>{
     const id=++portraitImportId;
