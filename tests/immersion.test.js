@@ -19,8 +19,8 @@ const fixture = modules => {
 const card = '## Description\nA quiet mechanic.\n## First Message\nRain.\n## Alternate Greeting 1\nSunshine.';
 
 // Test the request and data contracts, not just the presence of checkbox markup.
-test('all nine original extras are available, deduplicated and filtered',()=>{
-  assert.deepEqual(ids,['datingProfile','shoppingList','topSongs','demise','psychoanalysis','emotionalRegisters','boringTuesday','pissThemOff','greetingBreakdown']);
+test('original extras and creator-notes reflection are available, deduplicated and filtered',()=>{
+  assert.deepEqual(ids,['datingProfile','shoppingList','topSongs','demise','psychoanalysis','emotionalRegisters','boringTuesday','pissThemOff','creatorNotesNotes','greetingBreakdown']);
   assert.deepEqual(normalizeModules(['demise','unknown','demise','datingProfile']),['datingProfile','demise']);
   for (const invalid of [null,{},'demise',true]) assert.deepEqual(normalizeModules(invalid),[]);
 });
@@ -37,6 +37,47 @@ test('unchecked extras contribute neither instructions nor schema; each selectio
     assert.deepEqual(Object.keys(moduleTemplate([selected])),[selected]);
   }
 });
+
+test('creator-notes reflection is selected, grounded, non-scoring, and handles missing notes',()=>{
+  const notesCard=JSON.stringify({data:{
+    description:'Iris checks every risk and asks for consent before touching new machinery.',
+    creator_notes:'Iris is utterly impulsive. She always leaps into danger without stopping to think.'
+  }});
+  const on=singlePrompt(notesCard,kind,false,['creatorNotesNotes']);
+  const off=singlePrompt(notesCard,kind);
+  assert.match(on,/creatorNotesNotes \(Creator's Notes Notes\)/);
+  assert.match(on,/oversimplified, incomplete, unexpectedly insightful or contradicted/);
+  assert.match(on,/Do NOT merely recap or paraphrase/);
+  assert.ok(!off.includes('creatorNotesNotes'));
+  const withoutNotes=singlePrompt(card,kind,false,['creatorNotesNotes']);
+  const schema=JSON.parse(withoutNotes.split('\n').find(line=>line.startsWith('{"summary":')));
+  assert.deepEqual(schema.creatorNotesNotes,{notApplicable:'No creator notes supplied.'});
+
+  const raw=fill(reportTemplate(kind,false,{hasCreatorNotes:true},{modules:['creatorNotesNotes']}));
+  raw.creatorNotesNotes='The creator calls Iris impulsive, but her safety checks complicate that description. <b>Precision matters.</b>\n\nThat mismatch could be shorthand rather than a failure to understand Iris.';
+  const scored=validateAudit(raw,kind,false,{features:{hasCreatorNotes:true},modules:['creatorNotesNotes']});
+  const base=validateAudit(raw,kind,false,{features:{hasCreatorNotes:true}});
+  assert.equal(scored.overallScore,base.overallScore);
+  assert.deepEqual(scored.core,base.core);
+  assert.deepEqual(scored.specialists,base.specialists);
+  assert.deepEqual(scored.optionalWarnings,[]);
+  const html=renderAudit(scored);
+  assert.match(html,/Creator's Notes Notes/);
+  assert.match(html,/&lt;b&gt;Precision matters/);
+  assert.doesNotMatch(html,/<b>Precision matters/);
+  assert.match(html,/<\/p><p>That mismatch/);
+  assert.match(reportToMarkdown(scored),/Creator's Notes Notes/);
+
+  const absent=validateAudit(fixture([]),kind,false,{features:{hasCreatorNotes:false},modules:['creatorNotesNotes']});
+  assert.deepEqual(absent.creatorNotesNotes,{notApplicable:'No creator notes supplied.'});
+  assert.deepEqual(absent.optionalWarnings,[]);
+  assert.match(renderAudit(absent),/Not applicable: No creator notes supplied/);
+  const comparison=comparePrompt(notesCard,kind,card,kind,'independent',{modulesA:['creatorNotesNotes'],modulesB:[]});
+  const shape=JSON.parse(comparison.split('\n').find(line=>line.startsWith('{"cardA":')));
+  assert.ok(shape.cardA.creatorNotesNotes);
+  assert.equal(shape.cardB.creatorNotesNotes,undefined);
+});
+
 test('per-greeting option overrides only score prohibitions and retains independent frontend-aware starts',()=>{
   const on=singlePrompt(card,kind,false,['greetingBreakdown']);
   assert.doesNotMatch(on,/No per-greeting scorecards|without numeric greeting scores|numeric greeting grades or model-computed/);
