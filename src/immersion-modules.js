@@ -205,7 +205,7 @@ export function optionalSections(report) {
       };
       paragraphs = Object.entries(v).map(([key, text]) => (labels[key] || key) + ": " + text);
     }
-    sections.push({title:label, paragraphs, items});
+    sections.push({id, title:label, paragraphs, items});
   }
   return sections;
 }

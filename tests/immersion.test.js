@@ -78,6 +78,40 @@ test('creator-notes reflection is selected, grounded, non-scoring, and handles m
   assert.equal(shape.cardB.creatorNotesNotes,undefined);
 });
 
+test('optional presentation gives each extra a useful layout without changing scores or exports',()=>{
+  const modules=['datingProfile','demise','greetingBreakdown','creatorNotesNotes'];
+  const greetings=[{id:'first',label:'First Message'},{id:'alternate:2',label:'Alternate Greeting 2'}];
+  const raw=fixture(modules);
+  raw.datingProfile='**Amelia** likes *books*. <script>unsafe()</script>';
+  raw.creatorNotesNotes='A documented perspective, not a character directive.';
+  raw.demise={howTheyDie:'A plausible mishap.',obituary:'A farewell that fits.'};
+  raw.greetingBreakdown=[
+    {id:'first',label:'First Message',score:9,register:'Comedic chaos',notes:'Grounded sensory details.'},
+    {id:'alternate:2',label:'Alternate Greeting 2',score:5,register:'Quiet conversation',notes:'A softer entry point.'}
+  ];
+  const r=validateAudit(raw,kind,false,{features:{hasCreatorNotes:true},modules,greetings});
+  const baseline=validateAudit(raw,kind,false,{features:{hasCreatorNotes:true}});
+  const html=renderAudit(r);
+  const md=reportToMarkdown(r);
+  assert.equal(r.overallScore,baseline.overallScore);
+  for(const name of ['datingProfile','demise','creatorNotesNotes','greetingBreakdown'])assert.match(html,new RegExp('extra-card--'+name));
+  assert.match(html,/dating-letter/);
+  assert.match(html,/demise-layout/);
+  assert.match(html,/creator-reading/);
+  assert.equal((html.match(/class="greeting-card"/g)||[]).length,2);
+  assert.match(html,/Graded 2 of 2 supplied greetings/);
+  assert.match(html,/greeting-rating">9\/10/);
+  assert.match(html,/width:90%/);
+  assert.match(html,/width:50%/);
+  assert.match(html,/<strong>Amelia<\/strong>/);
+  assert.match(html,/<em>books<\/em>/);
+  assert.match(html,/&lt;script&gt;unsafe\(\)&lt;\/script&gt;/);
+  assert.doesNotMatch(html,/<script>unsafe/);
+  assert.match(md,/\*\*Amelia\*\* likes \*books\*/);
+  assert.match(md,/Alternate Greeting 2 · 5\/10/);
+  assert.match(renderComparison({cardA:r,cardB:r,comparison:{verdict:'Tie.',aAdvantages:[],bAdvantages:[],sharedGround:[],scopeDifferences:[]}}),/greeting-card/);
+});
+
 test('per-greeting option overrides only score prohibitions and retains independent frontend-aware starts',()=>{
   const on=singlePrompt(card,kind,false,['greetingBreakdown']);
   assert.doesNotMatch(on,/No per-greeting scorecards|without numeric greeting scores|numeric greeting grades or model-computed/);

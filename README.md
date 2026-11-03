@@ -2,6 +2,8 @@
 
 ## 5.5 release
 
+- Report presentation refresh (2026-11-02): Optional extras no longer share a uniform prose/list card. Dating profiles render like bios, hypothetical demise and obituary sit in paired panels, music and shopping use indexed entries, reaction types have visual groupings, and every greeting has its own scorecard with register, rationale and a visual meter. Basic Markdown emphasis is safely rendered after escaping model content. Exports and evaluation contracts are unchanged. The sticky mobile font-size control is more compact. PWA cache hotfix-7; public version stays 5.5.
+
 - Creator's Notes Notes (2026-11-02): Optional and non-scoring. Compares what the creator's notes say, suggest or leave out with the character as written, offering an independent evidence-based reflection rather than automatically summarizing or agreeing. Missing notes display Not applicable, not invented analysis. Available independently for each comparison card and included in exports when selected. Private PWA cache hotfix-6, public version stays 5.5.
 
 - Expanded slop beyond stereotypical AI prose to evidenced failures of character integrity, motivation, agency and narrative coherence. Slop cleanliness contributes 10% of final quality, leaving 90% for the primary rubric. A high-slop character can still have genuine strengths.

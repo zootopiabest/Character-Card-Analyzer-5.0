@@ -42,6 +42,8 @@ Read this before modifying the analyzer or arguing for reversing an old decision
 
 - 5.5 creator-notes commentary (2026-11-02): Added optional Creator's Notes Notes for an evidence-led reading of creator claims against the written character, independent of scored criteria. Absent notes receive deterministic Not applicable. Private PWA cache revision is `5.5:hotfix-6`; public version remains 5.5.
 
+- 5.5 report presentation refresh (2026-11-02): The optional-extras renderer now uses the existing validated module IDs to give each output its own visual presentation (dating bio, obituary, music/shopping, registers, everyday reaction, creator notes, and individual greeting report cards). All text remains model-supplied: no summaries are invented, no text is discarded, no scored fields are changed, and Markdown exports remain textual. Basic *italic* and **bold** emphasis is HTML-escaped before safe generated tags; never insert untrusted HTML. The optional module catalog's `optionalSections` now includes stable `id` for presentation only. Keep greeting IDs and score coverage intact; reports must handle zero greetings and incomplete optional sections. Compact the sticky text-size toolbar on mobile without removing its controls or persistent preference. PWA private cache revision `5.5:hotfix-7`, public version 5.5 unchanged.
+
 ## Workflow and guardrails
 - Prefer discussing contradictions with this log to silently acquiescing to either owner or an AI code review. Explain tradeoffs and run tests, e.g. `npm test` and `npm run check`.
 - Keep tests for greeting slot isolation, 0/1 greeting call counts, metadata lifecycle, optional validation, and final deterministic grade. Missing fields must not get fake zeroes.
