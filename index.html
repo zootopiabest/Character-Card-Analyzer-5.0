@@ -33,6 +33,7 @@
 <details id="whatsNew" class="panel whats-new"><summary>✨ What's New <span class="summary-hint">Release notes, by version</span></summary>
   <details open><summary>5.5 · Better grading, more control, fewer lost reports</summary>
     <ul>
+      <li><strong>OOC / Analyzer Notes.</strong> Optional, unscored context for intended behavior, frontend assumptions or repeated model misreadings. Separate from the character card and creator notes; also reaches isolated greeting checks.</li>
       <li><strong>Readable, characterful reports.</strong> Optional extras now have distinct layouts: profile-style dating bios, two-panel obituaries, numbered lists and tracks, reaction tiles, reflective notes, and a dedicated scored card for each greeting. The mobile text-size toolbar takes less space while reading, and Markdown emphasis is safely displayed.</li>
       <li><strong>Creator's Notes Notes.</strong> Optional, non-scoring commentary on what the creator's notes claim or reveal, whether those claims fit the written character, and the analyzer's independent interpretation. Missing notes are not invented.</li>
       <li><strong>Slop affects the final grade (10%).</strong> Now recognizes characterization collapse, contrivance, incoherence and weak human-written prose, not just stereotypical AI filler. Slop never automatically disqualifies a compelling character.</li>
@@ -110,6 +111,11 @@
 <div class="classification-set"><label for="primaryB">Card B: primary rubric</label><select id="primaryB"></select></div>
 <div class="classification-set"><label for="secondaryB">Optional secondary</label><select id="secondaryB"></select></div></div></div>
 <p class="micro">Auto classification adds a model request per card. Manually override categories for hybrids or unusual designs.</p>
+</details>
+<details id="analyzerNotesSettings"><summary>OOC / Analyzer Notes <span class="summary-hint">Optional · external audit context</span></summary>
+<div class="input-group"><label for="analyzerNotes">Clarifications for the analyzer</label>
+<textarea id="analyzerNotes" rows="5" placeholder="What does the model keep misunderstanding? Explain unusual design choices, intended scope or frontend behavior…" aria-describedby="analyzerNotesHint"></textarea></div>
+<p id="analyzerNotesHint" class="micro">These notes inform the evaluator, not the character's runtime instructions or its scores. They may clarify intent but cannot erase contradictions or add missing runtime traits. In comparisons, label Card A or Card B for card-specific notes; unlabeled notes apply to both. The raw notes are not saved in report history and disappear on page reload.</p>
 </details>
 <details id="immersionSettings"><summary>Optional extras <span id="immersionCount" class="immersion-count"></span></summary>
 <label class="checkline"><input id="separateGreetings" type="checkbox" aria-describedby="separateGreetingsHint"><span>Send greetings separately?</span></label>
