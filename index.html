@@ -33,6 +33,7 @@
 <details id="whatsNew" class="panel whats-new"><summary>✨ What's New <span class="summary-hint">Release notes, by version</span></summary>
   <details open><summary>5.5 · Better grading, more control, fewer lost reports</summary>
     <ul>
+      <li><strong>OpenRouter reasoning effort.</strong> Choose Model default or None through Max. Support differs by model; reasoning tokens share the report output budget.</li>
       <li><strong>OOC / Analyzer Notes.</strong> Optional, unscored context for intended behavior, frontend assumptions or repeated model misreadings. Separate from the character card and creator notes; also reaches isolated greeting checks.</li>
       <li><strong>Readable, characterful reports.</strong> Optional extras now have distinct layouts: profile-style dating bios, two-panel obituaries, numbered lists and tracks, reaction tiles, reflective notes, and a dedicated scored card for each greeting. The mobile text-size toolbar takes less space while reading, and Markdown emphasis is safely displayed.</li>
       <li><strong>Creator's Notes Notes.</strong> Optional, non-scoring commentary on what the creator's notes claim or reveal, whether those claims fit the written character, and the analyzer's independent interpretation. Missing notes are not invented.</li>
@@ -66,6 +67,9 @@
 <div class="field"><label for="apiKey">API key</label><input id="apiKey" type="password" autocomplete="off" placeholder="Only sent to your chosen provider"></div>
 <div class="field" id="customBaseWrap" hidden><label for="apiBase">Custom API base URL</label><input id="apiBase" type="url" placeholder="https://host.example/v1"></div>
 <div class="field"><label for="maxTokens">Report output token limit</label><input id="maxTokens" type="number" min="1024" max="131072" step="1024" value="16384"></div>
+<div class="field" id="reasoningSettingsWrap" hidden><label for="reasoningEffort">Reasoning effort · OpenRouter</label>
+<select id="reasoningEffort" aria-describedby="reasoningHint"><option value="default">Model default (no override)</option><option value="none">None</option><option value="minimal">Minimal</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="xhigh">Extra high (xhigh)</option><option value="max">Max</option></select>
+<p id="reasoningHint" class="micro" role="status" aria-live="polite">Not every OpenRouter model supports adjustable reasoning. Thinking tokens also count toward the output budget.</p></div>
 </div><label class="checkline"><input id="rememberKey" type="checkbox"><span>Remember API key in this browser</span></label>
 <p class="micro">Your key is never sent to the analyzer repository or a project server. Model requests go directly from your browser to the provider. Remembered keys use local storage on your device.</p>
 
