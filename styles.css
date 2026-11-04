@@ -43,6 +43,7 @@ input[type=search]{width:100%;background:#11151e;color:var(--ink);border:1px sol
 .whats-new li{line-height:1.6;margin:5px 0}
 .input-warning{color:#f6c888!important;background:#e5a85315;border:1px solid #e5a85360;border-radius:8px;padding:9px 12px;white-space:pre-wrap}
 .cost-estimate{color:var(--mint)!important;padding:8px 10px;border-left:3px solid var(--mint);background:#77e0ca0c}
+.reasoning-warning{color:#f6c888!important}
 .editor-tools{display:flex;justify-content:end;margin:7px 0}
 .field-editor{padding:8px;border:1px solid var(--line);border-radius:10px;max-height:600px;overflow:auto}
 .field-editor .field-section{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:7px 0;background:var(--panel)}
