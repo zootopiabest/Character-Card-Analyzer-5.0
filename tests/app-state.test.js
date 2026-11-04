@@ -18,7 +18,7 @@ function harness({classifyCard=async()=>({primary:'character'}),runSingle=async(
   const ctx=vm.createContext({document:{getElementById:element,querySelectorAll:()=>[],createElement:()=>element(Symbol())},
     localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},
     mountImmersionPanel:()=>({snapshot:()=>({modules:[],modulesA:[],modulesB:[]}),setMode(){}}),mountModelBrowser:()=>({syncSelection(){},activate(){}}),
-    PROVIDERS:{gemini:{label:'Gemini'}},DEFAULT_MODEL:()=> 'test-model',SPECIALISTS,SPECIALIST_KEYS,parseCard,greetingsOf,extractCardText,
+    PROVIDERS:{gemini:{label:'Gemini'},openrouter:{label:'OpenRouter'}},CACHE_KEY:'card-analyzer-5-openrouter-catalog',DEFAULT_MODEL:()=> 'test-model',SPECIALISTS,SPECIALIST_KEYS,parseCard,greetingsOf,extractCardText,
     mountOutputReview,mountFieldEditor:()=>({refresh(){}}),allReports:async()=>[],saveReport:async()=>{},pinReport:async()=>{},removeReport:async()=>{},clearReports:async()=>{},exportAllReports:async()=>'{}',
     planEstimate:({baseOutput})=>({inputTokens:0,mainOutput:baseOutput||16384,maxOutputTokens:baseOutput||16384,requestCount:1}),priceForModel:()=>null,estimatePricing:()=>null,formatUSD:()=>'$0',
     diffCardFields:()=>[],AbortController,DOMException,prepareRun:async c=>c,classifyCard,runSingle,runComparison,renderAudit:r=>r.summary,renderComparison:()=> 'comparison',APP_VERSION:'test'});
@@ -62,6 +62,26 @@ test('request plan exposes classification and per-card greeting counts including
   assert.match(h.element('requestPlan').textContent,/5 total.*1 classification.*3 greeting diagnostics/);
   h.element('separateGreetings').handlers.change();
   assert.equal(JSON.parse(h.storage.get('card-analyzer-5-settings')).separateGreetings,true);
+});
+test('OpenRouter reasoning effort is provider-specific, persisted and captured at Run',async()=>{
+  let received;
+  const h=harness({runSingle:async cfg=>{received=cfg;return fakeResult();}});
+  h.element('provider').value='openrouter';
+  h.element('provider').handlers.change({target:{value:'openrouter'}});
+  assert.equal(h.element('reasoningSettingsWrap').hidden,false);
+  assert.equal(h.element('reasoningEffort').value,'default');
+  h.element('reasoningEffort').value='max';
+  h.element('reasoningEffort').handlers.change();
+  assert.equal(JSON.parse(h.storage.get('card-analyzer-5-settings')).providers.openrouter.reasoningEffort,'max');
+  await h.ctx.review.run();
+  assert.equal(received.reasoningEffort,'max');
+  h.element('provider').value='gemini';
+  h.element('provider').handlers.change({target:{value:'gemini'}});
+  assert.equal(h.element('reasoningSettingsWrap').hidden,true);
+  h.element('provider').value='openrouter';
+  h.element('provider').handlers.change({target:{value:'openrouter'}});
+  assert.equal(h.element('reasoningEffort').value,'max');
+  assert.equal(h.element('reasoningSettingsWrap').hidden,false);
 });
 test('the pre-run summary shows all parsed greetings even with separate requests off',()=>{
   const h=harness();h.element('separateGreetings').checked=false;
