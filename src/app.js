@@ -1,6 +1,7 @@
 import {parseCard,greetingsOf} from "./card-context.js?v=5.5";
 import { mountImmersionPanel } from "./immersion-panel.js?v=5.5";
 import { mountModelBrowser } from "./model-browser.js?v=5.5";
+import { CACHE_KEY } from "./openrouter-models.js?v=5.5";
 import { PROVIDERS, DEFAULT_MODEL, prepareRun } from "./providers.js?v=5.5";
 import { SPECIALISTS, SPECIALIST_KEYS } from "./rubrics/specialists.js?v=5.5";
 import { importCardFile, importPortrait } from "./importer.js?v=5.5";
@@ -83,19 +84,40 @@ function populateSelector(id, primary) {
 function readConfig() {
   return {
     provider:$("provider").value, model:$("model").value.trim(), key:$("apiKey").value.trim(),
-    baseUrl:$("apiBase").value.trim(), maxTokens:Number($("maxTokens").value)||16384
+    baseUrl:$("apiBase").value.trim(), maxTokens:Number($("maxTokens").value)||16384,
+    reasoningEffort:$("reasoningEffort").value||"default"
   };
+}
+function updateReasoningHint() {
+  const hint=$("reasoningHint"),effort=$("reasoningEffort").value,modelId=$("model").value.trim();
+  const caveat="Not every OpenRouter model accepts adjustable reasoning or every effort level. Unsupported choices may be ignored or rejected. Reasoning uses output tokens and can reduce the space left for the report.";
+  let detail="",warning=false;
+  try {
+    const catalog=JSON.parse(localStorage.getItem(CACHE_KEY)||"null")?.models;
+    const model=Array.isArray(catalog)?catalog.find(m=>m?.id===modelId):null;
+    const capabilities=model?.reasoning;
+    if(effort!=="default" && capabilities?.mandatory && effort==="none") {
+      detail="This model requires reasoning and cannot use None. Choose Model default or a supported level. ";warning=true;
+    } else if(effort!=="default" && Array.isArray(capabilities?.supported_efforts) && !capabilities.supported_efforts.includes(effort)) {
+      detail="The catalog does not list "+effort+" for this model (available: "+(capabilities.supported_efforts.join(", ")||"none listed")+"). ";warning=true;
+    } else if(effort!=="default" && model && !capabilities) {
+      detail="This model does not advertise adjustable reasoning in the OpenRouter catalog. ";warning=true;
+    }
+  } catch {}
+  hint.textContent=detail+caveat;
+  hint.classList.toggle("reasoning-warning",warning);
 }
 function updateModelSummary() {
   $("modelSettingsSummary").textContent=PROVIDERS[$("provider").value].label+" · "+($("model").value.trim()||"Choose a model");
   modelBrowser?.syncSelection();
+  updateReasoningHint();
 }
 function persistSettings(providerOverride) {
   try {
     const cfg=readConfig();
     if(providerOverride) cfg.provider=providerOverride;
     settings.providers=settings.providers||{};
-    settings.providers[cfg.provider]={model:cfg.model,baseUrl:cfg.baseUrl,maxTokens:cfg.maxTokens};
+    settings.providers[cfg.provider]={model:cfg.model,baseUrl:cfg.baseUrl,maxTokens:cfg.maxTokens,reasoningEffort:cfg.reasoningEffort};
     settings.provider=cfg.provider;settings.modelSettingsOpen=$("modelSettings").open;settings.rememberKey=$("rememberKey").checked;
     settings.separateGreetings=$("separateGreetings").checked;
     localStorage.setItem(storeKey,JSON.stringify(settings));
@@ -109,6 +131,8 @@ function loadProvider(provider) {
   $("model").value=saved.model ?? DEFAULT_MODEL(provider);
   $("apiBase").value=saved.baseUrl || "";
   $("maxTokens").value=(settings.outputLimits||{})[mode]||(mode==="compare"?32768:16384);
+  $("reasoningEffort").value=saved.reasoningEffort||"default";
+  $("reasoningSettingsWrap").hidden=provider!=="openrouter";
   $("apiKey").value=$("rememberKey").checked ? (keys[provider]||"") : "";
   $("customBaseWrap").hidden=provider!=="custom";
   $("openRouterBrowser").hidden=provider!=="openrouter";
@@ -301,8 +325,8 @@ function init() {
     persistSettings(activeProvider);loadProvider(e.target.value);persistSettings();
   });
   $("model").addEventListener("input",updateModelSummary);
-  for(const id of ["model","apiKey","apiBase","maxTokens","rememberKey","separateGreetings"]) {
-    $(id).addEventListener("change",()=>{if(id==='maxTokens'){settings.outputLimits=settings.outputLimits||{};settings.outputLimits[mode]=Math.max(1024,Number($('maxTokens').value)||16384);}persistSettings();updateRequestPlan();});
+  for(const id of ["model","apiKey","apiBase","maxTokens","reasoningEffort","rememberKey","separateGreetings"]) {
+    $(id).addEventListener("change",()=>{if(id==='maxTokens'){settings.outputLimits=settings.outputLimits||{};settings.outputLimits[mode]=Math.max(1024,Number($('maxTokens').value)||16384);}if(id==='reasoningEffort')updateReasoningHint();persistSettings();updateRequestPlan();});
   }
   document.querySelectorAll("[data-mode]").forEach((el)=>el.addEventListener("click",()=>setMode(el.dataset.mode)));
   $("analyzeButton").addEventListener("click",()=>run().catch((err)=>status(err.message,true)));
