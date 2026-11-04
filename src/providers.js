@@ -8,6 +8,7 @@ const PRESETS = {
 };
 export const PROVIDERS = PRESETS;
 export const DEFAULT_MODEL = (name) => PRESETS[name]?.model || "";
+const OPENROUTER_REASONING_EFFORTS = new Set(["none", "minimal", "low", "medium", "high", "xhigh", "max"]);
 
 function failResponse(status, json) {
   const detail = json?.error?.message || json?.message || JSON.stringify(json || {}).slice(0, 300);
@@ -21,6 +22,7 @@ async function sendJson(url, headers, body, config) {
   const timer=setTimeout(()=>controller.abort(new DOMException('Model request timed out. No automatic retry was sent.','TimeoutError')),config.timeoutMs||300000);
   const entry={purpose:config.requestLabel||'completion',requestedModel:config.requestedModel||config.model,
     sentModel:config.model,maxOutputTokens:config.maxTokens,temperature:config.provider==='gemini'?0.25:null,
+    reasoningEffort:config.provider==='openrouter'?(config.reasoningEffort||'default'):null,
     startedAt:new Date().toISOString(),status:'pending'};
   config.requests?.push(entry);
   try {
@@ -102,7 +104,8 @@ export function runRecord(config,details={}) {
   return {startedAt:config.startedAt,completedAt:new Date().toISOString(),provider:config.provider,
     requestedModel:config.requestedModel||config.model,resolvedModel:config.session?.model||config.model,
     returnedModels:[...new Set(requests.map(r=>r.model).filter(Boolean))],
-    settings:{maxOutputTokens:config.maxTokens,temperature:config.provider==='gemini'?0.25:'provider default',timeoutMs:config.timeoutMs||300000},
+    settings:{maxOutputTokens:config.maxTokens,temperature:config.provider==='gemini'?0.25:'provider default',
+      reasoningEffort:config.provider==='openrouter'?(config.reasoningEffort||'default'):'provider default',timeoutMs:config.timeoutMs||300000},
     requests,requestCount:requests.length,outputRepairs:(config.session?.outputRepairs||[]).map(r=>({...r})),...details};
 }
 export async function complete(config, system, user, imageDataUrl = null) {
@@ -148,6 +151,12 @@ export async function complete(config, system, user, imageDataUrl = null) {
       { role: "user", content: roleContent }
     ],
   };
+  // OpenRouter only: leave the parameter out unless the user explicitly overrides the model's default.
+  if (config.provider === 'openrouter' && config.reasoningEffort && config.reasoningEffort !== 'default') {
+    if (!OPENROUTER_REASONING_EFFORTS.has(config.reasoningEffort))
+      throw new Error('Unsupported OpenRouter reasoning effort: ' + config.reasoningEffort);
+    body.reasoning = {effort:config.reasoningEffort};
+  }
   // Newer OpenAI reasoning-model families use max_completion_tokens.
   if (config.provider === "openai" && /^(o[1-9]|gpt-5|gpt-6)/i.test(config.model.trim()))
     body.max_completion_tokens = budget;
