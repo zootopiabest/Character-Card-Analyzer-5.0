@@ -67,7 +67,7 @@ export function reportTemplate(kind, hasImage = false, features = {}, {forCompar
   return {
     summary: "2-3 concise sentences; evidence-led overall finding",
     core: criteria(coreKeys), specialists,
-    slop: {score:"NUMBER 0-100 (higher worse)", evidence:"specific mechanisms or none"},
+    slop: {score:"NUMBER 0-100 (higher worse; 0 valid)", evidence:"For score >0: observed slop flaw(s) with location or quote, why each fails in context, and severity proportional to the number. For 0: no evidenced slop. Praise alone never justifies points."},
     ...(!forComparison ? {
       strengths:["0-3 concise top-level strengths (not repeated criterion essays)"],
       weaknesses:["0-3 evidenced unique weaknesses; [] is valid"]
@@ -89,7 +89,7 @@ export function rubricPrompt(kind, hasImage = false, features = {}, modules = []
 }
 const baseOutputRules = [
   "Before rating, privately distinguish: (1) durable priorities vs scripted quirks; (2) chosen temperament vs forced identical outcomes; (3) executed humor/drama vs labels or shock; (4) real contradictions vs plausible change; (5) independently evidenced faults vs duplicate consequences. Return ONLY one valid JSON object matching this structure. Replace score placeholders with NUMBERS; do not include missing optional fields. Each criterion's rationale combines cited evidence/accomplishment -> its distinct runtime effect. No invented roleplay test results, numeric greeting grades or model-computed overall score.",
-  "Do NOT mention hypothetical unsupported frontend features, missing infoboard UI/templates, alternate-greeting portability, or speculative lorebook activation as defects, tradeoffs, limitations, or caveats. Evaluate the intended frontend only. For frontend claims, require supplied evidence of an operational failure rather than missing external support. Summary <=3 sentences; every list <=3 concise entries and may be []; avoid repeating criterion analyses in summaries or lists. Weaknesses require evidence and impact. For a score of 6+, articulate what actually WORKS in that criterion at its intended scope. For scores below 6, state the principal functional limitation without cushioning it with irrelevant compliments. Distinguish quoted card content from its predicted effect."
+  "Do NOT mention hypothetical unsupported frontend features, missing infoboard UI/templates, alternate-greeting portability, or speculative lorebook activation as defects, tradeoffs, limitations, or caveats. Evaluate the intended frontend only. For frontend claims, require supplied evidence of an operational failure rather than missing external support. Summary <=3 sentences; every list <=3 concise entries and may be []; avoid repeating criterion analyses in summaries or lists. Weaknesses require evidence and impact. For a score of 6+, articulate what actually WORKS in that criterion at its intended scope. For scores below 6, state the principal functional limitation without cushioning it with irrelevant compliments. Distinguish quoted card content from its predicted effect. For slop >0 (even a single-digit score), explain exactly what defect earned the points; if no defect is substantiated, assign slop 0 rather than a token nonzero score. Do not cite a defended intentional style choice as a defect."
 ].join(" ");
 const outputRules = (modules = []) => {
   const selected = normalizeModules(modules);
