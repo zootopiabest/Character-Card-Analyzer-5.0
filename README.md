@@ -2,7 +2,7 @@
 
 ## 5.5 release
 
-- OOC / Analyzer Notes (2026-11-03): Optional, collapsible evaluator-side context, restored from 4.6. Explain misread design decisions or intended runtime assumptions without modifying the card. Unlike Creator's Notes Notes, these are instructions/context from the person requesting the audit, not a scored card field or an optional report section. Available in both single audits and head-to-head comparisons, including automatic classification and separately requested greeting checks. Card A/B labels scope comparison-specific notes. Claims are evaluated against actual evidence, not blindly accepted. Raw notes aren't stored in exported/saved reports; a boolean tracks whether they were supplied. Clear Input resets notes; reload discards them. Visible version stays 5.5; PWA cache hotfix-8.
+- OOC / Analyzer Notes (2026-11-03): Optional, collapsible evaluator-side context. Explain misread design decisions or intended runtime assumptions without modifying the card. Unlike Creator's Notes Notes, these are instructions/context from the person requesting the audit, not a scored card field or an optional report section. Available in both single audits and head-to-head comparisons, including automatic classification and separately requested greeting checks. Card A/B labels scope comparison-specific notes. Claims are evaluated against actual evidence, not blindly accepted. Raw notes aren't stored in exported/saved reports; a boolean tracks whether they were supplied. Clear Input resets notes; reload discards them. Visible version stays 5.5; PWA cache hotfix-8.
 
 - Report presentation refresh (2026-11-02): Optional extras no longer share a uniform prose/list card. Dating profiles render like bios, hypothetical demise and obituary sit in paired panels, music and shopping use indexed entries, reaction types have visual groupings, and every greeting has its own scorecard with register, rationale and a visual meter. Basic Markdown emphasis is safely rendered after escaping model content. Exports and evaluation contracts are unchanged. The sticky mobile font-size control is more compact. PWA cache hotfix-7; public version stays 5.5.
 
@@ -19,8 +19,6 @@
 - Text size control (2026-10-28): A sticky toolbar provides A− / A+, an 80–200% slider, the current percentage and Reset. Text sizes use root-relative units so the preference applies to reports, inputs, buttons and JSON review as well as ordinary body text. The setting saves on this device, works offline, and can change during an audit without altering its inputs or requests. Public version stays 5.5; PWA cache revision is hotfix-5.
 
 
-
-**A completely separate analyzer**. The 4.6 project is unchanged: https://github.com/zootopiabest/Character-card-Analyzer
 
 **Version check:** The footer says `Runtime 5.5 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.5`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
 
@@ -109,7 +107,7 @@ Bump `sw.js`'s `VERSION` alongside the runtime/cache URL version on every releas
 - Preserved existing exported property names `profileGreetingCoverage`, `exampleDialogueAssessment`, `aAdvantages`, and `bAdvantages` to avoid unnecessary schema changes. Updated validator, HTML/Markdown renderer and exports for the new optional fields.
 - Added explicit frontend-dependent lorebook treatment. Imports now label disabled entries, keyword/conditional entries and constant-requested entries, without treating constant as proof of guaranteed persistence.
 - Expanded paired human-review calibration examples from five to twelve. Added updated offline regression tests for prompt pruning, score arithmetic, the new JSON schema, lorebook activation, safety escaping and cross-card comparisons.
-- All browser asset cache-version stamps now identify 5.1.2. No GitHub account or original 4.6 repository is modified by this local package.
+- All browser asset cache-version stamps now identify 5.1.2.
 
 **Optimization measurements (rough character counts, excluding transport/API overhead):** On matched synthetic cards, the prompt text was ~36.1% shorter for a simple single audit, ~38.6% shorter for a simple head-to-head comparison, and ~32.1% shorter for a comparison with alternate greetings and examples. This is **not** a measured token count or a verified model-output reduction; the proposed 42% / 35% targets remain goals, not claims. Live model calibration and provider-dependent output measurement have not been performed.
 
@@ -188,7 +186,7 @@ For GitHub Pages, enable Pages with **GitHub Actions** as its source under Setti
 - Portability across all model families and local-server CORS has not been verified.
 - Browser-local API key persistence is opt-in and is unsuitable on a shared/untrusted device.
 - There are no live API regression tests because these would cost tokens and require private keys.
-- This project is alpha, **not** a drop-in functional replacement for every 4.6 feature.
+- This project is alpha; feature completeness and provider compatibility are not guaranteed.
 
 ## Development
 
