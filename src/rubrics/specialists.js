@@ -14,7 +14,7 @@ export const SPECIALISTS = {
     label: "Character-driven scenario", description: "A situation built to explore a particular person.",
     criteria: {
       individualPortrayal: "Profile and scenario together support this person's specific perspective and choices. High: the scene reveals usable judgments, without demanding unusual traits.",
-      sceneIntegration: "Situation and character actively interact instead of remaining disconnected paragraphs. High: supplied pressures or opportunities matter to this portrayal.",
+      sceneIntegration: "Situation and character actively interact instead of remaining disconnected paragraphs. High: supplied pressures or opportunities matter to this portrayal. Setting-wide constraints can matter through other actors, user choices or future events even when the character does not personally exercise a mechanic; do not demand an immediate demonstration of each world rule.",
       userPossibilities: "User can participate meaningfully without scripted actions or mandatory dramatic escalation; quiet scenes are valid. High: usable choices inside the stated scene, including restraint.",
       consistency: "Does portrayal remain supported as the scene develops? High: plausible persistence or change across the promised scene. Persistent fact collisions belong to cohesion; judge scene-level portrayal continuity here."
     }, rules: ["A vignette may establish the situation without prompting the user to act."]
@@ -23,7 +23,7 @@ export const SPECIALISTS = {
     label: "Scenario-driven character", description: "A person designed chiefly for a finite or specific narrative role.",
     criteria: {
       roleExecution: "Specific and capable in the intended role; an entire off-screen life is not required. High: precise, responsive fulfillment of that role.",
-      premiseFunction: "Character details do work in the scenario rather than acting as disconnected ornament. High: relevant details support the promised encounter.",
+      premiseFunction: "Character details do work in the scenario rather than acting as disconnected ornament. High: relevant details support the promised encounter. World mechanics can support encounter consistency through NPCs, enemies, user abilities or later scenes without being abilities of the featured character; do not treat indirect utility as ornament.",
       scenarioCoherence: "Do constraints and stakes support a usable sequence or resolution at the intended scope? High: a workable encounter, including a finite vignette. Persistent fact collisions belong to cohesion; prompt directive collisions belong to reliability.",
       playerAgency: "User retains meaningful choices within stated restrictions; finite endings and tight starting roles are valid. High: choices can meaningfully affect the encounter without requiring unlimited freedom."
     }, rules: ["An archetype can be excellent when its actual execution is precise."]

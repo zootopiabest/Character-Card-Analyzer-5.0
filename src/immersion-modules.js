@@ -1,4 +1,4 @@
-import {GREETING_ASSESSMENT} from "./rubrics/greetings.js?v=5.5";
+import {GREETING_ASSESSMENT} from "./rubrics/greetings.js?v=5.6";
 // Optional modules ported from the original analyzer. Only selected asks and fields enter a request.
 export const IMMERSION_MODULES = [
   {
