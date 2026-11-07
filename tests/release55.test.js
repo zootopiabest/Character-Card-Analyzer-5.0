@@ -58,13 +58,13 @@ test('What\'s New explicitly documents shipped 5.5 features and historical versi
    'Structured card editor','Side-by-side comparison','Remake field diff','Static technical lint','Persistent design decisions','Example dialogue lifecycle',"Creator's Notes Notes",'Readable, characterful reports','OOC / Analyzer Notes','OpenRouter reasoning effort'])
    assert.ok(html.includes(feature),feature);
  assert.ok(html.includes('5.2.1 · Every greeting counts'));
- assert.ok(html.includes('Card Analyzer <span>5.5</span>'));
+ assert.ok(html.includes('Card Analyzer <span>5.6</span>'));
  const guide=readFileSync(new URL('../CLAUDE.md',import.meta.url),'utf8');
  const readme=readFileSync(new URL('../README.md',import.meta.url),'utf8');
  assert.match(guide,/temporary register conditioning/);
  assert.match(guide,/under Inference only/);
  assert.doesNotMatch(readme,/Do not assume examples disappear without an explicit lifecycle rule/);
- assert.match(readFileSync(new URL('../sw.js',import.meta.url),'utf8'),/hotfix-9/);
+ assert.match(readFileSync(new URL('../sw.js',import.meta.url),'utf8'),/release-1/);
 });
 test('remake field diff reports structural changes without storing full field text',()=>{
  const a={data:{name:'A',description:'Short.',first_mes:'Hello.'}};
