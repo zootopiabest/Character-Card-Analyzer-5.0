@@ -1,9 +1,9 @@
-import {parseCard,renderCard,cardFeatures,greetingsOf} from "../card-context.js?v=5.5";
-import { normalizeModules, moduleTemplate, modulePrompt } from "../immersion-modules.js?v=5.5";
-import { CORE_CRITERIA, FOUNDATION } from "./core.js?v=5.5";
-import { SPECIALISTS, assertSpecialist } from "./specialists.js?v=5.5";
+import {parseCard,renderCard,cardFeatures,greetingsOf} from "../card-context.js?v=5.6";
+import { normalizeModules, moduleTemplate, modulePrompt } from "../immersion-modules.js?v=5.6";
+import { CORE_CRITERIA, FOUNDATION } from "./core.js?v=5.6";
+import { SPECIALISTS, assertSpecialist } from "./specialists.js?v=5.6";
 import { RUNTIME_RUBRIC, CREATOR_RUBRIC, LOREBOOK_RUBRIC, GREETING_RUBRIC,
-  ALTERNATES_RUBRIC, EXAMPLES_RUBRIC, VISUAL_RUBRIC, COMPARISON_RUBRIC } from "./components.js?v=5.5";
+  ALTERNATES_RUBRIC, EXAMPLES_RUBRIC, VISUAL_RUBRIC, COMPARISON_RUBRIC } from "./components.js?v=5.6";
 
 export const coreKeys = Object.keys(CORE_CRITERIA);
 const modulesFor = (kind) => {

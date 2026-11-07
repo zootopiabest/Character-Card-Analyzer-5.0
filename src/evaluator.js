@@ -1,14 +1,14 @@
-import {parseCard,greetingsOf,renderCard} from "./card-context.js?v=5.5";
-import {GREETING_ASSESSMENT} from "./rubrics/greetings.js?v=5.5";
-import { normalizeModules, validateModules } from "./immersion-modules.js?v=5.5";
-import { prepareRun, runRecord } from "./providers.js?v=5.5";
-import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.5";
-import { singlePrompt, comparePrompt, reportTemplate, comparisonTemplate, coreKeys, specialistKeys, inspectCardFeatures, analyzerContext } from "./rubrics/assemble.js?v=5.5";
-import { SPECIALISTS } from "./rubrics/specialists.js?v=5.5";
-import { APP_VERSION } from "./version.js?v=5.5";
-import { isolateGreetings } from "./greeting-context.js?v=5.5";
-import { completeJson, auditIssues } from './model-output.js?v=5.5';
-export { parseJson } from './model-output.js?v=5.5';
+import {parseCard,greetingsOf,renderCard} from "./card-context.js?v=5.6";
+import {GREETING_ASSESSMENT} from "./rubrics/greetings.js?v=5.6";
+import { normalizeModules, validateModules } from "./immersion-modules.js?v=5.6";
+import { prepareRun, runRecord } from "./providers.js?v=5.6";
+import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.6";
+import { singlePrompt, comparePrompt, reportTemplate, comparisonTemplate, coreKeys, specialistKeys, inspectCardFeatures, analyzerContext } from "./rubrics/assemble.js?v=5.6";
+import { SPECIALISTS } from "./rubrics/specialists.js?v=5.6";
+import { APP_VERSION } from "./version.js?v=5.6";
+import { isolateGreetings } from "./greeting-context.js?v=5.6";
+import { completeJson, auditIssues } from './model-output.js?v=5.6';
+export { parseJson } from './model-output.js?v=5.6';
 
 function assertNumber(n, min, max, field) {
   if (typeof n !== "number" || !Number.isFinite(n) || n < min || n > max)
