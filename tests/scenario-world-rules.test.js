@@ -14,7 +14,7 @@ const kind={primary:'character',secondary:null};
 
 test('world systems can matter without personal use and are not automatic bloat',()=>{
   assert.match(FOUNDATION,/SCENARIO & WORLD RULES/);
-  assert.match(FOUNDATION,/not restricted to the featured character/);
+  assert.match(FOUNDATION,/NOT restricted to the featured character/);
   assert.match(FOUNDATION,/physical combatant, never casts spells/);
   assert.match(FOUNDATION,/INFORMATION ECONOMY/);
   assert.match(FOUNDATION,/Speculative token crowding or a rule not used in the greeting is not evidence of bloat/);
