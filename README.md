@@ -1,4 +1,10 @@
-# Card Analyzer 5.5 (alpha)
+# Card Analyzer 5.6 (alpha)
+
+## 5.6 release (2026-11-07)
+
+- **Scenario/worldbuilding independence:** Scenario fields may carry shared laws, spell progression, encounter limits, and other rules governing the entire setting. A character need not know, use, or personally possess those abilities for the information to be relevant to NPCs, opponents, user decisions, or later roleplay. Character-focused rubrics no longer assume the scenario contains only personal behavior.
+- **Evidence-based information economy:** Do not infer bloat or non-actionable lore from length, indirectly useful rules, or hypothetical token pressure. Explain real redundancy, contradiction, ambiguity, disproportionate context expense or concrete runtime interference before deducting under Inference. A detailed system may improve consistency.
+- **Regression protection:** Added checks that shared and scenario-specific instructions survive single-card, comparison, and RPG/world classifications. No score weights, field IDs, output schemas or paid-call behavior changed.
 
 ## 5.5 release
 
@@ -24,7 +30,7 @@
 
 
 
-**Version check:** The footer says `Runtime 5.5 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.5`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.6 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.6`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no package installation and no build step. The small JSON repair dependency is vendored with its license for local and offline use.
 
