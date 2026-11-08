@@ -87,7 +87,7 @@ test('an empty grouped alternate keeps the later original slot and nested fenced
 test('missing optional grades report explicit coverage instead of silently looking complete',async()=>{
   const raw=report();raw.greetingBreakdown=raw.greetingBreakdown.slice(0,1);
   const {result,prompts}=await intercept(()=>raw,()=>runSingle(config,text,kind,null,['greetingBreakdown']));
-  assert.equal(prompts.length,1);assert.equal(result.overallScore,8.1);
+  assert.equal(prompts.length,1);assert.equal(result.overallScore,8.2);
   assert.equal(result.greetingBreakdownIncomplete,true);assert.equal(result.optionalWarnings.length,2);
   assert.match(renderAudit(result),/Graded 1 of 3 supplied greetings/);
 });

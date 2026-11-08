@@ -9,6 +9,7 @@ import {diffCardFields} from '../src/card-diff.js';
 const kind={primary:'character',secondary:null};
 const criteria=obj=>Object.fromEntries(Object.keys(obj).map(k=>[k,{score:8,rationale:'A concrete demonstrated function.'}]));
 function report(slop){return {summary:'Supported portrayal.',core:criteria(CORE_CRITERIA),specialists:{character:criteria(SPECIALISTS.character.criteria)},
+  contextSlop:{score:20,removablePercent:{min:10,max:20},evidence:'Profile repeats established motives; compress the repeated explanation while preserving the motive.'},
   slop:{score:slop,evidence:'Evidence-based execution analysis.'},strengths:[],weaknesses:[],tradeoffs:[],firstMessageSynergy:'Adequate start.'};}
 test('5.5 slop counts 10%, never imposes a veto and missing slop withholds overall',()=>{
   assert.equal(validateAudit(report(0),kind).overallScore,8.2);
@@ -64,7 +65,7 @@ test('What\'s New explicitly documents shipped 5.5 features and historical versi
  assert.match(guide,/temporary register conditioning/);
  assert.match(guide,/under Inference only/);
  assert.doesNotMatch(readme,/Do not assume examples disappear without an explicit lifecycle rule/);
- assert.match(readFileSync(new URL('../sw.js',import.meta.url),'utf8'),/release-1/);
+ assert.match(readFileSync(new URL('../sw.js',import.meta.url),'utf8'),/context-slop-1/);
 });
 test('remake field diff reports structural changes without storing full field text',()=>{
  const a={data:{name:'A',description:'Short.',first_mes:'Hello.'}};

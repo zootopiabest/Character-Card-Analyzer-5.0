@@ -62,7 +62,8 @@ function fakeAudit(withLists=true){
   return {
     summary:"A functioning character.",core:Object.fromEntries(Object.keys(CORE_CRITERIA).map(k=>[k,criterion()])),
     specialists:{character:Object.fromEntries(Object.keys(SPECIALISTS.character.criteria).map(k=>[k,criterion()]))},
-    slop:{score:5,evidence:"No filler."},
+    contextSlop:{score:20,removablePercent:{min:10,max:20},evidence:'Profile repeats established motives; compress the repeated explanation while preserving the motive.'},
+  slop:{score:5,evidence:"No filler."},
     ...(withLists?{strengths:[],weaknesses:[]}:{}),
     tradeoffs:[],firstMessageSynergy:"Active first greeting works."
   };

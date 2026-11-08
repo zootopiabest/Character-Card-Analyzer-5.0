@@ -16,6 +16,7 @@ const fixture = (which=kind, features={}) => ({
   summary:'Text supports a grounded finding.',
   core:scores(Object.keys(CORE_CRITERIA),8),
   specialists:Object.fromEntries(specialistKeys(which).map(id=>[id,scores(Object.keys(SPECIALISTS[id].criteria),9)])),
+  contextSlop:{score:14,removablePercent:{min:10,max:20},evidence:'Profile repeats established motives; compress the repeated explanation while preserving the motive.'},
   slop:{score:12,evidence:'No meaningful filler.'},
   strengths:['Functional voice'],weaknesses:[],tradeoffs:[],
   firstMessageSynergy:'First opening is appropriate and independent.',
@@ -54,11 +55,11 @@ test('legacy evidence and effect are accepted but normalized to rationale',()=>{
   assert.equal(validateAudit(item,kind).overallScore,null);
   assert.match(validateAudit(item,kind).validationWarnings.join(' '),/rationale/);
 });
-test('numerical integrity retains the 40/45/15 rubric split within 90% quality',()=>{
+test('numerical integrity retains the 40/45/15 rubric split within 80% quality',()=>{
   const two={primary:'character',secondary:'rpg'};
   const item=fixture(two);
   for(const c of Object.values(item.specialists.rpg)) c.score=4;
-  assert.equal(validateAudit(item,two).overallScore,7.9);
+  assert.equal(validateAudit(item,two).overallScore,8.0);
   item.core.craft.score='10';
   assert.equal(validateAudit(item,two).overallScore,null);
 });
@@ -203,9 +204,9 @@ test('trauma and comic execution checks survive consolidation',()=>{
 });
 test('single-home ownership distinguishes context economy, prose and outcomes',()=>{
   assert.match(FOUNDATION,/Choose ONE scoring home per defect/);
-  assert.match(CORE_CRITERIA.inference,/redundant explanation that materially burdens context/);
-  assert.match(CORE_CRITERIA.craft,/information economy belongs to inference/);
-  assert.match(FOUNDATION,/bounded 10%/);
+  assert.match(CORE_CRITERIA.inference,/avoidable wording belongs only to Context Slop/);
+  assert.match(CORE_CRITERIA.craft,/persistent-context economy belongs only to Context Slop/);
+  assert.match(FOUNDATION,/80% rubric quality, 10% slop cleanliness and 10% context efficiency/);
   assert.match(CORE_CRITERIA.inference,/world rules, causal relationships and state/);
   assert.match(SPECIALISTS.rpg.criteria.mechanics,/prompt delivery and formatting conflicts belong to reliability/);
 });

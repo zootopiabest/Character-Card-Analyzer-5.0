@@ -53,17 +53,23 @@ export function validateAudit(report, kind, hasImage = false, {features = {}, fo
     }
   }
   const slop=recover(()=>({score:assertNumber(report.slop?.score,0,100,'slop.score'),evidence:assertString(report.slop?.evidence,'slop.evidence')}),'Slop unavailable');
+  const contextSlop=recover(()=>{
+    const c=report.contextSlop;
+    const min=assertNumber(c?.removablePercent?.min,0,100,'contextSlop.removablePercent.min');
+    const max=assertNumber(c?.removablePercent?.max,min,100,'contextSlop.removablePercent.max');
+    return {score:assertNumber(c?.score,0,100,'contextSlop.score'),removablePercent:{min,max},evidence:assertString(c?.evidence,'contextSlop.evidence')};
+  },'Context Slop unavailable');
   const visual=hasImage?recover(()=>({score:assertNumber(report.visual?.score,0,100,'visual.score'),matches:strings(report.visual?.matches,'visual.matches'),mismatches:strings(report.visual?.mismatches,'visual.mismatches'),notes:assertString(report.visual?.notes,'visual.notes')}),'Portrait comparison unavailable',true):null;
   let overallScore=null;
-  if(scoreComplete&&slop){
+  if(scoreComplete&&slop&&contextSlop){
     const primary=averageModule(specialists[kind.primary]),coreScore=averageModule(core);
     const secondary=kind.secondary&&kind.secondary!==kind.primary?averageModule(specialists[kind.secondary]):null;
     const rubricScore=secondary===null?coreScore*0.45+primary*0.55:coreScore*0.4+primary*0.45+secondary*0.15;
-    overallScore=Number((rubricScore*0.9+(100-slop.score)/10*0.1).toFixed(1));
+    overallScore=Number((rubricScore*0.8+(100-slop.score)/10*0.1+(100-contextSlop.score)/10*0.1).toFixed(1));
   }
   const extras=validateModules(report,modules,{greetings,hasCreatorNotes:features.hasCreatorNotes});
   const result={
-    ...extras,kind,overallScore,appVersion:APP_VERSION,core,specialists,slop,visual,
+    ...extras,kind,overallScore,appVersion:APP_VERSION,scoringVersion:'context-slop-1',core,specialists,slop,contextSlop,visual,
     summary:recover(()=>assertString(report.summary,'summary'),'Summary unavailable'),
     strengths:recover(()=>strings(report.strengths,'strengths',forComparison),'Strengths unavailable'),
     weaknesses:recover(()=>strings(report.weaknesses,'weaknesses',forComparison),'Weaknesses unavailable'),
@@ -72,7 +78,7 @@ export function validateAudit(report, kind, hasImage = false, {features = {}, fo
     profileGreetingCoverage:features.hasAlternates?recover(()=>assertString(report.profileGreetingCoverage,'profileGreetingCoverage'),'Greeting coverage unavailable',true):null,
     exampleDialogueAssessment:features.hasExamples?recover(()=>assertString(report.exampleDialogueAssessment,'exampleDialogueAssessment'),'Example assessment unavailable',true):null
   };
-  return {...result,scoreComplete,incomplete:!scoreComplete||!slop||validationWarnings.length>0,validationWarnings,
+  return {...result,scoreComplete,incomplete:!scoreComplete||!slop||!contextSlop||validationWarnings.length>0,validationWarnings,
     optionalWarnings:[...(extras.optionalWarnings||[]),...optionalWarnings]};
 }
 

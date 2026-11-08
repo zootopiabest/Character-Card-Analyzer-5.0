@@ -1,6 +1,15 @@
 import { optionalSections } from "./immersion-modules.js?v=5.6";
 const safe = (v) => String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const number = (n) => typeof n==='number'&&Number.isFinite(n)?n.toFixed(1):'Unavailable';
+const hasContextScoring = r => r.scoringVersion==='context-slop-1'||Boolean(r.contextSlop);
+const scoringLabel = r => hasContextScoring(r)
+  ? '80% rubric quality + 10% slop cleanliness + 10% context efficiency'
+  : '90% rubric quality + 10% slop cleanliness (legacy scoring)';
+const contextLabel = r => r.contextSlop ? r.contextSlop.score+'/100 (higher worse)'
+  : hasContextScoring(r) ? 'Unavailable' : 'Not assessed (legacy report)';
+const contextEvidence = r => r.contextSlop
+  ? 'Estimated removable content: '+r.contextSlop.removablePercent.min+'–'+r.contextSlop.removablePercent.max+'% (approximate, not a token measurement).\n\n'+r.contextSlop.evidence
+  : hasContextScoring(r) ? 'Unavailable; overall grade withheld.' : 'Not assessed in this saved report; its original score is unchanged.';
 
 // Support the model's basic Markdown emphasis without ever trusting its HTML.
 // Card text is escaped FIRST, then only our own strong/em tags are inserted.
@@ -100,10 +109,11 @@ export function renderAudit(report) {
     '<header class="result-header"><span class="eyebrow">'+safe('v'+(report.appVersion||'unknown')+' · '+report.kind.primary)+
     (report.kind.secondary?' + '+safe(report.kind.secondary):'')+
     '</span><div class="result-score'+(report.overallScore===null?' incomplete-score':'')+'"><span>'+number(report.overallScore)+
-    (report.overallScore===null?'':'<small>/10</small>')+'</span><div><b>Overall quality</b><p>'+(report.overallScore===null?'Withheld: required criteria or slop unavailable.':'90% rubric quality + 10% slop cleanliness')+'</p></div></div>'+
+    (report.overallScore===null?'':'<small>/10</small>')+'</span><div><b>Overall quality</b><p>'+(report.overallScore===null?'Withheld: required criteria, slop or Context Slop unavailable.':scoringLabel(report))+'</p></div></div>'+
     proseBlock('Finding',report.summary)+'</header>'+listBlock('Incomplete audit',report.validationWarnings?.length?report.validationWarnings:null)+
     '<div class="score-strip"><div><small>Slop severity</small><strong>'+(report.slop?Math.round(report.slop.score):'Unavailable')+
-    (report.slop?'<span>/100 ↑ worse</span>':'')+'</strong></div><div><small>Core dimensions</small><strong>'+
+    (report.slop?'<span>/100 ↑ worse</span>':'')+'</strong></div><div><small>Context Slop</small><strong>'+(report.contextSlop?Math.round(report.contextSlop.score):'—')+
+    (report.contextSlop?'<span>/100 ↑ worse</span>':'')+'</strong>'+(report.contextSlop?'':'<small>'+safe(contextLabel(report))+'</small>')+'</div><div><small>Core dimensions</small><strong>'+
     Object.keys(report.core).length+'</strong></div><div><small>Specialist modules</small><strong>'+
     Object.keys(report.specialists).length+'</strong></div></div>'+
     '<details open><summary>Universal foundation</summary><div class="criteria-grid">'+
@@ -112,6 +122,7 @@ export function renderAudit(report) {
       '<details open><summary>Specialist: '+safe(id)+'</summary><div class="criteria-grid">'+
       Object.entries(section).map(([key,val])=>criterion(key,val)).join("")+'</div></details>').join("")+
     proseBlock('Slop analysis',report.slop?.evidence)+
+    proseBlock('Context Slop · persistent profile efficiency',contextEvidence(report))+
     listBlock('What it does well',report.strengths)+listBlock('Construction defects',report.weaknesses)+
     listBlock('Intentional tradeoffs, not defects',report.tradeoffs)+
     proseBlock('First message synergy',report.firstMessageSynergy)+
@@ -137,8 +148,8 @@ export function renderComparison(data) {
     '<button type="button" class="tab" data-report-tab="cardA" aria-selected="false">Card A details</button>'+
     '<button type="button" class="tab" data-report-tab="cardB" aria-selected="false">Card B details</button></div>'+
     '<section data-report-panel="overview" class="comparison-summary"><h3>Head-to-head verdict</h3><p>'+safe(c.verdict)+'</p>'+
-    '<div class="compare-score-cards"><article><small>Card A</small><strong>'+score(A)+'/10</strong><span>Slop '+(A.slop?A.slop.score+'/100':'—')+'</span></article>'+
-    '<article><small>Card B</small><strong>'+score(B)+'/10</strong><span>Slop '+(B.slop?B.slop.score+'/100':'—')+'</span></article></div>'+
+    '<div class="compare-score-cards"><article><small>Card A</small><strong>'+score(A)+'/10</strong><span>Slop '+(A.slop?A.slop.score+'/100':'—')+'</span><span>Context Slop '+safe(contextLabel(A))+'</span></article>'+
+    '<article><small>Card B</small><strong>'+score(B)+'/10</strong><span>Slop '+(B.slop?B.slop.score+'/100':'—')+'</span><span>Context Slop '+safe(contextLabel(B))+'</span></article></div>'+
     '<details open><summary>Aligned grading criteria</summary><div class="compare-table-wrap"><table class="compare-table"><thead>'+row('Criterion','Card A','Card B')+'</thead><tbody>'+coreRows+specialistRows+'</tbody></table></div></details>'+
     '<div class="compare-cols">'+listBlock('Card A advantages',c.aAdvantages)+listBlock('Card B advantages',c.bAdvantages)+'</div>'+
     listBlock('Shared ground',c.sharedGround)+listBlock('Scope differences',c.scopeDifferences)+
@@ -151,13 +162,15 @@ export function reportToMarkdown(result,mode='single') {
   const bullets = (items) => items?.length ? items.map(x=>'- '+x).join('\n') : 'None evidenced.';
   const audit = (r) => [
     '# Card audit: '+r.kind.primary+(r.kind.secondary?' + '+r.kind.secondary:''),
-    'App version: **'+(r.appVersion||'unknown')+'** | Overall: **'+(r.overallScore===null?'Withheld — incomplete criteria':number(r.overallScore)+'/10')+'** | Slop: **'+(r.slop?r.slop.score+'/100 (higher worse)':'Unavailable')+'**',
+    'App version: **'+(r.appVersion||'unknown')+'** | Overall: **'+(r.overallScore===null?'Withheld — incomplete criteria':number(r.overallScore)+'/10')+'** | Slop: **'+(r.slop?r.slop.score+'/100 (higher worse)':'Unavailable')+'** | Context Slop: **'+contextLabel(r)+'**',
+    'Scoring: '+scoringLabel(r)+'.',
     ...(r.validationWarnings?.length?['## Incomplete audit\n'+bullets(r.validationWarnings)]:[]),
     r.summary,'## Universal criteria',
     ...Object.entries(r.core).map(([name,v])=>'### '+name+': '+v.score+'/10\n'+v.rationale),
     ...Object.entries(r.specialists).flatMap(([id,criteria])=>['## '+id,
       ...Object.entries(criteria).map(([name,v])=>'### '+name+': '+v.score+'/10\n'+v.rationale)]),
     ...(r.slop?['## Slop\n'+r.slop.evidence]:[]),
+    '## Context Slop\n'+contextEvidence(r),
     ...(r.strengths != null ? ['## Strengths\n'+bullets(r.strengths)] : []),
     ...(r.weaknesses != null ? ['## Weaknesses\n'+bullets(r.weaknesses)] : []),
     ...(r.tradeoffs!=null?['## Tradeoffs\n'+bullets(r.tradeoffs)]:[]),

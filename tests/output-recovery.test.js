@@ -60,7 +60,7 @@ test('a full comparison with repeated unescaped prose quotes is recovered withou
   assert.equal(result.cardA.core.reliability.rationale,expected.cardA.core.reliability.rationale);
   assert.deepEqual(result.cardA.tradeoffs,expected.cardA.tradeoffs);
   assert.equal(result.cardB.core.craft.rationale,expected.cardB.core.craft.rationale);
-  assert.equal(result.cardA.overallScore,8.1);assert.equal(result.cardB.overallScore,8.1);
+  assert.equal(result.cardA.overallScore,8.2);assert.equal(result.cardB.overallScore,8.2);
 });
 
 test('local repair preserves unescaped dialogue, Unicode, multiline strings and real zero scores',()=>{
@@ -75,7 +75,7 @@ test('a repaired single audit is schema-validated without another model call',as
   let calls=0;
   const raw=JSON.stringify(audit()).replace(/}$/,',}');
   const result=await withFetch(async()=>{calls++;return reply(raw);},()=>runSingle(config,card,kind));
-  assert.equal(calls,1);assert.equal(result.incomplete,false);assert.equal(result.overallScore,8.1);
+  assert.equal(calls,1);assert.equal(result.incomplete,false);assert.equal(result.overallScore,8.2);
   assert.deepEqual(result.run.outputRepairs,[{request:'main audit',method:'local'}]);
   assert.doesNotMatch(JSON.stringify(result.run),/TEST_SECRET_KEY|rawResponse/);
 });

@@ -1,5 +1,12 @@
 # Card Analyzer 5.6 (alpha)
 
+## 5.6 Context Slop update (2026-11-08)
+
+- Context Slop measures avoidable wording in persistent runtime material: redundancy, obvious inferred conclusions and explanations that add no meaningful guidance. Preserve facts, nuance, voice, useful reinforcement and world rules. Length alone is not bloat; greetings, temporary examples and creator/auditor metadata are excluded.
+- Each new audit includes a 0–100 Context Slop score (higher worse), an approximate removable-percentage range and, for nonzero scores, 1–2 located original → shorter examples. Charge this waste here only, not again under Inference, Craft or general Slop.
+- **Overall = 80% rubric quality + 10% slop cleanliness + 10% context efficiency**, with each cleanliness/efficiency value `(100 − corresponding slop score) / 10`. The internal core/specialist split is unchanged. Missing or invalid Context Slop withholds the numeric overall grade.
+- Single/comparison reports and exports include the new assessment; saved older reports retain their original score and are labeled legacy. Public version remains 5.6; private PWA cache revision is `5.6:context-slop-1`.
+
 ## 5.6 release (2026-11-07)
 
 - **Scenario/worldbuilding independence:** Scenario fields may carry shared laws, spell progression, encounter limits, and other rules governing the entire setting. A character need not know, use, or personally possess those abilities for the information to be relevant to NPCs, opponents, user decisions, or later roleplay. Character-focused rubrics no longer assume the scenario contains only personal behavior.

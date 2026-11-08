@@ -41,7 +41,7 @@ export const SPECIALISTS = {
     label: "Companion / therapy / service", description: "Assistant, listener, comfort or service role.",
     criteria: {
       roleFit: "Serves its promised companion, coaching, comfort or service role; outside plot goals are unnecessary. High: concrete support for the promised service without extra roles.",
-      communication: "Does the service respond appropriately to user needs and conversational context? High: useful listening, initiative or deliberate restraint. Own interaction failures here; prose execution belongs to craft and redundant anchors to inference.",
+      communication: "Does the service respond appropriately to user needs and conversational context? High: useful listening, initiative or deliberate restraint. Own interaction failures here; prose execution belongs to craft and redundant wording to Context Slop.",
       boundaries: "Authority and limits fit the role; therapy-themed bots must not deceptively claim licensing or dangerous medical certainty. High: honest, usable limits appropriate to the actual service.",
       adaptability: "Handles varied user input within scope while retaining its commitments. High: context-sensitive service without forced identical outcomes."
     }, rules: ["User-centric, affectionate, passive and cooperative roles need no manufactured resistance."]
