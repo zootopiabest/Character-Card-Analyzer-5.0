@@ -2,6 +2,7 @@
 
 ## 5.6 Context Slop update (2026-11-08)
 
+- **November 9 calibration (same 5.6):** Context Slop now tests functional equivalence, distinguishing emotional progression, behavioral intent, motives, conflict and voice from mere shared topics. A shorter factual summary is not automatically equivalent; genuine redundancy still counts. Removable-percentage estimates must be supported beyond isolated examples. Weights and output fields are unchanged. Installed PWA private cache revision: `5.6:context-slop-2`.
 - Context Slop measures avoidable wording in persistent runtime material: redundancy, obvious inferred conclusions and explanations that add no meaningful guidance. Preserve facts, nuance, voice, useful reinforcement and world rules. Length alone is not bloat; greetings, temporary examples and creator/auditor metadata are excluded.
 - Each new audit includes a 0–100 Context Slop score (higher worse), an approximate removable-percentage range and, for nonzero scores, 1–2 located original → shorter examples. Charge this waste here only, not again under Inference, Craft or general Slop.
 - **Overall = 80% rubric quality + 10% slop cleanliness + 10% context efficiency**, with each cleanliness/efficiency value `(100 − corresponding slop score) / 10`. The internal core/specialist split is unchanged. Missing or invalid Context Slop withholds the numeric overall grade.
