@@ -68,7 +68,7 @@ export function reportTemplate(kind, hasImage = false, features = {}, {forCompar
     summary: "2-3 concise sentences; evidence-led overall finding",
     core: criteria(coreKeys), specialists,
     slop: {score:"NUMBER 0-100 (higher worse; 0 valid)", evidence:"For score >0: observed slop flaw(s) with location or quote, why each fails in context, and severity proportional to the number. For 0: no evidenced slop. Praise alone never justifies points."},
-    contextSlop: {score:"NUMBER 0-100 (higher worse; 0 valid)", removablePercent:{min:"NUMBER 0-100",max:"NUMBER 0-100 >= min"}, evidence:"Explain the estimated avoidable bloat. For >0, include 1-2 located original → shorter examples preserving all meaningful guidance. For 0, explain why the text earns its space; if no persistent material, use 0 and range 0–0. No duplicate penalties."},
+    contextSlop: {score:"NUMBER 0-100 (higher worse; 0 valid)", removablePercent:{min:"NUMBER 0-100",max:"NUMBER 0-100 >= min"}, evidence:"Explain the estimated avoidable bloat. For >0, include 1-2 located original → shorter examples preserving distinct behavioral, motivational, emotional, voice, causal and rule functions, not just the factual gist. Explain how each function survives and what broader evidence supports the estimated removable-percent range; isolated edits do not prove widespread bloat. For 0, explain why the text earns its space; if no persistent material, use 0 and range 0–0. No duplicate penalties."},
     ...(!forComparison ? {
       strengths:["0-3 concise top-level strengths (not repeated criterion essays)"],
       weaknesses:["0-3 evidenced unique weaknesses; [] is valid"]
