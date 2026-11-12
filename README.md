@@ -1,5 +1,10 @@
 # Card Analyzer 5.7 (alpha)
 
+## 5.7 same-version Reaction Map fix (2026-11-12)
+
+- **Emotional Registers:** Optional Reaction Map now illustrates a fresh, small trigger and the character's actual in-character response, instead of paraphrasing their profile, replaying biographical events, or explaining their tropes. **Comedy** specifically shows how they react to a joke or amusing incident, not why they're funny.
+- **No public version bump:** The version remains 5.7. Only the private PWA cache revision changes to deliver the updated module; scoring and output shape are unchanged.
+
 ## 5.7 release (2026-11-12)
 
 - **Personality is not a concession:** Deliberate passivity, low initiative, romance already in progress, genre and user-led pacing are neutral parts of the intended premise. No independent plot drive is required of a character.

@@ -38,6 +38,33 @@ test('unchecked extras contribute neither instructions nor schema; each selectio
   }
 });
 
+test('Emotional Registers depicts new in-character reactions, not copied traits or comedic characterization',()=>{
+  const prompt=modulePrompt(['emotionalRegisters']);
+  assert.match(prompt,/imagine one small, plausible, fresh moment/);
+  assert.match(prompt,/trigger → immediate reaction/);
+  assert.match(prompt,/not a character description, psychological profile/);
+  assert.match(prompt,/rather than replaying backstory events/);
+  assert.match(prompt,/COMEDY is SPECIFICALLY how they react when someone tells them a joke/);
+  assert.match(prompt,/Do NOT describe what makes the character funny/);
+  assert.match(prompt,/reactions may be muted, delayed, confused, passive, or absent/);
+  assert.match(prompt,/Do not script {{user}}'s speech/);
+  const shape=moduleTemplate(['emotionalRegisters']).emotionalRegisters;
+  assert.deepEqual(Object.keys(shape),['sad','angry','happy','grief','comedy']);
+  assert.match(shape.comedy,/actual reaction to the humor, NOT why they are funny/);
+  const solo=singlePrompt(card,kind,false,['emotionalRegisters']);
+  const both=comparePrompt(card,kind,card,kind,'independent',{modulesA:['emotionalRegisters'],modulesB:[]});
+  assert.match(solo,/fresh small sad trigger/);
+  assert.match(both,/COMEDY is SPECIFICALLY/);
+  assert.equal((both.match(/emotionalRegisters \(Reaction Map\)/g)||[]).length,1);
+  const raw=fixture(['emotionalRegisters']);
+  raw.emotionalRegisters.comedy='Someone makes a dry joke; she pauses, tries to identify the literal meaning, then asks if she missed something.';
+  const r=validateAudit(raw,kind,false,{modules:['emotionalRegisters']});
+  assert.equal(r.overallScore,validateAudit(raw,kind).overallScore);
+  assert.equal(r.emotionalRegisters.comedy,raw.emotionalRegisters.comedy);
+  assert.match(renderAudit(r),/Someone makes a dry joke/);
+  assert.match(reportToMarkdown(r),/Someone makes a dry joke/);
+});
+
 test('creator-notes reflection is selected, grounded, non-scoring, and handles missing notes',()=>{
   const notesCard=JSON.stringify({data:{
     description:'Iris checks every risk and asks for consent before touching new machinery.',

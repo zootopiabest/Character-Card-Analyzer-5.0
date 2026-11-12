@@ -7,6 +7,11 @@ Read this before modifying the analyzer or arguing for reversing an old decision
 - Versioning: Do not change the public app version unless the user explicitly requests it. For an approved bump, update `index.html`, `src/version.js`, `package.json`, `sw.js`, every versioned module import, `README.md`, and What's New. For other updates, retain the existing version and, if needed, revise only the private PWA cache key. Include new imported modules in PWA shell precache; don't cache API responses/cards/keys.
 - Input: JSON, V3, CharX, PNG card, Wyvern Markdown, and freeform Markdown. Structured field markers protect headings embedded in greeting text. Per-greeting scenario override extension slot identity must be retained.
 
+## Optional reaction-map behavior (same-version 5.7 fix, 2026-11-12)
+- Emotional Registers is a portrayal exercise, not a biography summary. For each field, invent a modest setting-appropriate trigger and show an immediate in-character reaction. No forced overt emotion, action, or user scripts; silence and non-reaction are valid.
+- Comedy asks how the character responds to a joke, sarcasm, or humorous moment, not what makes them funny as a character. Do not retell the card's prior comedic scenes.
+- Keep the public app version unchanged for fixes unless the user explicitly requests a version bump.
+
 ## Character evaluation philosophy
 - Judge intent and actual feasible runtime, not portability, stereotypes, length, a quota of novelty, shock or moral taste. Presume declared frontend features (Wyvern infoboards, lorebooks, scenario overrides, etc.) work. Do not deduct simply because another frontend ignores them.
 - Negative space and ordinary inference matter. Do not demand exhaustive grief scripts, romance, hooks in greetings, proactive behavior, an arc, or a full psychology explanation. A trope well executed can be exceptional. Tone/genre/kink/diagnosis/trauma/sexuality are neutral materials; evaluate causal coherence, reader/player agency and consequences.
