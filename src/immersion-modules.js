@@ -92,6 +92,15 @@ export const IMMERSION_MODULES = [
     "schema": "1-3 substantive natural paragraphs offering an evidence-based independent reflection on the creator's notes versus the actual character; never a score or recap"
   },
   {
+    "id": "designConsiderations",
+    "label": "Design Considerations",
+    "blurb": "Optional, unscored implementation analysis. No manufactured tradeoffs.",
+    "ask": "designConsiderations (Design Considerations): Identify ONLY actual implementation choices in this card that demonstrably advance one relevant runtime objective while limiting another relevant runtime objective. Each entry must point to a specific card instruction or configuration and explain BOTH concrete effects. Personality, quietness, passivity, low initiative, user-led pacing, genre, pre-established romance, narrow scope, target audience and lack of a different premise are NEVER tradeoffs by themselves. Do not manufacture a tension just to complete this module, turn ordinary characterization into a technical compromise, repeat scored defects, or speculate about missing frontend support. Return 0–3 concise evidence-based observations. A card with no evidenced implementation tension earns [] without criticism. This module is non-scoring and is not a request for alternative character premises.",
+    "schema": [
+      "0–3 concise evidenced implementation tensions, or [] if none"
+    ]
+  },
+  {
     "id": "greetingBreakdown",
     "label": "Per-Greeting Report Card",
     "blurb": "Every greeting graded on its own — first message and each alternate, judged as if it were the only one.",
@@ -122,7 +131,7 @@ export function modulePrompt(selected = []) {
   const ids = normalizeModules(selected);
   if (!ids.length) return "";
   return [
-    "OPTIONAL IMMERSION MODULES (USER-SELECTED): These are illustrative interpretations, not canon, actual roleplay tests, or scoring evidence. Never use generated scenes, reactions, or module-local greeting scores to justify or change core, specialist, slop, or overall scores. Infer plausible behavior without requiring the author to script it. Adapt modern concepts to the card's universe. For a roster/world card, name the supported character(s) being portrayed; do not invent a personality for the setting itself. If an immersion request (excluding per-greeting reports) has no applicable subject, return {\"notApplicable\":\"specific reason\"} for that module instead of its normal shape. Never use this for a difficult but applicable subject.",
+    "OPTIONAL IMMERSION MODULES (USER-SELECTED): These are illustrative interpretations, not canon, actual roleplay tests, or scoring evidence. Never use generated scenes, reactions, or module-local greeting scores to justify or change core, specialist, slop, or overall scores. Infer plausible behavior without requiring the author to script it. Adapt modern concepts to the card's universe. For a roster/world card, name the supported character(s) being portrayed; do not invent a personality for the setting itself. If an immersion request (excluding per-greeting reports and Design Considerations) has no applicable subject, return {\"notApplicable\":\"specific reason\"} for that module instead of its normal shape. Never use this for a difficult but applicable subject. For Design Considerations, no actual tension means [], not notApplicable.",
     "Complete the main audit before the selected extras. The general three-entry list limit does not apply to these modules; follow each selected module's requested count and keep entries concise.",
     ...IMMERSION_MODULES.filter(m => ids.includes(m.id)).map(m => m.ask)
   ].join("\n");
@@ -156,7 +165,7 @@ export function validateModules(report, selected = [], {greetings,hasCreatorNote
         fields[mod.id]={notApplicable:'No creator notes supplied.'};continue;
       }
       if(mod.id==='greetingBreakdown'&&Array.isArray(greetings))fields.greetingBreakdownExpected=greetings.length;
-      if(mod.id!=='greetingBreakdown'&&typeof value?.notApplicable==='string'&&value.notApplicable.trim()){
+      if(mod.id!=='greetingBreakdown'&&mod.id!=='designConsiderations'&&typeof value?.notApplicable==='string'&&value.notApplicable.trim()){
         fields[mod.id]={notApplicable:value.notApplicable};continue;
       }
       if(mod.id==='greetingBreakdown'&&Array.isArray(greetings)){
@@ -176,6 +185,7 @@ export function validateModules(report, selected = [], {greetings,hasCreatorNote
       }
       const validated=validateValue(value,mod.schema,mod.id);
       if(mod.id==='topSongs'&&validated.length!==5)throw new Error('expected exactly five songs');
+      if(mod.id==='designConsiderations'&&validated.length>3)throw new Error('expected zero to three considerations');
       if(mod.id==='shoppingList'&&(validated.items.length<5||validated.items.length>8))throw new Error('expected five to eight items');
       fields[mod.id]=validated;
     } catch { warnings.push(mod.label + ": the model omitted this section or returned invalid content/counts. No automatic retry was sent."); }
@@ -194,6 +204,7 @@ export function optionalSections(report) {
     else if (typeof v === "string") paragraphs = id==='creatorNotesNotes' ? v.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean) : [v];
     else if (id === "shoppingList") { items = v.items; paragraphs = [v.notes]; }
     else if (id === "topSongs") items = v.map(s => s.title + " — " + s.artist + ": " + s.vibe);
+    else if (id === "designConsiderations") { items = v; if (!v.length) paragraphs = ["No evidenced implementation tensions found."]; }
     else if (id === "greetingBreakdown") {
       items = v.map(g => g.label + " · " + g.score + "/10 · " + g.register + ": " + g.notes);
       if(Number.isInteger(report.greetingBreakdownExpected))paragraphs=["Graded "+v.length+" of "+report.greetingBreakdownExpected+" supplied greetings."];

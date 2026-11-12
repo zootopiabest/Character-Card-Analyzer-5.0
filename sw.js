@@ -5,7 +5,7 @@ const VERSION = '5.7';
 const PREFIX = 'card-analyzer-5:' + self.registration.scope + ':';
 // A private cache revision changes without a public version bump. Each same-version
 // fix replaces the populated shell so the updated rubric reaches installed PWAs.
-const CACHE = PREFIX + VERSION + ':reaction-map-1';
+const CACHE = PREFIX + VERSION + ':selectable-design-1';
 const SHELL = [
   './index.html', './manifest.webmanifest', './styles.css?v=' + VERSION,
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png',
