@@ -7,6 +7,11 @@ Read this before modifying the analyzer or arguing for reversing an old decision
 - Versioning: Do not change the public app version unless the user explicitly requests it. For an approved bump, update `index.html`, `src/version.js`, `package.json`, `sw.js`, every versioned module import, `README.md`, and What's New. For other updates, retain the existing version and, if needed, revise only the private PWA cache key. Include new imported modules in PWA shell precache; don't cache API responses/cards/keys.
 - Input: JSON, V3, CharX, PNG card, Wyvern Markdown, and freeform Markdown. Structured field markers protect headings embedded in greeting text. Per-greeting scenario override extension slot identity must be retained.
 
+## Selectable Design Considerations (same-version 5.7 fix, 2026-11-12)
+- Design Considerations belongs to the user-selected Optional Extras catalog, with its own checkbox in single and each comparison card. It is not a default or mandatory report field. Only selected runs request `designConsiderations`.
+- Each finding must locate a design choice in the actual card that measurably improves one relevant implementation goal while limiting another. Do not frame character traits, low initiative, user-driven play, romance premises or target audiences as sacrifices. Return [] when none qualify; do not fabricate tradeoffs.
+- Extras must not alter scoring. Present an empty-but-selected result clearly. Keep version 5.7 unless the owner explicitly asks otherwise.
+
 ## Optional reaction-map behavior (same-version 5.7 fix, 2026-11-12)
 - Emotional Registers is a portrayal exercise, not a biography summary. For each field, invent a modest setting-appropriate trigger and show an immediate in-character reaction. No forced overt emotion, action, or user scripts; silence and non-reaction are valid.
 - Comedy asks how the character responds to a joke, sarcasm, or humorous moment, not what makes them funny as a character. Do not retell the card's prior comedic scenes.
@@ -23,7 +28,7 @@ Read this before modifying the analyzer or arguing for reversing an old decision
 ## 5.7 design-considerations release (2026-11-12)
 
 - Passive, quiet, dependent and user-led characters need no plot initiative. Characterization should be judged by context-sensitive portrayal, not outward action count.
-- Single-card reports no longer request or display the mandatory `tradeoffs` array. Only include the optional `designConsiderations` field for an evidence-backed implementation tension affecting two relevant runtime goals; otherwise omit it entirely. It is never scored.
+- Single-card reports no longer request or display the mandatory `tradeoffs` array. Only request `designConsiderations` if the user selects that optional module. Return an array of 0–3 substantiated implementation tensions (empty when none). It is never scored.
 - Head-to-head `scopeDifferences` describe neutral premise differences, not a compromise or weakness. Avoid importing a default preference for slow-burn, proactivity, romance, conflict, or any genre.
 - Preserve the existing 80/10/10 scoring, core rubric, specialist selection and old saved report numeric scores; update versioned imports and PWA shell together.
 

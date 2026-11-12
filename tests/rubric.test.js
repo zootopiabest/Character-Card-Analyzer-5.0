@@ -63,32 +63,23 @@ test('numerical integrity retains the 40/45/15 rubric split within 80% quality',
   item.core.craft.score='10';
   assert.equal(validateAudit(item,two).overallScore,null);
 });
-test('5.7 rejects personality-as-tradeoff framing and only presents demonstrated implementation tensions',()=>{
+test('5.7 keeps character premises neutral and never emits unsolicited design considerations',()=>{
   const schema=reportTemplate(kind);
   assert.ok(!Object.hasOwn(schema,'tradeoffs'));
   assert.ok(!Object.hasOwn(schema,'designConsiderations'));
   assert.match(SPECIALISTS.character.criteria.behavioralRange,/Range is not the quantity of outward actions/);
   const prompt=singlePrompt('Quiet, passive character who waits for {{user}}.',kind);
-  assert.match(prompt,/OPTIONAL DESIGN CONSIDERATIONS/);
-  assert.match(prompt,/OMIT designConsiderations entirely/);
+  assert.match(prompt,/PREMISE NEUTRALITY/);
+  assert.match(prompt,/Never emit a mandatory tradeoffs section/);
   assert.match(prompt,/user-led pacing/);
-  assert.match(prompt,/NOT sacrifices of agency, momentum, freedom/);
+  assert.doesNotMatch(prompt,/designConsiderations/);
   const item=fixture();
-  item.tradeoffs=['Low initiative forces the user to drive the plot.']; // legacy data must not resurface
+  item.tradeoffs=['Low initiative forces the user to drive the plot.'];
+  item.designConsiderations=['Unsolicited commentary should not enter a new report.'];
   const initial=validateAudit(item,kind);
-  assert.equal(initial.designConsiderations,null);
-  assert.doesNotMatch(renderAudit(initial),/Low initiative forces the user|Intentional tradeoffs/);
-  item.designConsiderations=['A rigid format helps structured parsing but limits freeform output.'];
-  const considered=validateAudit(item,kind);
-  assert.equal(considered.overallScore,initial.overallScore);
-  assert.match(renderAudit(considered),/Design considerations/);
-  assert.match(reportToMarkdown(considered),/## Design considerations/);
-  item.designConsiderations='invalid, not an array';
-  const invalid=validateAudit(item,kind);
-  assert.equal(invalid.overallScore,initial.overallScore);
-  assert.equal(invalid.designConsiderations,null);
-  assert.match(invalid.optionalWarnings.join(' '),/Design considerations unavailable/);
-  assert.doesNotMatch(renderAudit(invalid),/<h4>Design considerations<\/h4>/);
+  assert.equal(initial.designConsiderations,undefined);
+  assert.doesNotMatch(renderAudit(initial),/Unsolicited commentary|Low initiative forces the user|Design Considerations/);
+  assert.doesNotMatch(reportToMarkdown(initial),/## Design considerations|Design Considerations/);
 });
 test('single greeting without examples prunes irrelevant instructions AND JSON fields',()=>{
   const text=formatted({name:'Mara',description:'Quiet mechanic.',first_mes:'Rain.'});
