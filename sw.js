@@ -1,11 +1,11 @@
 // Bump with every release and keep SHELL in sync with versioned entry points.
-const VERSION = '5.6';
+const VERSION = '5.7';
 // Cache Storage is shared by all project sites on this origin. Never delete
 // caches belonging to the original analyzer or any other GitHub Pages project.
 const PREFIX = 'card-analyzer-5:' + self.registration.scope + ':';
 // A private cache revision changes without a public version bump. Each same-version
 // fix replaces the populated shell so the updated rubric reaches installed PWAs.
-const CACHE = PREFIX + VERSION + ':context-slop-2';
+const CACHE = PREFIX + VERSION + ':design-considerations-1';
 const SHELL = [
   './index.html', './manifest.webmanifest', './styles.css?v=' + VERSION,
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png',
@@ -21,7 +21,7 @@ const INDEX = new URL('./index.html', self.registration.scope).href;
 
 self.addEventListener('install', event => {
   // Atomic precache: a failed download must not activate a partial offline app.
-  // Bypass stale HTTP cache when URLs retain ?v=5.6 during an update.
+  // Bypass stale HTTP cache when URLs retain a versioned query during an update.
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL.map(url => new Request(url, {cache:'reload'})))));
   // Updates wait until all old clients close, or the user explicitly reloads.
 });

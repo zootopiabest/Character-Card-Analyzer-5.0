@@ -56,8 +56,8 @@ test('precache is a complete matching release under the GitHub Pages subpath',()
   }
 });
 test('versioned cache installs a fresh release shell and bypasses old HTTP cache',async()=>{
-  const w=worker();assert.equal(w.state.VERSION,'5.6');
-  assert.notEqual(w.state.CACHE,w.state.PREFIX+'5.6');
+  const w=worker();assert.equal(w.state.VERSION,'5.7');
+  assert.notEqual(w.state.CACHE,w.state.PREFIX+'5.6:context-slop-2');
   await w.dispatch('install');
   assert.equal(w.cachedRequests.length,w.state.SHELL.length);
   assert.ok(w.cachedRequests.every(r=>r instanceof Request&&r.cache==='reload'));

@@ -65,7 +65,7 @@ function fakeAudit(withLists=true){
     contextSlop:{score:20,removablePercent:{min:10,max:20},evidence:'Profile repeats established motives; compress the repeated explanation while preserving the motive.'},
   slop:{score:5,evidence:"No filler."},
     ...(withLists?{strengths:[],weaknesses:[]}:{}),
-    tradeoffs:[],firstMessageSynergy:"Active first greeting works."
+    firstMessageSynergy:"Active first greeting works."
   };
 }
 const config={provider:"custom",baseUrl:"https://example.com",key:"fake",model:"fake",maxTokens:8000};

@@ -1,4 +1,12 @@
-# Card Analyzer 5.6 (alpha)
+# Card Analyzer 5.7 (alpha)
+
+## 5.7 release (2026-11-12)
+
+- **Personality is not a concession:** Deliberate passivity, low initiative, romance already in progress, genre and user-led pacing are neutral parts of the intended premise. No independent plot drive is required of a character.
+- **Removed forced tradeoff findings:** New audit templates no longer request a `tradeoffs` array. A non-scoring `designConsiderations` array is permitted only for a specifically evidenced implementation tension between relevant runtime objectives, and is otherwise omitted. Historical tradeoffs are not displayed as 5.7 findings.
+- **Neutral head-to-head framing:** Comparison scope differences describe factual premise distinctions, not supposed costs or lost alternative experiences.
+- **No grade changes:** Existing four core criteria, six specialist rubrics, 80/10/10 weights and Context Slop logic remain intact. Version stamps and PWA shell cache have been updated to 5.7.
+
 
 ## 5.6 Context Slop update (2026-11-08)
 
@@ -6,7 +14,7 @@
 - Context Slop measures avoidable wording in persistent runtime material: redundancy, obvious inferred conclusions and explanations that add no meaningful guidance. Preserve facts, nuance, voice, useful reinforcement and world rules. Length alone is not bloat; greetings, temporary examples and creator/auditor metadata are excluded.
 - Each new audit includes a 0–100 Context Slop score (higher worse), an approximate removable-percentage range and, for nonzero scores, 1–2 located original → shorter examples. Charge this waste here only, not again under Inference, Craft or general Slop.
 - **Overall = 80% rubric quality + 10% slop cleanliness + 10% context efficiency**, with each cleanliness/efficiency value `(100 − corresponding slop score) / 10`. The internal core/specialist split is unchanged. Missing or invalid Context Slop withholds the numeric overall grade.
-- Single/comparison reports and exports include the new assessment; saved older reports retain their original score and are labeled legacy. Public version remains 5.6; private PWA cache revision is `5.6:context-slop-1`.
+- Single/comparison reports and exports include the new assessment; saved older reports retain their original score and are labeled legacy. At that release, the public version was 5.6 and the PWA cache used a 5.6 Context Slop revision.
 
 ## 5.6 release (2026-11-07)
 
@@ -38,7 +46,7 @@
 
 
 
-**Version check:** The footer says `Runtime 5.6 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.6`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
+**Version check:** The footer says `Runtime 5.7 loaded` only after that JavaScript build runs. Downloaded reports also include `App version: 5.7`. If the footer has an older version, use **Reload to update** when offered, or close all analyzer windows and reopen while online. Before the first installation, a normal browser refresh loads the new code. Asset URLs are version-tagged to avoid stale deployment files.
 
 This is a fresh, static browser application with an independent modular grading system. It is not a migration or a rewrite in the existing repo. It uses no backend, no package installation and no build step. The small JSON repair dependency is vendored with its license for local and offline use.
 
