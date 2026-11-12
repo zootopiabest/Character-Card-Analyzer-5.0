@@ -1,4 +1,4 @@
-import {parseCard,renderCard,greetingsOf} from './card-context.js?v=5.6';
+import {parseCard,renderCard,greetingsOf} from './card-context.js?v=5.7';
 export function isolateGreetings(input) {
   const card=parseCard(input),greetings=greetingsOf(card);
   const persistent=card.sections.filter(s=>!s.greetingId);

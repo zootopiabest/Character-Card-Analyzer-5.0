@@ -1,6 +1,6 @@
-import {CACHE_KEY,toBrowserModels} from './openrouter-models.js?v=5.6';
-import {parseCard,greetingsOf,renderCard} from './card-context.js?v=5.6';
-import {isolateGreetings} from './greeting-context.js?v=5.6';
+import {CACHE_KEY,toBrowserModels} from './openrouter-models.js?v=5.7';
+import {parseCard,greetingsOf,renderCard} from './card-context.js?v=5.7';
+import {isolateGreetings} from './greeting-context.js?v=5.7';
 // Character heuristics are not tokenizer-accurate. Output is a ceiling, not a forecast.
 export function priceForModel(provider,model){if(provider!=='openrouter')return null;try{const saved=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');const match=toBrowserModels(saved?.models).find(m=>m.id===model);return match&&match.inputPrice!==null&&match.outputPrice!==null?{input:match.inputPrice,output:match.outputPrice}:null;}catch{return null;}}
 export function planEstimate({cards,mode='single',separateGreetings=false,perGreeting=[],autoClassifications=0,baseOutput=16384,analyzerNotes=''}){let mainChars=11000,diagnosticChars=0,diagnosticCalls=0,bonus=0;

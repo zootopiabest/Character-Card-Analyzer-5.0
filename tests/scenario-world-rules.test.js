@@ -17,7 +17,7 @@ test('world systems can matter without personal use and are not automatic bloat'
   assert.match(FOUNDATION,/NOT restricted to the featured character/);
   assert.match(FOUNDATION,/physical combatant, never casts spells/);
   assert.match(FOUNDATION,/CONTEXT SLOP/);
-  assert.match(FOUNDATION,/world rules, even those unused by the protagonist/);
+  assert.match(FOUNDATION,/world rules, even ones the protagonist does not use/);
   assert.match(CORE_CRITERIA.inference,/World rules governing other actors or possible future interactions/);
   assert.match(SPECIALISTS.characterScenario.criteria.sceneIntegration,/Setting-wide constraints/);
   assert.match(SPECIALISTS.scenarioCharacter.criteria.premiseFunction,/NPCs, enemies, user abilities or later scenes/);

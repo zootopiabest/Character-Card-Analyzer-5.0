@@ -1,6 +1,6 @@
-import {parseCard,extractCardText} from "./card-context.js?v=5.6";
-import {readCharx} from "./charx.js?v=5.6";
-export {extractCardText,formatLorebook} from "./card-context.js?v=5.6";
+import {parseCard,extractCardText} from "./card-context.js?v=5.7";
+import {readCharx} from "./charx.js?v=5.7";
+export {extractCardText,formatLorebook} from "./card-context.js?v=5.7";
 const MAX_FILE=15*1024*1024;
 
 const toDataUrl = (file) => new Promise((resolve,reject) => {

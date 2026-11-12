@@ -1,4 +1,4 @@
-import {parseCard} from './card-context.js?v=5.6';
+import {parseCard} from './card-context.js?v=5.7';
 
 // Mechanical warnings only. JSON extension/lorebook/metadata payloads are not
 // prose: nested JSON objects legitimately contain adjacent closing braces "}}".

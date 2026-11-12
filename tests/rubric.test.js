@@ -18,7 +18,7 @@ const fixture = (which=kind, features={}) => ({
   specialists:Object.fromEntries(specialistKeys(which).map(id=>[id,scores(Object.keys(SPECIALISTS[id].criteria),9)])),
   contextSlop:{score:14,removablePercent:{min:10,max:20},evidence:'Profile repeats established motives; compress the repeated explanation while preserving the motive.'},
   slop:{score:12,evidence:'No meaningful filler.'},
-  strengths:['Functional voice'],weaknesses:[],tradeoffs:[],
+  strengths:['Functional voice'],weaknesses:[],
   firstMessageSynergy:'First opening is appropriate and independent.',
   ...(features.hasAlternates ? {profileGreetingCoverage:'Each independent start has enough support.'} : {}),
   ...(features.hasExamples ? {exampleDialogueAssessment:'Examples teach voice.'} : {})
@@ -62,6 +62,33 @@ test('numerical integrity retains the 40/45/15 rubric split within 80% quality',
   assert.equal(validateAudit(item,two).overallScore,8.0);
   item.core.craft.score='10';
   assert.equal(validateAudit(item,two).overallScore,null);
+});
+test('5.7 rejects personality-as-tradeoff framing and only presents demonstrated implementation tensions',()=>{
+  const schema=reportTemplate(kind);
+  assert.ok(!Object.hasOwn(schema,'tradeoffs'));
+  assert.ok(!Object.hasOwn(schema,'designConsiderations'));
+  assert.match(SPECIALISTS.character.criteria.behavioralRange,/Range is not the quantity of outward actions/);
+  const prompt=singlePrompt('Quiet, passive character who waits for {{user}}.',kind);
+  assert.match(prompt,/OPTIONAL DESIGN CONSIDERATIONS/);
+  assert.match(prompt,/OMIT designConsiderations entirely/);
+  assert.match(prompt,/user-led pacing/);
+  assert.match(prompt,/NOT sacrifices of agency, momentum, freedom/);
+  const item=fixture();
+  item.tradeoffs=['Low initiative forces the user to drive the plot.']; // legacy data must not resurface
+  const initial=validateAudit(item,kind);
+  assert.equal(initial.designConsiderations,null);
+  assert.doesNotMatch(renderAudit(initial),/Low initiative forces the user|Intentional tradeoffs/);
+  item.designConsiderations=['A rigid format helps structured parsing but limits freeform output.'];
+  const considered=validateAudit(item,kind);
+  assert.equal(considered.overallScore,initial.overallScore);
+  assert.match(renderAudit(considered),/Design considerations/);
+  assert.match(reportToMarkdown(considered),/## Design considerations/);
+  item.designConsiderations='invalid, not an array';
+  const invalid=validateAudit(item,kind);
+  assert.equal(invalid.overallScore,initial.overallScore);
+  assert.equal(invalid.designConsiderations,null);
+  assert.match(invalid.optionalWarnings.join(' '),/Design considerations unavailable/);
+  assert.doesNotMatch(renderAudit(invalid),/<h4>Design considerations<\/h4>/);
 });
 test('single greeting without examples prunes irrelevant instructions AND JSON fields',()=>{
   const text=formatted({name:'Mara',description:'Quiet mechanic.',first_mes:'Rain.'});
@@ -143,6 +170,8 @@ test('comparison independently prunes each card and deduplicates module instruct
   assert.ok(!Object.hasOwn(template.cardB,'exampleDialogueAssessment'));
   assert.ok(!Object.hasOwn(template.cardA,'profileGreetingCoverage'));
   assert.ok(Object.hasOwn(template.cardB,'profileGreetingCoverage'));
+  assert.match(template.comparison.scopeDifferences[0],/neutral premise\/scope distinctions/);
+  assert.doesNotMatch(template.comparison.scopeDifferences[0],/tradeoffs/);
   for(const item of [template.cardA,template.cardB]) {
     assert.ok(!Object.hasOwn(item,'strengths'));
     assert.ok(!Object.hasOwn(item,'weaknesses'));
@@ -216,11 +245,11 @@ test('functional register, illustrative dialogue and ordinary inference remain v
   assert.match(FOUNDATION,/Illustrative dialogue is useful unless prescribed as inevitable/);
   assert.match(FOUNDATION,/avoiding unwanted touch permits initiating contact/);
 });
-test('classification and app stamp are 5.6',()=>{
-  assert.equal(APP_VERSION,'5.6');
+test('classification and app stamp are 5.7',()=>{
+  assert.equal(APP_VERSION,'5.7');
   const rep=validateAudit(fixture(),kind);
-  assert.match(reportToMarkdown(rep),/App version: \*\*5\.6\*\*/);
-  assert.match(renderAudit(rep),/v5\.6/);
+  assert.match(reportToMarkdown(rep),/App version: \*\*5\.7\*\*/);
+  assert.match(renderAudit(rep),/v5\.7/);
   assert.match(CLASSIFY_SYSTEM,/secondary/);
 });
 test('JSON parser accepts fenced JSON and rejects nonnumeric score placeholders',()=>{

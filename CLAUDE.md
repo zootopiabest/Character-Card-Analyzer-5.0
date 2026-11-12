@@ -4,7 +4,7 @@ Read this before modifying the analyzer or arguing for reversing an old decision
 
 ## Scope and architecture
 - Repository: `zootopiabest/Character-Card-Analyzer-5.0`. Scope changes to this repository. The project uses static vanilla JavaScript and native modules, browser BYOK, no backend or build pipeline.
-- Release bump: `index.html`, `src/version.js`, `package.json`, `sw.js`, every versioned module import, `README.md`, and What's New nested release notes. Include new imported modules in PWA shell precache; don't cache API responses/cards/keys.
+- Versioning: Do not change the public app version unless the user explicitly requests it. For an approved bump, update `index.html`, `src/version.js`, `package.json`, `sw.js`, every versioned module import, `README.md`, and What's New. For other updates, retain the existing version and, if needed, revise only the private PWA cache key. Include new imported modules in PWA shell precache; don't cache API responses/cards/keys.
 - Input: JSON, V3, CharX, PNG card, Wyvern Markdown, and freeform Markdown. Structured field markers protect headings embedded in greeting text. Per-greeting scenario override extension slot identity must be retained.
 
 ## Character evaluation philosophy
@@ -14,6 +14,13 @@ Read this before modifying the analyzer or arguing for reversing an old decision
 - Anti-sycophancy is foundational but *not* a defect quota. Cite observable supporting text and likely runtime effects. Be willing to award a high score or no weaknesses; don't invent criticisms to look sharp.
 - Slop 0–100 is bad execution regardless of authorship. Includes purple padding AND characterization collapse, forced contrivance, incoherence, rote personality labels, agency destruction and prose dysfunction. A card can be terrible and yield an interesting character. **Final quality = 80% rubric quality + 10% slop cleanliness + 10% context efficiency**, where cleanliness = (100−slop)/10 and context efficiency = (100−contextSlop)/10. Persistent-profile bloat belongs only to Context Slop, not Inference, Craft or general Slop. No automatic veto, no extra slop penalty; missing slop or Context Slop withholds final numeric grade. Slop starts at 0: every positive score, including 1–9/100, requires a specific, located dysfunction and explanation of its impact/severity. A purely complimentary slop analysis cannot justify nonzero points, and a deliberate choice that functions well is not a defect. If none is evidenced, score 0 instead of manufacturing a token flaw. Don't multiply negative deductions under separate criterion names without independent evidence.
 - Main audit must consider all greetings for slop and overall characterization no matter how greeting score diagnostics are transported. Each greeting is a separate selectable opening/AU; no majority tone, no contradictory concurrent greetings. `Send greetings separately` uses one isolated context per greeting only for diagnostics; 0/1 greetings remain in main call. Missing entries are visibly incomplete and can be manually retried if added later; **no automatic paid re-runs**. Greeting grades do not separately alter overall grade.
+
+## 5.7 design-considerations release (2026-11-12)
+
+- Passive, quiet, dependent and user-led characters need no plot initiative. Characterization should be judged by context-sensitive portrayal, not outward action count.
+- Single-card reports no longer request or display the mandatory `tradeoffs` array. Only include the optional `designConsiderations` field for an evidence-backed implementation tension affecting two relevant runtime goals; otherwise omit it entirely. It is never scored.
+- Head-to-head `scopeDifferences` describe neutral premise differences, not a compromise or weakness. Avoid importing a default preference for slow-burn, proactivity, romance, conflict, or any genre.
+- Preserve the existing 80/10/10 scoring, core rubric, specialist selection and old saved report numeric scores; update versioned imports and PWA shell together.
 
 ## Output, cost, storage and UX
 - Output token limit **manually controlled**. Default 16,384 single audit and 32,768 comparison (saved independently by mode). Combined `Per-Greeting Report Card` adds 250 output tokens per greeting automatically; separate diagnostics get their own smaller ceiling. Never silently auto-select a hypothetical ideal number. Respect provider ceiling if known.
