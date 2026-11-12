@@ -32,6 +32,7 @@ const EXTRA_PRESENTATION = {
   demise: {symbol:'✧', eyebrow:'HYPOTHETICAL FATE', tone:'violet', layout:'wide'},
   psychoanalysis: {symbol:'◌', eyebrow:'BEHAVIORAL READING', tone:'violet', layout:'wide'},
   emotionalRegisters: {symbol:'◈', eyebrow:'REACTION MAP', tone:'mint', layout:'wide'},
+  designConsiderations: {symbol:'◇', eyebrow:'IMPLEMENTATION · NON-SCORING', tone:'violet', layout:'wide'},
   boringTuesday: {symbol:'☕', eyebrow:'EVERYDAY MOMENT', tone:'mint', layout:'standard'},
   pissThemOff: {symbol:'⚡', eyebrow:'PRESSURE POINTS', tone:'rose', layout:'standard'},
   creatorNotesNotes: {symbol:'✎', eyebrow:'EDITORIAL LENS', tone:'violet', layout:'wide'},
@@ -124,7 +125,6 @@ export function renderAudit(report) {
     proseBlock('Slop analysis',report.slop?.evidence)+
     proseBlock('Context Slop · persistent profile efficiency',contextEvidence(report))+
     listBlock('What it does well',report.strengths)+listBlock('Construction defects',report.weaknesses)+
-    listBlock('Design considerations',report.designConsiderations?.length?report.designConsiderations:null)+
     proseBlock('First message synergy',report.firstMessageSynergy)+
     proseBlock('Profile → all greetings',report.profileGreetingCoverage)+
     proseBlock('Example dialogue & lasting voice',report.exampleDialogueAssessment)+
@@ -173,7 +173,6 @@ export function reportToMarkdown(result,mode='single') {
     '## Context Slop\n'+contextEvidence(r),
     ...(r.strengths != null ? ['## Strengths\n'+bullets(r.strengths)] : []),
     ...(r.weaknesses != null ? ['## Weaknesses\n'+bullets(r.weaknesses)] : []),
-    ...(r.designConsiderations?.length?['## Design considerations\n'+bullets(r.designConsiderations)]:[]),
     ...(r.firstMessageSynergy!=null?['## First message synergy\n'+r.firstMessageSynergy]:[]),
     ...(r.profileGreetingCoverage != null ? ['## Profile → all greetings\n'+r.profileGreetingCoverage] : []),
     ...(r.exampleDialogueAssessment != null ? ['## Example dialogue and lasting voice\n'+r.exampleDialogueAssessment] : []),

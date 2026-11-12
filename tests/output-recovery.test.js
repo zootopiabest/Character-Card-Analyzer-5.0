@@ -48,13 +48,13 @@ test('quote-only recovery refuses missing content and ambiguous closing delimite
     assert.equal(escapeProseQuotes(raw),null);
 });
 test('a full comparison with repeated unescaped prose quotes is recovered without a review or paid retry',async()=>{
-  const expected=fill(comparisonTemplate(card,kind,card,kind));
+  const expected=fill(comparisonTemplate(card,kind,card,kind,{modulesA:['designConsiderations']}));
   expected.cardA.core.reliability.rationale='Instructions mandate "Never speak for {{user}}" and "Voice other characters," keeping boundaries intact.';
   expected.cardA.designConsiderations=['Fixed "Label, value" headers support parsing but limit fluid dialogue.'];
   expected.cardB.core.craft.rationale='Uses "word one," "word two," and "word three," without changing the assessment.';
   const raw=JSON.stringify(expected).replaceAll('\\"','"');let calls=0;
   const result=await withFetch(async()=>{calls++;return reply(raw);},()=>runComparison({...config,
-    onOutputIssue:()=>{throw Error('This response should be recovered locally.');}},card,kind,card,kind));
+    onOutputIssue:()=>{throw Error('This response should be recovered locally.');}},card,kind,card,kind,'independent',{modulesA:['designConsiderations']}));
   assert.equal(calls,1);assert.equal(result.run.requestCount,1);
   assert.equal(result.cardA.incomplete,false);assert.equal(result.cardB.incomplete,false);
   assert.equal(result.cardA.core.reliability.rationale,expected.cardA.core.reliability.rationale);

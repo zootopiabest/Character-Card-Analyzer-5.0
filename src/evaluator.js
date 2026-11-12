@@ -59,10 +59,6 @@ export function validateAudit(report, kind, hasImage = false, {features = {}, fo
     const max=assertNumber(c?.removablePercent?.max,min,100,'contextSlop.removablePercent.max');
     return {score:assertNumber(c?.score,0,100,'contextSlop.score'),removablePercent:{min,max},evidence:assertString(c?.evidence,'contextSlop.evidence')};
   },'Context Slop unavailable');
-  const designConsiderations=report.designConsiderations==null?null:recover(()=>{
-    const notes=strings(report.designConsiderations,'designConsiderations');
-    return notes.length?notes:null;
-  },'Design considerations unavailable',true);
   const visual=hasImage?recover(()=>({score:assertNumber(report.visual?.score,0,100,'visual.score'),matches:strings(report.visual?.matches,'visual.matches'),mismatches:strings(report.visual?.mismatches,'visual.mismatches'),notes:assertString(report.visual?.notes,'visual.notes')}),'Portrait comparison unavailable',true):null;
   let overallScore=null;
   if(scoreComplete&&slop&&contextSlop){
@@ -77,7 +73,6 @@ export function validateAudit(report, kind, hasImage = false, {features = {}, fo
     summary:recover(()=>assertString(report.summary,'summary'),'Summary unavailable'),
     strengths:recover(()=>strings(report.strengths,'strengths',forComparison),'Strengths unavailable'),
     weaknesses:recover(()=>strings(report.weaknesses,'weaknesses',forComparison),'Weaknesses unavailable'),
-    designConsiderations,
     firstMessageSynergy:recover(()=>assertString(report.firstMessageSynergy,'firstMessageSynergy'),'First-message assessment unavailable'),
     profileGreetingCoverage:features.hasAlternates?recover(()=>assertString(report.profileGreetingCoverage,'profileGreetingCoverage'),'Greeting coverage unavailable',true):null,
     exampleDialogueAssessment:features.hasExamples?recover(()=>assertString(report.exampleDialogueAssessment,'exampleDialogueAssessment'),'Example assessment unavailable',true):null

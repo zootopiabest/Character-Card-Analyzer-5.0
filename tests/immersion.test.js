@@ -20,7 +20,7 @@ const card = '## Description\nA quiet mechanic.\n## First Message\nRain.\n## Alt
 
 // Test the request and data contracts, not just the presence of checkbox markup.
 test('original extras and creator-notes reflection are available, deduplicated and filtered',()=>{
-  assert.deepEqual(ids,['datingProfile','shoppingList','topSongs','demise','psychoanalysis','emotionalRegisters','boringTuesday','pissThemOff','creatorNotesNotes','greetingBreakdown']);
+  assert.deepEqual(ids,['datingProfile','shoppingList','topSongs','demise','psychoanalysis','emotionalRegisters','boringTuesday','pissThemOff','creatorNotesNotes','designConsiderations','greetingBreakdown']);
   assert.deepEqual(normalizeModules(['demise','unknown','demise','datingProfile']),['datingProfile','demise']);
   for (const invalid of [null,{},'demise',true]) assert.deepEqual(normalizeModules(invalid),[]);
 });
@@ -36,6 +36,49 @@ test('unchecked extras contribute neither instructions nor schema; each selectio
     for(const unselected of ids.filter(id=>id!==selected)) assert.ok(!prompt.includes(unselected),unselected+' leaked into '+selected);
     assert.deepEqual(Object.keys(moduleTemplate([selected])),[selected]);
   }
+});
+
+test('Design Considerations is a selectable optional, scoped per card and unscored',()=>{
+  assert.ok(ids.includes('designConsiderations'));
+  assert.ok(!restoreSelections(null).single.includes('designConsiderations'));
+  const cardA=JSON.stringify({data:{description:'A quiet person.',first_mes:'Hello.'}});
+  const promptOff=singlePrompt(cardA,kind);
+  const promptOn=singlePrompt(cardA,kind,false,['designConsiderations']);
+  assert.doesNotMatch(promptOff,/designConsiderations/);
+  assert.doesNotMatch(promptOff,/OPTIONAL IMMERSION MODULES/);
+  assert.match(promptOn,/designConsiderations \(Design Considerations\)/);
+  assert.match(promptOn,/Return 0–3 concise evidence-based observations/);
+  assert.match(promptOn,/no evidenced implementation tension earns \[\]/);
+  assert.ok(Object.hasOwn(moduleTemplate(['designConsiderations']),'designConsiderations'));
+  assert.ok(!Object.hasOwn(moduleTemplate([]),'designConsiderations'));
+  const raw=fixture(['designConsiderations']);
+  raw.designConsiderations=['Strict structured labels improve parsing but restrict natural dialogue.'];
+  const scored=validateAudit(raw,kind,false,{modules:['designConsiderations']});
+  const disabled=validateAudit(raw,kind);
+  assert.equal(scored.overallScore,disabled.overallScore);
+  assert.deepEqual(scored.designConsiderations,raw.designConsiderations);
+  assert.ok(!Object.hasOwn(disabled,'designConsiderations'));
+  assert.match(renderAudit(scored),/extra-card--designConsiderations/);
+  assert.match(renderAudit(scored),/Strict structured labels improve parsing/);
+  assert.match(reportToMarkdown(scored),/### Design Considerations/);
+  assert.doesNotMatch(renderAudit(disabled),/Design Considerations/);
+  const none=fixture(['designConsiderations']);
+  none.designConsiderations=[];
+  const empty=validateAudit(none,kind,false,{modules:['designConsiderations']});
+  assert.deepEqual(empty.designConsiderations,[]);
+  assert.deepEqual(empty.optionalWarnings,[]);
+  assert.match(renderAudit(empty),/No evidenced implementation tensions found/);
+  assert.match(reportToMarkdown(empty),/No evidenced implementation tensions found/);
+  const bad=fixture(['designConsiderations']);
+  bad.designConsiderations=['a','b','c','d'];
+  const invalid=validateAudit(bad,kind,false,{modules:['designConsiderations']});
+  assert.equal(invalid.overallScore,disabled.overallScore);
+  assert.equal(invalid.designConsiderations,undefined);
+  assert.match(invalid.optionalWarnings.join(' '),/Design Considerations/);
+  const compare=comparePrompt(cardA,kind,cardA,kind,'independent',{modulesA:['designConsiderations'],modulesB:[]});
+  const template=JSON.parse(compare.split('\n').find(line=>line.startsWith('{"cardA":')));
+  assert.ok(Object.hasOwn(template.cardA,'designConsiderations'));
+  assert.ok(!Object.hasOwn(template.cardB,'designConsiderations'));
 });
 
 test('Emotional Registers depicts new in-character reactions, not copied traits or comedic characterization',()=>{

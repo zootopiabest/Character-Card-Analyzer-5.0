@@ -1,5 +1,11 @@
 # Card Analyzer 5.7 (alpha)
 
+## 5.7 same-version selectable Design Considerations fix (2026-11-12)
+
+- **Now a real Optional Extras checkbox:** Design Considerations can be enabled independently for a single card or either card in a comparison. No related prompt/schema is included when unselected.
+- **No manufactured costs:** Selected analysis reports 0–3 evidence-backed implementation tensions, with [] and a visible "No evidenced implementation tensions found" result when none qualify. Personality, passivity and chosen premises do not count.
+- **Unscored and isolated:** No changes to the 80/10/10 scoring weights or scored rubrics. The formerly automatic conditional main-report section has been removed. Public version remains 5.7; only the PWA private cache changes.
+
 ## 5.7 same-version Reaction Map fix (2026-11-12)
 
 - **Emotional Registers:** Optional Reaction Map now illustrates a fresh, small trigger and the character's actual in-character response, instead of paraphrasing their profile, replaying biographical events, or explaining their tropes. **Comedy** specifically shows how they react to a joke or amusing incident, not why they're funny.
