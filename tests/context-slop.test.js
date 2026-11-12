@@ -57,9 +57,9 @@ test('single and comparison prompts isolate bloat and preserve valuable detail',
   const card={data:{description:'A guard.',scenario:'World rules.',first_mes:'Scene.'}};
   for(const prompt of [singlePrompt(card,kind),comparePrompt(card,kind,card,kind)]){
     assert.match(prompt,/CONTEXT SLOP/);
-    assert.match(prompt,/exclude greetings, temporary examples and creator\/auditor metadata/);
-    assert.match(prompt,/no model failure or context overflow is required/);
-    assert.match(prompt,/Preserve meaningful nuance, voice cues, useful reinforcement, concrete facts and world rules/);
+    assert.match(prompt,/Exclude greetings, temporary examples, and creator\/auditor metadata/);
+    assert.match(prompt,/no context overflow or observed model failure is required/);
+    assert.match(prompt,/Preserve useful reinforcement, concrete facts, voice cues, and world rules/);
     assert.match(prompt,/no extra bloat deductions under inference, craft or general slop/);
     assert.match(prompt,/"contextSlop"/);
     assert.match(prompt,/"removablePercent"/);
