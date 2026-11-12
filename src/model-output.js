@@ -1,6 +1,6 @@
-import { jsonrepair } from './vendor/jsonrepair/regular/jsonrepair.js?v=5.6';
-import { complete } from './providers.js?v=5.6';
-import { escapeProseQuotes } from './quoted-json.js?v=5.6';
+import { jsonrepair } from './vendor/jsonrepair/regular/jsonrepair.js?v=5.7';
+import { complete } from './providers.js?v=5.7';
+import { escapeProseQuotes } from './quoted-json.js?v=5.7';
 
 function outputError(message, rawResponse) {
   return Object.assign(new Error(message), {code:'INVALID_MODEL_JSON', rawResponse});
