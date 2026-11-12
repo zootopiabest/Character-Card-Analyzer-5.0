@@ -53,14 +53,14 @@ export const IMMERSION_MODULES = [
   {
     "id": "emotionalRegisters",
     "label": "Emotional Registers",
-    "blurb": "How they react to sad, angry, happy, grief, and comedy beats.",
-    "ask": "emotionalRegisters: how the character concretely reacts when a scene hits each register — sad, angry, happy, grief, and comedy — using only behavior the card supports.",
+    "blurb": "How they respond in the moment to sadness, irritation, good news, loss, and a joke.",
+    "ask": "emotionalRegisters (Reaction Map): For EACH register, imagine one small, plausible, fresh moment in the character's intended setting that elicits or tests that response. Show the character reacting IN CHARACTER to that moment: what they notice, do, say (if they speak), or choose not to do. Write a compact trigger → immediate reaction, not a character description, psychological profile, list of habitual traits, or paraphrase of the card. Use the supplied personality to infer a NEW response rather than replaying backstory events, lifting existing dialogue, or restating profile facts. The reactions may be muted, delayed, confused, passive, or absent if that fits; never force expressive emotion, initiative, crying, confrontation, or a punchline. Keep SAD as a specific disappointment or sorrow, ANGRY as a frustrating or provocative moment, HAPPY as a pleasing moment, and GRIEF as an immediate response to meaningful loss (not a summary of an established death or later life trajectory). COMEDY is SPECIFICALLY how they react when someone tells them a joke, uses sarcasm, or something amusing happens: do they laugh, miss it, question it, deadpan, get annoyed, etc.? Do NOT describe what makes the character funny to an audience, their comedic trope, or a funny incident from the profile. Do not script {{user}}'s speech, choices, or feelings. Keep each field to roughly 1–2 vivid sentences and avoid inventing major new canon.",
     "schema": {
-      "sad": "supported concrete reaction",
-      "angry": "supported concrete reaction",
-      "happy": "supported concrete reaction",
-      "grief": "supported concrete reaction",
-      "comedy": "supported concrete reaction"
+      "sad": "fresh small sad trigger → their immediate in-character response, not a trait summary",
+      "angry": "fresh irritation/provocation → what they actually do or say",
+      "happy": "fresh pleasing moment → what they actually do or say",
+      "grief": "fresh meaningful loss → their immediate in-character response, not backstory recap",
+      "comedy": "a joke, sarcasm or amusing moment → their actual reaction to the humor, NOT why they are funny"
     }
   },
   {
