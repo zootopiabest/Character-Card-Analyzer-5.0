@@ -1,14 +1,14 @@
-import {parseCard,greetingsOf,renderCard} from "./card-context.js?v=5.6";
-import {GREETING_ASSESSMENT} from "./rubrics/greetings.js?v=5.6";
-import { normalizeModules, validateModules } from "./immersion-modules.js?v=5.6";
-import { prepareRun, runRecord } from "./providers.js?v=5.6";
-import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.6";
-import { singlePrompt, comparePrompt, reportTemplate, comparisonTemplate, coreKeys, specialistKeys, inspectCardFeatures, analyzerContext } from "./rubrics/assemble.js?v=5.6";
-import { SPECIALISTS } from "./rubrics/specialists.js?v=5.6";
-import { APP_VERSION } from "./version.js?v=5.6";
-import { isolateGreetings } from "./greeting-context.js?v=5.6";
-import { completeJson, auditIssues } from './model-output.js?v=5.6';
-export { parseJson } from './model-output.js?v=5.6';
+import {parseCard,greetingsOf,renderCard} from "./card-context.js?v=5.7";
+import {GREETING_ASSESSMENT} from "./rubrics/greetings.js?v=5.7";
+import { normalizeModules, validateModules } from "./immersion-modules.js?v=5.7";
+import { prepareRun, runRecord } from "./providers.js?v=5.7";
+import { CLASSIFY_SYSTEM, classificationPrompt, normalizeClassification } from "./classifier.js?v=5.7";
+import { singlePrompt, comparePrompt, reportTemplate, comparisonTemplate, coreKeys, specialistKeys, inspectCardFeatures, analyzerContext } from "./rubrics/assemble.js?v=5.7";
+import { SPECIALISTS } from "./rubrics/specialists.js?v=5.7";
+import { APP_VERSION } from "./version.js?v=5.7";
+import { isolateGreetings } from "./greeting-context.js?v=5.7";
+import { completeJson, auditIssues } from './model-output.js?v=5.7';
+export { parseJson } from './model-output.js?v=5.7';
 
 function assertNumber(n, min, max, field) {
   if (typeof n !== "number" || !Number.isFinite(n) || n < min || n > max)
@@ -59,6 +59,10 @@ export function validateAudit(report, kind, hasImage = false, {features = {}, fo
     const max=assertNumber(c?.removablePercent?.max,min,100,'contextSlop.removablePercent.max');
     return {score:assertNumber(c?.score,0,100,'contextSlop.score'),removablePercent:{min,max},evidence:assertString(c?.evidence,'contextSlop.evidence')};
   },'Context Slop unavailable');
+  const designConsiderations=report.designConsiderations==null?null:recover(()=>{
+    const notes=strings(report.designConsiderations,'designConsiderations');
+    return notes.length?notes:null;
+  },'Design considerations unavailable',true);
   const visual=hasImage?recover(()=>({score:assertNumber(report.visual?.score,0,100,'visual.score'),matches:strings(report.visual?.matches,'visual.matches'),mismatches:strings(report.visual?.mismatches,'visual.mismatches'),notes:assertString(report.visual?.notes,'visual.notes')}),'Portrait comparison unavailable',true):null;
   let overallScore=null;
   if(scoreComplete&&slop&&contextSlop){
@@ -73,7 +77,7 @@ export function validateAudit(report, kind, hasImage = false, {features = {}, fo
     summary:recover(()=>assertString(report.summary,'summary'),'Summary unavailable'),
     strengths:recover(()=>strings(report.strengths,'strengths',forComparison),'Strengths unavailable'),
     weaknesses:recover(()=>strings(report.weaknesses,'weaknesses',forComparison),'Weaknesses unavailable'),
-    tradeoffs:recover(()=>strings(report.tradeoffs,'tradeoffs'),'Tradeoffs unavailable'),
+    designConsiderations,
     firstMessageSynergy:recover(()=>assertString(report.firstMessageSynergy,'firstMessageSynergy'),'First-message assessment unavailable'),
     profileGreetingCoverage:features.hasAlternates?recover(()=>assertString(report.profileGreetingCoverage,'profileGreetingCoverage'),'Greeting coverage unavailable',true):null,
     exampleDialogueAssessment:features.hasExamples?recover(()=>assertString(report.exampleDialogueAssessment,'exampleDialogueAssessment'),'Example assessment unavailable',true):null
