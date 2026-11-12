@@ -1,4 +1,4 @@
-// Bump with every release and keep SHELL in sync with versioned entry points.
+// Change public VERSION only when explicitly requested; keep SHELL in sync.
 const VERSION = '5.7';
 // Cache Storage is shared by all project sites on this origin. Never delete
 // caches belonging to the original analyzer or any other GitHub Pages project.

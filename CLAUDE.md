@@ -4,7 +4,7 @@ Read this before modifying the analyzer or arguing for reversing an old decision
 
 ## Scope and architecture
 - Repository: `zootopiabest/Character-Card-Analyzer-5.0`. Scope changes to this repository. The project uses static vanilla JavaScript and native modules, browser BYOK, no backend or build pipeline.
-- Release bump: `index.html`, `src/version.js`, `package.json`, `sw.js`, every versioned module import, `README.md`, and What's New nested release notes. Include new imported modules in PWA shell precache; don't cache API responses/cards/keys.
+- Versioning: Do not change the public app version unless the user explicitly requests it. For an approved bump, update `index.html`, `src/version.js`, `package.json`, `sw.js`, every versioned module import, `README.md`, and What's New. For other updates, retain the existing version and, if needed, revise only the private PWA cache key. Include new imported modules in PWA shell precache; don't cache API responses/cards/keys.
 - Input: JSON, V3, CharX, PNG card, Wyvern Markdown, and freeform Markdown. Structured field markers protect headings embedded in greeting text. Per-greeting scenario override extension slot identity must be retained.
 
 ## Character evaluation philosophy

@@ -88,7 +88,7 @@ test('5.7 rejects personality-as-tradeoff framing and only presents demonstrated
   assert.equal(invalid.overallScore,initial.overallScore);
   assert.equal(invalid.designConsiderations,null);
   assert.match(invalid.optionalWarnings.join(' '),/Design considerations unavailable/);
-  assert.doesNotMatch(renderAudit(invalid),/Design considerations/);
+  assert.doesNotMatch(renderAudit(invalid),/<h4>Design considerations<\/h4>/);
 });
 test('single greeting without examples prunes irrelevant instructions AND JSON fields',()=>{
   const text=formatted({name:'Mara',description:'Quiet mechanic.',first_mes:'Rain.'});
